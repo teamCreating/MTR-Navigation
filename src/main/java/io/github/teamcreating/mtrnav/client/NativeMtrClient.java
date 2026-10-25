@@ -84,7 +84,7 @@ public final class NativeMtrClient {
                 if (dimensionIndex != 0) { lastCatalog = 0; return; }
             }
             if (network == null || network.catalog().revision() != parsed.catalog().revision()) {
-                NavigationClient.journeys = List.of(); timetable = null;
+                NavigationClient.journeys = List.of(); NavigationClient.referencePlan = null; timetable = null;
             }
             network = parsed; NavigationClient.catalog = parsed.catalog().retainPlatformNames(NavigationClient.catalog);
             NavigationClient.status = parsed.catalog().stations().isEmpty() ? "mtrnav.no_stations" : "mtrnav.ready";
@@ -163,15 +163,18 @@ public final class NativeMtrClient {
             List<Journey> results; String failure = "";
             try { results = new RoutePlanner().find(source, origin, destination, sort, Settings.defaults()); }
             catch (RoutePlanner.SearchLimitException error) { results = List.of(); failure = "mtrnav.search_budget";
-                com.mojang.logging.LogUtils.getLogger().warn("[MTR Navigation] Query resource limit: {} events, {} -> {}", source.events().size(), origin, destination); }
+                com.mojang.logging.LogUtils.getLogger().warn("[MTR Navigation] Query resource limit ({}): {} events, {} -> {}", error.getMessage(), source.events().size(), origin, destination); }
             catch (IllegalArgumentException error) { results = List.of(); failure = "mtrnav.station_refreshed";
                 com.mojang.logging.LogUtils.getLogger().warn("[MTR Navigation] Query station validation failed", error); }
             catch (RuntimeException error) { results = List.of(); failure = "mtrnav.search_failed";
                 com.mojang.logging.LogUtils.getLogger().warn("[MTR Navigation] Query failed", error); }
             var completed = results; String failedStatus = failure;
+            var reference = results.isEmpty() ? io.github.teamcreating.mtrnav.core.ConnectionPlan.find(source.catalog(), origin, destination).orElse(null) : null;
             Minecraft.getInstance().execute(() -> {
                     if (epoch != session || generation != queryGeneration) return;
                     NavigationClient.journeys = completed;
+                    NavigationClient.referencePlan = reference;
+                    NavigationClient.referenceReason = !failedStatus.isEmpty() ? "mtrnav.reference_incomplete" : reference != null && reference.transfers() > Settings.defaults().maxTransfers() ? "mtrnav.reference_limit" : "mtrnav.reference_no_service";
                     NavigationClient.status = !failedStatus.isEmpty() ? failedStatus : completed.isEmpty() ? "mtrnav.no_route" : "mtrnav.native_results";
                 });
         });

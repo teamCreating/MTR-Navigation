@@ -15,6 +15,8 @@ public final class NavigationClient {
     private NavigationClient() {}
     public static Catalog catalog;
     public static List<Journey> journeys = List.of();
+    public static ConnectionPlan referencePlan;
+    public static String referenceReason = "";
     public static List<StopEvent> arrivals = List.of();
     public static JourneyTracker.State tracking;
     public static boolean boardLoading;
@@ -65,7 +67,7 @@ public final class NavigationClient {
         }
     }
     public static void reset() {
-        catalog = null; journeys = List.of(); arrivals = List.of(); tracking = null;
+        catalog = null; journeys = List.of(); referencePlan = null; referenceReason = ""; arrivals = List.of(); tracking = null;
         boardLoading = false; boardUpdatedNanos = 0;
         origin = destination = boardStation = ""; status = "mtrnav.connecting";
         queryId = lastTrackingId = lastPoll = lastSample = 0; helloSent = false;
@@ -76,6 +78,8 @@ public final class NavigationClient {
     public static void query() {
         if (origin.isEmpty() || destination.isEmpty()) { status = "mtrnav.choose_stations"; return; }
         status = "mtrnav.searching"; journeys = List.of();
+        referencePlan = ConnectionPlan.find(catalog, origin, destination).orElse(null);
+        referenceReason = "mtrnav.reference_pending";
         if (usingNative) NativeMtrClient.query(); else queryId = send("query", "", "");
     }
     public static void select(Journey journey) { if (usingNative) NativeMtrClient.select(journey); else send("select", journey.id(), ""); }
@@ -104,7 +108,7 @@ public final class NavigationClient {
         if (response.catalog() != null && response.id() >= lastCatalogId) {
             lastCatalogId = response.id();
             if (catalog == null || response.revision() != catalog.revision()) {
-                journeys = List.of(); catalog = response.catalog();
+                journeys = List.of(); referencePlan = null; catalog = response.catalog();
             }
         }
         if (catalog != null && response.revision() != catalog.revision()) return;
@@ -113,6 +117,9 @@ public final class NavigationClient {
         }
         if (response.kind().equals("query")) {
             journeys = response.journeys(); status = journeys.isEmpty() ? "mtrnav.no_route" : "mtrnav.ready";
+            referencePlan = journeys.isEmpty() ? ConnectionPlan.find(catalog, origin, destination).orElse(null) : null;
+            referenceReason = response.message().equals("reference_limit") ? "mtrnav.reference_limit"
+                    : response.message().isEmpty() || response.message().equals("reference_no_service") ? "mtrnav.reference_no_service" : "mtrnav.reference_incomplete";
         } else if (response.kind().equals("hello")) status = "mtrnav.ready";
         if (response.kind().equals("poll") && response.id() >= Math.max(lastTrackingId, boardRequestId) && !boardStation.isEmpty()) {
             arrivals = response.arrivals(); boardLoading = false; boardUpdatedNanos = System.nanoTime();

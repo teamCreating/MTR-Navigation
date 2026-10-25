@@ -25,6 +25,7 @@ public final class NavigationScreen extends Screen {
     private final List<Action> fromMatches = new ArrayList<>(), toMatches = new ArrayList<>(), boardMatches = new ArrayList<>(), cards = new ArrayList<>();
     private final List<StationTarget> stationTargets = new ArrayList<>();
     private List<Station> fromStations = List.of(), toStations = List.of(), boardStations = List.of();
+    private final int[] matchOffsets = new int[3];
     private Action queryButton, sortButton, routesTab, departuresTab, activeTab, startButton, progressButton, backButton, requeryButton, cancelButton;
     private int selectedJourney, scroll, contentHeight, left, top, panelWidth, panelHeight, bodyTop, bodyBottom, detailX, detailTop, footerY;
     private boolean wide, collapsed, showAllStops;
@@ -71,11 +72,13 @@ public final class NavigationScreen extends Screen {
         collapsed = view == View.ACTIVE || view == View.JOURNEYS && searchCollapsed && panelHeight < 310;
         int x = left + 12, inner = panelWidth - 24;
         int tabWidth = panelWidth < 500 ? 63 : 76;
-        int tabsX = left + panelWidth - 32 - (tracking == null ? 2 : 3) * (tabWidth + 3);
+        int tabsX = left + panelWidth - 66 - (tracking == null ? 2 : 3) * (tabWidth + 3);
         routesTab = button("mtrnav.query_tab", tabsX, top + 6, tabWidth, 19, () -> changeView(View.JOURNEYS)); routesTab.tab = true;
         departuresTab = button("mtrnav.departures", tabsX + tabWidth + 3, top + 6, tabWidth, 19, () -> changeView(View.DEPARTURES)); departuresTab.tab = true;
         activeTab = button("mtrnav.active_trip", tabsX + (tabWidth + 3) * 2, top + 6, tabWidth, 19, () -> changeView(View.ACTIVE)); activeTab.tab = true;
         button("mtrnav.close", left + panelWidth - 26, top + 7, 16, 16, this::onClose);
+        button("mtrnav.hud_settings_short", left + panelWidth - 58, top + 7, 28, 16, () -> minecraft.setScreen(new HudSettingsScreen(this)))
+                .setTooltip(Tooltip.create(Component.translatable("mtrnav.hud_settings")));
         int queryWidth = 68, fieldWidth = (inner - queryWidth - 40) / 2, right = x + fieldWidth + 28;
         fromBox = new EditBox(font, x, top + 44, fieldWidth, 20, Component.translatable("mtrnav.origin"));
         toBox = new EditBox(font, right, top + 44, fieldWidth, 20, Component.translatable("mtrnav.destination"));
@@ -87,9 +90,9 @@ public final class NavigationScreen extends Screen {
         fromBox.setValue(fromText != null ? fromText : catalog == null ? "" : catalog.stationName(origin));
         toBox.setValue(toText != null ? toText : catalog == null ? "" : catalog.stationName(destination));
         boardBox.setValue(boardText != null ? boardText : catalog == null ? "" : catalog.stationName(selectedBoard));
-        fromBox.setResponder(value -> { fromText = value; edited(true, value); refreshMatches(); });
-        toBox.setResponder(value -> { toText = value; edited(false, value); refreshMatches(); });
-        boardBox.setResponder(value -> { boardText = value; selectedBoard = resolve(value); refreshMatches(); });
+        fromBox.setResponder(value -> { fromText = value; matchOffsets[0] = 0; edited(true, value); refreshMatches(); });
+        toBox.setResponder(value -> { toText = value; matchOffsets[1] = 0; edited(false, value); refreshMatches(); });
+        boardBox.setResponder(value -> { boardText = value; matchOffsets[2] = 0; selectedBoard = resolve(value); refreshMatches(); });
         fromBox.visible = toBox.visible = !collapsed && view == View.JOURNEYS;
         boardBox.visible = view == View.DEPARTURES;
         var swap = button("mtrnav.swap_short", x + fieldWidth + 4, top + 44, 20, 20, () -> {
@@ -136,6 +139,7 @@ public final class NavigationScreen extends Screen {
             toMatches.add(button("", right, top + 66 + i * 22, fieldWidth, 22, () -> choose(1, index)));
             boardMatches.add(button("", x, top + 66 + i * 22, boardBox.getWidth(), 22, () -> choose(2, index)));
         }
+        if (view == View.DEPARTURES && !selectedBoard.isEmpty() && boardStation.isEmpty()) board(selectedBoard);
         refreshMatches(); updateControls();
     }
     private String resolve(String value) { return catalog == null ? "" : StationSearch.exact(catalog.stations(), value); }
@@ -145,6 +149,7 @@ public final class NavigationScreen extends Screen {
     }
     private void choose(int input, int index) {
         var matches = input == 0 ? fromStations : input == 1 ? toStations : boardStations;
+        index += matchOffsets[input];
         if (index >= matches.size()) return;
         var s = matches.get(index);
         if (input == 0) { fromBox.setValue(displayName(s.name())); origin = s.id(); setFocused(toBox); }
@@ -156,20 +161,22 @@ public final class NavigationScreen extends Screen {
         if (catalog == null) return List.of();
         String needle = value.strip().toLowerCase(Locale.ROOT);
         return catalog.stations().stream().filter(s -> displayName(s.name()).toLowerCase(Locale.ROOT).contains(needle))
-                .sorted(Comparator.comparing(Station::name).thenComparing(Station::id)).limit(3).toList();
+                .sorted(Comparator.comparing(Station::name).thenComparing(Station::id)).toList();
     }
     private void refreshMatches() {
         if (fromBox == null) return;
         fromStations = matches(fromBox.getValue()); toStations = matches(toBox.getValue()); boardStations = matches(boardBox.getValue());
-        updateMatches(fromMatches, fromStations, fromBox.visible && fromBox.isFocused() && origin.isEmpty());
-        updateMatches(toMatches, toStations, toBox.visible && toBox.isFocused() && destination.isEmpty());
-        updateMatches(boardMatches, boardStations, boardBox.visible && boardBox.isFocused() && selectedBoard.isEmpty());
+        updateMatches(0, fromMatches, fromStations, fromBox.visible && fromBox.isFocused() && origin.isEmpty());
+        updateMatches(1, toMatches, toStations, toBox.visible && toBox.isFocused() && destination.isEmpty());
+        updateMatches(2, boardMatches, boardStations, boardBox.visible && boardBox.isFocused() && selectedBoard.isEmpty());
     }
-    private void updateMatches(List<Action> buttons, List<Station> stations, boolean show) {
+    private void updateMatches(int input, List<Action> buttons, List<Station> stations, boolean show) {
+        matchOffsets[input] = Math.max(0, Math.min(matchOffsets[input], stations.size() - buttons.size()));
         for (int i = 0; i < buttons.size(); i++) {
-            var b = buttons.get(i); b.visible = show && i < stations.size();
-            if (b.visible) { var s = stations.get(i); String label = displayName(s.name()) + " (" + s.x() + ", " + s.z() + ")";
-                b.setMessage(Component.literal(label)); b.setTooltip(Tooltip.create(Component.literal(label))); }
+            int index = i + matchOffsets[input];
+            var b = buttons.get(i); b.visible = show && index < stations.size();
+            if (b.visible) { var s = stations.get(index); String label = displayName(s.name()) + " (" + s.x() + ", " + s.z() + ")";
+                b.setMessage(Component.literal(label)); b.setTooltip(Tooltip.create(Component.literal(label + (stations.size() > 3 ? " · " + (index + 1) + "/" + stations.size() + " · " + tr("mtrnav.scroll_matches") : "")))); }
         }
     }
     @Override public void tick() {
@@ -208,8 +215,14 @@ public final class NavigationScreen extends Screen {
         }
         selectedJourney = Math.max(0, Math.min(selectedJourney, journeys.size() - 1));
         for (int i = 0; i < cards.size(); i++) {
-            var b = cards.get(i); b.visible = view == View.JOURNEYS && i < journeys.size();
+            var b = cards.get(i); b.visible = view == View.JOURNEYS && (i < journeys.size() || i == 0 && journeys.isEmpty() && referencePlan != null);
             if (!b.visible) continue;
+            if (journeys.isEmpty()) {
+                b.selected = true; b.setMessage(Component.literal(tr("mtrnav.reference_route")));
+                b.detail = tr("mtrnav.transfers", referencePlan.transfers());
+                b.extra = referencePlan.legs().stream().map(l -> routeCode(l.routeId())).reduce((a, c) -> a + " → " + c).orElse(tr("mtrnav.same_station"));
+                b.tint = ACCENT; b.setTooltip(Tooltip.create(Component.translatable(referenceReason))); continue;
+            }
             var journey = journeys.get(i); b.selected = selectedJourney == i;
             b.setMessage(Component.literal(tr("mtrnav.option", i + 1) + "  " + duration(journey.arrival() - journey.queryTime())));
             b.detail = tr("mtrnav.transfers", journey.transfers()) + " · " + remaining(journey.arrival());
@@ -217,7 +230,7 @@ public final class NavigationScreen extends Screen {
             b.tint = journey.legs().isEmpty() ? ACCENT : routeColor(journey.legs().getFirst().routeId());
             b.setTooltip(Tooltip.create(Component.literal(journey.legs().stream().map(l -> route(l.routeId())).reduce((a, c) -> a + " → " + c).orElse(tr("mtrnav.same_station")))));
         }
-        detailTop = bodyTop + (!wide && view == View.JOURNEYS && !journeys.isEmpty() ? 43 : 0);
+        detailTop = bodyTop + (!wide && view == View.JOURNEYS && (!journeys.isEmpty() || referencePlan != null) ? 43 : 0);
     }
     @Override public boolean keyPressed(int key, int scan, int modifiers) {
         if ((key == 257 || key == 335) && queryButton.visible && queryButton.active && !collapsed && !(getFocused() instanceof Action)) { search(); return true; }
@@ -227,15 +240,17 @@ public final class NavigationScreen extends Screen {
         for (var list : List.of(fromMatches, toMatches, boardMatches)) for (var b : list) if (b.visible && b.isMouseOver(x, y)) return b.mouseClicked(x, y, button);
         if (button == 0) for (var target : stationTargets) if (target.contains(x, y)) { openBoard(target.id()); return true; }
         int contentX = wide && view == View.JOURNEYS ? detailX : left + 12;
-        if (button == 0 && scroll == 0 && x >= contentX && x < left + panelWidth - 12 && y >= detailTop && y < detailTop + 22 && view != View.DEPARTURES && (tracking != null || !journeys.isEmpty())) { showAllStops = !showAllStops; return true; }
+        if (button == 0 && scroll == 0 && x >= contentX && x < left + panelWidth - 12 && y >= detailTop && y < detailTop + 22 && view != View.DEPARTURES && (tracking != null || !journeys.isEmpty() || referencePlan != null)) { showAllStops = !showAllStops; return true; }
         return super.mouseClicked(x, y, button);
     }
     @Override public boolean isPauseScreen() { return false; }
     @Override public void removed() { if (view == View.DEPARTURES) stopBoard(); super.removed(); }
     @Override public void render(GuiGraphics g, int mouseX, int mouseY, float delta) {
         renderBackground(g, mouseX, mouseY, delta);
-        g.fill(left, top, left + panelWidth, top + panelHeight, BACKGROUND); outline(g, left, top, panelWidth, panelHeight, BORDER);
-        text(g, title.getString(), left + 12, top + 11, Math.max(40, routesTab.getX() - left - 20), TEXT);
+        frame(g, left, top, panelWidth, panelHeight);
+        icon(g, left + 10, top + 7, 16);
+        text(g, title.getString(), left + 31, top + 11, Math.max(0, routesTab.getX() - left - 36), TEXT);
+        railDivider(g, left + 12, top + 28, panelWidth - 24);
         if (!collapsed) {
             if (view == View.DEPARTURES) text(g, tr("mtrnav.board_station"), boardBox.getX(), top + 32, boardBox.getWidth(), MUTED);
             else {
@@ -252,15 +267,26 @@ public final class NavigationScreen extends Screen {
         stationTargets.clear();
         if (view == View.DEPARTURES) renderBoard(g);
         else renderJourney(g, mouseX, mouseY);
-        g.fill(left + 12, footerY, left + panelWidth - 12, footerY + 1, BORDER);
+        railDivider(g, left + 12, footerY - 1, panelWidth - 24);
         if (view != View.ACTIVE) {
-            String summary = view == View.DEPARTURES ? tr("mtrnav.board_summary", arrivals.size()) : journeys.isEmpty() ? tr("mtrnav.search_help") : tr("mtrnav.option_summary", selectedJourney + 1, journeys.size());
+            String summary = view == View.DEPARTURES ? tr("mtrnav.board_summary", arrivals.size()) : journeys.isEmpty() ? tr(referencePlan == null ? "mtrnav.search_help" : "mtrnav.reference_only") : tr("mtrnav.option_summary", selectedJourney + 1, journeys.size());
             text(g, summary, left + 12, footerY + 12, panelWidth - 40 - startButton.getWidth(), TEXT);
         }
         boolean stale = view == View.DEPARTURES ? boardStale() : CLOCK.stale(System.nanoTime());
         String footer = stale && catalog != null ? tr("mtrnav.stale") : view == View.ACTIVE ? tr(usingNative ? "mtrnav.manual_short" : "mtrnav.progress_hint") : tr(view == View.DEPARTURES ? "mtrnav.board_detail_hint" : "mtrnav.station_click_hint");
         text(g, footer, left + 12, top + panelHeight - 10, panelWidth - 24, stale ? WARNING : MUTED);
         for (var widget : widgets) if (widget.visible) widget.render(g, mouseX, mouseY, delta);
+        for (int i = 0; i < 3; i++) {
+            var list = i == 0 ? fromMatches : i == 1 ? toMatches : boardMatches;
+            var stations = i == 0 ? fromStations : i == 1 ? toStations : boardStations;
+            if (!list.getFirst().visible || stations.size() <= 3) continue;
+            var first = list.getFirst(); int h = list.size() * 22;
+            int thumb = Math.max(6, h * 3 / stations.size());
+            int barX = first.getX() + first.getWidth() - 3;
+            g.fill(barX, first.getY(), barX + 2, first.getY() + h, BORDER);
+            int barY = first.getY() + (h - thumb) * matchOffsets[i] / Math.max(1, stations.size() - 3);
+            g.fill(barX, barY, barX + 2, barY + thumb, ACCENT);
+        }
         boolean popup = fromMatches.stream().anyMatch(b -> b.visible) || toMatches.stream().anyMatch(b -> b.visible) || boardMatches.stream().anyMatch(b -> b.visible);
         if (!popup) for (var target : stationTargets) if (target.contains(mouseX, mouseY)) { g.renderTooltip(font, Component.translatable("mtrnav.station_board_hint", station(target.id())), mouseX, mouseY); break; }
     }
@@ -269,7 +295,7 @@ public final class NavigationScreen extends Screen {
         int contentWidth = left + panelWidth - 12 - contentX;
         if (wide && view == View.JOURNEYS) {
             g.fill(detailX - 7, bodyTop, detailX - 6, bodyBottom, BORDER);
-            if (journeys.isEmpty()) { int y = bodyTop + 10; for (var line : font.split(Component.translatable("mtrnav.search_help"), detailX - left - 28)) { g.drawString(font, line, left + 16, y, MUTED, false); y += 13; } }
+            if (journeys.isEmpty() && referencePlan == null) { int y = bodyTop + 10; for (var line : font.split(Component.translatable("mtrnav.search_help"), detailX - left - 28)) { g.drawString(font, line, left + 16, y, MUTED, false); y += 13; } }
         }
         var rows = rows(contentWidth - 26); contentHeight = rows.stream().mapToInt(Row::height).sum();
         int viewport = Math.max(0, bodyBottom - detailTop); clampScroll(viewport);
@@ -342,7 +368,10 @@ public final class NavigationScreen extends Screen {
                 if (!guidance().isEmpty()) wrap(rows, guidance(), width, WARNING);
             }
         } else {
-            if (journeys.isEmpty()) { rows.add(new Row(tr(status), TEXT, 21, 1)); wrap(rows, tr("mtrnav.empty_help"), width, MUTED); return rows; }
+            if (journeys.isEmpty()) {
+                if (referencePlan != null) return referenceRows(width);
+                wrap(rows, tr(status), width, TEXT); wrap(rows, tr("mtrnav.empty_help"), width, MUTED); return rows;
+            }
             journey = journeys.get(selectedJourney);
             rows.add(new Row(duration(journey.arrival() - journey.queryTime()) + " · " + tr("mtrnav.transfers", journey.transfers()), ACCENT, 21, 1));
             wrap(rows, station(journey.originStationId()) + " → " + station(journey.destinationStationId()) + " · " + tr("mtrnav.arrival") + " " + remaining(journey.arrival()), width, TEXT);
@@ -362,6 +391,24 @@ public final class NavigationScreen extends Screen {
         }
         return rows;
     }
+    private List<Row> referenceRows(int width) {
+        var rows = new ArrayList<Row>();
+        rows.add(new Row(tr("mtrnav.reference_route") + " · " + tr("mtrnav.transfers", referencePlan.transfers()), ACCENT, 21, 1));
+        wrap(rows, tr(referenceReason), width, WARNING);
+        wrap(rows, tr("mtrnav.reference_only"), width, MUTED);
+        for (int i = 0; i < referencePlan.legs().size(); i++) {
+            var leg = referencePlan.legs().get(i); int tint = routeColor(leg.routeId());
+            if (i > 0) wrap(rows, tr("mtrnav.reference_transfer"), width, WARNING);
+            rows.add(new Row((i + 1) + "  " + route(leg.routeId()), tint, 20, 1));
+            wrap(rows, tr("mtrnav.direction", primary(leg.direction())), width, MUTED);
+            rows.add(new Row(station(leg.fromStationId()) + " · " + tr("mtrnav.platform", platform(leg.fromPlatformId())), tint, 18, 2, leg.fromStationId()));
+            if (showAllStops) for (var via : leg.viaStations()) rows.add(new Row(station(via), MUTED, 17, 2, via));
+            else if (!leg.viaStations().isEmpty()) wrap(rows, tr("mtrnav.stops_count", leg.viaStations().size()), width, MUTED);
+            rows.add(new Row(station(leg.toStationId()) + " · " + tr("mtrnav.platform", platform(leg.toPlatformId())), tint, 18, 2, leg.toStationId()));
+            rows.add(new Row("", TEXT, 6, 0));
+        }
+        return rows;
+    }
     private void wrap(List<Row> rows, String text, int width, int color) {
         for (var line : font.split(Component.literal(text), Math.max(30, width))) {
             var plain = new StringBuilder(); line.accept((index, style, point) -> { plain.appendCodePoint(point); return true; }); rows.add(new Row(plain.toString(), color, 12, 0));
@@ -369,6 +416,13 @@ public final class NavigationScreen extends Screen {
     }
     private void wrapped(GuiGraphics g, String text, int x, int y, int width, int color) { for (var line : font.split(Component.literal(text), width)) { g.drawString(font, line, x, y, color, false); y += 13; } }
     @Override public boolean mouseScrolled(double x, double y, double horizontal, double vertical) {
+        var lists = List.of(fromMatches, toMatches, boardMatches);
+        for (int i = 0; i < lists.size(); i++) {
+            var list = lists.get(i); var first = list.getFirst();
+            if (vertical != 0 && first.visible && x >= first.getX() && x <= first.getX() + first.getWidth() && y >= first.getY() && y <= first.getY() + list.size() * 22) {
+                matchOffsets[i] += vertical < 0 ? 1 : -1; refreshMatches(); return true;
+            }
+        }
         if (x >= left && x <= left + panelWidth && y >= bodyTop && y <= bodyBottom) { scroll = Math.max(0, scroll - (int)(vertical * 26)); return true; }
         return super.mouseScrolled(x, y, horizontal, vertical);
     }

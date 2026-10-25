@@ -4,7 +4,8 @@ license="MIT"
 [[mods]]
 modId="mtrnav"
 version="${version}"
-displayName="MTR Navigation"
+displayName="MTR：站间物语"
+logoFile="assets/mtrnav/icon.png"
 authors="TeamCreating"
 description='''Native MTR journey planning, live departures and journey guidance.'''
 [[dependencies.mtrnav]]

@@ -119,12 +119,15 @@ public final class NavigationServer {
                 execute(() -> {
                     try {
                         var results = new RoutePlanner().find(snapshot, request.origin(), request.destination(), request.sort(), config);
+                        var reference = results.isEmpty() ? io.github.teamcreating.mtrnav.core.ConnectionPlan.find(snapshot.catalog(), request.origin(), request.destination()).orElse(null) : null;
+                        String message = reference == null ? "" : reference.transfers() > config.maxTransfers() ? "reference_limit" : "reference_no_service";
                         server.execute(() -> {
                             if (owner != server || sessions.get(player.getUUID()) != session || session.queryId != request.id()) return;
                             var offered = new HashMap<String, Journey>(); results.forEach(j -> offered.put(j.id(), j)); session.offered = Map.copyOf(offered);
-                            reply(player, session, response(request, snapshot, catalogChanged ? snapshot.catalog() : null, results, List.of(), null, ""));
+                            reply(player, session, response(request, snapshot, catalogChanged ? snapshot.catalog() : null, results, List.of(), null, message));
                         });
-                    } catch (Exception e) { server.execute(() -> fail(player, session, request, "search_failed")); }
+                    } catch (RoutePlanner.SearchLimitException e) { server.execute(() -> fail(player, session, request, "search_budget")); }
+                    catch (Exception e) { server.execute(() -> fail(player, session, request, "search_failed")); }
                 }, () -> fail(player, session, request, "busy"));
             }
             case "select" -> {

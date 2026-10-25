@@ -4,6 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import static io.github.teamcreating.mtrnav.core.Model.*;
 import static io.github.teamcreating.mtrnav.client.NavigationClient.*;
 
@@ -11,7 +12,11 @@ import static io.github.teamcreating.mtrnav.client.NavigationClient.*;
 final class NavigationTheme {
     static final int BACKGROUND = 0xF5282D2D, PANEL = 0xFF282D2D, RAISED = 0xFF323837;
     static final int BORDER = 0xFF51594F, TEXT = 0xFFF4EFDF, MUTED = 0xFFADB1A5;
-    static final int ACCENT = 0xFFC6BB8D, WARNING = 0xFFFFCC80;
+    static final int ACCENT = 0xFFD4B478, WARNING = 0xFFFFCC80;
+    private static final int BRASS_DARK = 0xFF68502F, BRASS_LIGHT = 0xFFE3C68A;
+    private static final ResourceLocation STONE = ResourceLocation.withDefaultNamespace("textures/gui/advancements/backgrounds/stone.png");
+    private static final ResourceLocation BUTTON = ResourceLocation.withDefaultNamespace("widget/button");
+    private static final ResourceLocation ICON = ResourceLocation.fromNamespaceAndPath("mtrnav", "icon.png");
     private NavigationTheme() {}
     static String station(String id) {
         var station = catalog == null ? null : catalog.station(id);
@@ -45,6 +50,36 @@ final class NavigationTheme {
         g.fill(x, y, x + w, y + 1, color); g.fill(x, y + h - 1, x + w, y + h, color);
         g.fill(x, y, x + 1, y + h, color); g.fill(x + w - 1, y, x + w, y + h, color);
     }
+    static void icon(GuiGraphics g, int x, int y, int size) {
+        g.pose().pushPose();
+        g.pose().translate(x, y, 0); g.pose().scale(size / 1254f, size / 1254f, 1);
+        g.blit(ICON, 0, 0, 0f, 0f, 1254, 1254, 1254, 1254); g.pose().popPose();
+    }
+    static void frame(GuiGraphics g, int x, int y, int w, int h) {
+        for (int tx = 0; tx < w; tx += 16) for (int ty = 0; ty < h; ty += 16)
+            g.blit(STONE, x + tx, y + ty, 0f, 0f, Math.min(16, w - tx), Math.min(16, h - ty), 16, 16);
+        g.fill(x + 3, y + 3, x + w - 3, y + h - 3, 0xE8252928);
+        outline(g, x, y, w, h, 0xFF111210); outline(g, x + 1, y + 1, w - 2, h - 2, 0xFF85877D);
+        g.fill(x + 2, y + h - 3, x + w - 2, y + h - 1, 0xFF171916);
+        g.fill(x + w - 3, y + 2, x + w - 1, y + h - 2, 0xFF171916);
+        // Brass casing corners around an otherwise vanilla stone-and-iron panel.
+        for (int side : new int[]{0, 1}) {
+            int cx = side == 0 ? x + 2 : x + w - 26;
+            g.fill(cx, y + 2, cx + 24, y + 4, BRASS_LIGHT);
+            g.fill(cx, y + h - 5, cx + 24, y + h - 3, BRASS_DARK);
+            int edge = side == 0 ? x + 2 : x + w - 5;
+            g.fill(edge, y + 2, edge + 3, y + 24, ACCENT);
+            g.fill(edge, y + h - 24, edge + 3, y + h - 3, ACCENT);
+        }
+        for (int rx : new int[]{x + 5, x + w - 8}) for (int ry : new int[]{y + 5, y + h - 8}) {
+            g.fill(rx, ry, rx + 3, ry + 3, 0xFF53422B); g.fill(rx, ry, rx + 2, ry + 2, ACCENT);
+        }
+    }
+    static void railDivider(GuiGraphics g, int x, int y, int width) {
+        g.fill(x, y, x + width, y + 1, BRASS_DARK);
+        g.fill(x, y + 2, x + width, y + 3, BORDER);
+        for (int tick = 0; tick < width; tick += 12) g.fill(x + tick, y, x + tick + 2, y + 3, ACCENT);
+    }
     static String duration(long millis) {
         long minutes = Math.max(1, (millis + 59_999) / 60_000);
         return tr("mtrnav.minutes", minutes);
@@ -64,7 +99,7 @@ final class NavigationTheme {
         return tracking.notice().isEmpty() ? "" : tr("mtrnav.notice." + tracking.notice());
     }
 
-    /** Button keeps vanilla focus, keyboard activation and narration, with a flat painted surface. */
+    /** Vanilla stone controls inside a brass railway instrument casing. */
     static final class Action extends Button {
         boolean selected, primary, tab;
         String detail, extra;
@@ -74,9 +109,17 @@ final class NavigationTheme {
         }
         @Override protected void renderWidget(GuiGraphics g, int mouseX, int mouseY, float delta) {
             boolean highlighted = isHoveredOrFocused();
-            int surface = !active ? 0xFF252A28 : primary ? (highlighted ? 0xFFDFD3A0 : ACCENT)
-                    : selected ? RAISED : highlighted ? 0xFF3C443D : PANEL;
-            g.fill(getX(), getY(), getX() + width, getY() + height, surface);
+            if (detail == null) {
+                super.renderWidget(g, mouseX, mouseY, delta);
+                if (primary && active) {
+                    outline(g, getX() + 1, getY() + 1, width - 2, height - 2, ACCENT);
+                    for (int edge : new int[]{getX() + 3, getX() + width - 5}) g.fill(edge, getY() + 3, edge + 2, getY() + 5, BRASS_LIGHT);
+                }
+                if (tab && selected) g.fill(getX() + 2, getY() + height - 3, getX() + width - 2, getY() + height - 1, ACCENT);
+                return;
+            }
+            g.blitSprite(BUTTON, getX(), getY(), width, height);
+            g.fill(getX() + 2, getY() + 2, getX() + width - 2, getY() + height - 2, 0xD0252A27);
             if (tab) g.fill(getX(), getY() + height - 2, getX() + width, getY() + height, selected ? ACCENT : BORDER);
             else outline(g, getX(), getY(), width, height, selected || highlighted ? ACCENT : BORDER);
             if (selected) g.fill(getX(), getY(), getX() + 3, getY() + height, tint);
