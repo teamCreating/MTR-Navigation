@@ -31,7 +31,7 @@ public final class NativeMtrClient {
     }
     private static String dimension = "";
     private static volatile long epoch;
-    private static long queryGeneration, requestSequence, lastCatalog, lastDepartures, lastBoard, lastSample;
+    private static long queryGeneration, requestSequence, lastCatalog, lastDepartures, lastBoard, lastReminder, lastSample;
     private static int dimensionIndex;
     private static boolean dimensionResolved, waitingQuery;
     private static NativeTimetable.Network network;
@@ -53,12 +53,13 @@ public final class NativeMtrClient {
         if (activeSearch != null) activeSearch.cancel(true);
         search.getQueue().clear(); decoding.getQueue().clear();
         network = null; timetable = null; tracker = null; dimension = ""; dimensionResolved = false;
-        dimensionIndex = 0; lastCatalog = lastDepartures = lastBoard = lastSample = 0;
+        dimensionIndex = 0; lastCatalog = lastDepartures = lastBoard = lastReminder = lastSample = 0;
     }
     public static void tick(String currentDimension) {
         if (!dimension.equals(currentDimension)) { reset(); dimension = currentDimension; }
         long now = System.nanoTime();
-        boolean active = Minecraft.getInstance().screen instanceof NavigationScreen || NavigationClient.tracking != null;
+        var currentScreen = Minecraft.getInstance().screen;
+        boolean active = currentScreen instanceof NavigationScreen || currentScreen instanceof ReminderSettingsScreen || NavigationClient.tracking != null || NavigationClient.reminder != null;
         if (!active || !gate.enabled()) return;
         var expired = pending.entrySet().stream().filter(e -> now - e.getValue().started() > 8_000_000_000L).map(Map.Entry::getKey).toList();
         if (!expired.isEmpty()) { fail("Native timetable request timed out", null); return; }
@@ -68,11 +69,18 @@ public final class NativeMtrClient {
         }
         if (lastCatalog == 0 || now - lastCatalog > 120_000_000_000L) catalog(overlay);
         if (network == null) return;
-        boolean boardOnly = Minecraft.getInstance().screen instanceof NavigationScreen screen && screen.wantsBoard()
-                && NavigationClient.tracking == null && !waitingQuery;
-        if (!boardOnly && (lastDepartures == 0 || now - lastDepartures >= 3_000_000_000L)) departures();
-        if (Minecraft.getInstance().screen instanceof NavigationScreen screen && screen.wantsBoard()
-                && !NavigationClient.boardStation.isEmpty() && (lastBoard == 0 || now - lastBoard >= 1_000_000_000L)) arrivals();
+        boolean wantsBoard = currentScreen instanceof NavigationScreen screen && screen.wantsBoard() || currentScreen instanceof ReminderSettingsScreen;
+        boolean needsTimetable = NavigationClient.tracking != null || waitingQuery || currentScreen instanceof NavigationScreen && !wantsBoard;
+        boolean departuresDue = needsTimetable && (lastDepartures == 0 || now - lastDepartures >= 3_000_000_000L);
+        var reminder = NavigationClient.reminder;
+        boolean boardDue = wantsBoard && !NavigationClient.boardStation.isEmpty() && (lastBoard == 0 || now - lastBoard >= 1_000_000_000L);
+        boolean reminderDue = reminder != null && (lastReminder == 0 || now - lastReminder >= 1_000_000_000L);
+        switch (PollingOrder.next(departuresDue, lastDepartures, boardDue, lastBoard, reminderDue, lastReminder, waitingQuery)) {
+            case DEPARTURES -> departures();
+            case BOARD -> arrivals(NavigationClient.boardStation);
+            case REMINDER -> arrivals(reminder.stationId());
+            case NONE -> { }
+        }
     }
     private static void catalog(Catalog overlay) {
         var platforms = nativePlatforms(); String requestedDimension = dimension;
@@ -113,14 +121,14 @@ public final class NativeMtrClient {
             }
         })) lastDepartures = System.nanoTime();
     }
-    private static void arrivals() {
-        if (network == null || NavigationClient.boardStation.isEmpty()) return;
-        String station = NavigationClient.boardStation;
+    private static void arrivals(String station) {
+        if (network == null || station.isEmpty()) return;
         var expected = network;
-        var currentCatalog = NavigationClient.catalog;
+        var currentCatalog = NavigationClient.catalog == null ? network.catalog() : NavigationClient.catalog;
+        String reminderId = NavigationClient.reminder == null ? "" : NavigationClient.reminder.id();
         var body = new JsonObject(); var stationIds = new JsonArray(); stationIds.add(station);
         body.add("stationIdsHex", stationIds); body.addProperty("maxCountPerPlatform", DepartureBoard.PER_PLATFORM); body.addProperty("maxCountTotal", DepartureBoard.TOTAL);
-        if (request("arrivals", body.toString(), json -> {
+        boolean requested = request("arrivals", body.toString(), json -> {
             var data = NativeTimetable.data(json);
             var events = new ArrayList<StopEvent>(); var platforms = new LinkedHashMap<String, Platform>(); currentCatalog.platforms().forEach(p -> platforms.put(p.id(), p));
             for (var row : NativeTimetable.array(data, "arrivals")) {
@@ -136,10 +144,20 @@ public final class NativeMtrClient {
             var c = expected.catalog();
             return new BoardData(new Catalog(c.dimension(), c.revision(), c.stations(), List.copyOf(platforms.values()), c.routes()), List.copyOf(events), NativeTimetable.number(data, "currentTime"));
         }, parsed -> {
-            if (network != expected || !station.equals(NavigationClient.boardStation)) return;
-            sample(parsed.sample()); NavigationClient.catalog = parsed.catalog(); NavigationClient.arrivals = parsed.events();
-            NavigationClient.boardLoading = false; NavigationClient.boardUpdatedNanos = System.nanoTime();
-        })) lastBoard = System.nanoTime();
+            if (network != expected) return;
+            sample(parsed.sample()); NavigationClient.catalog = parsed.catalog();
+            NavigationClient.observeReminder(station, parsed.events(), parsed.sample(), reminderId);
+            if (station.equals(NavigationClient.boardStation)) {
+                NavigationClient.arrivals = parsed.events(); NavigationClient.boardLoading = false;
+                if (parsed.sample() > NavigationClient.boardSampleMillis) {
+                    NavigationClient.boardUpdatedNanos = System.nanoTime(); NavigationClient.boardSampleMillis = parsed.sample();
+                }
+            }
+        });
+        if (requested) {
+            if (station.equals(NavigationClient.boardStation)) lastBoard = System.nanoTime();
+            if (NavigationClient.reminder != null && station.equals(NavigationClient.reminder.stationId())) lastReminder = System.nanoTime();
+        }
     }
     public static void query() {
         queryGeneration++;
@@ -196,7 +214,7 @@ public final class NativeMtrClient {
         if (journey.legs().stream().allMatch(l -> !l.fromPlatformId().startsWith("map:") && !l.toPlatformId().startsWith("map:"))) NavigationApi.select(JourneySelection.from(journey));
         else NavigationApi.cancel();
     }
-    public static void refreshBoard() { lastBoard = 0; arrivals(); }
+    public static void refreshBoard() { lastBoard = 0; arrivals(NavigationClient.boardStation); }
     private static void sample(long serverMillis) {
         if (serverMillis > lastSample) { lastSample = serverMillis; NavigationClient.CLOCK.sample(serverMillis, System.nanoTime()); }
     }

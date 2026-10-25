@@ -4,6 +4,7 @@ import io.github.teamcreating.mtrnav.core.JourneyTracker;
 import io.github.teamcreating.mtrnav.core.StationSearch;
 import io.github.teamcreating.mtrnav.core.DepartureBoard;
 import io.github.teamcreating.mtrnav.core.ScrollBarGeometry;
+import io.github.teamcreating.mtrnav.core.ArrivalReminder;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.*;
 import net.minecraft.client.gui.screens.Screen;
@@ -28,17 +29,21 @@ public final class NavigationScreen extends Screen {
     private record BoardTarget(String key, int x, int y, int w, int h) {
         boolean contains(double px, double py) { return px >= x && px < x + w && py >= y && py < y + h; }
     }
+    private record DepartureTarget(StopEvent event, int x, int y, int w, int h) {
+        boolean contains(double px, double py) { return px >= x && px < x + w && py >= y && py < y + h; }
+    }
     private EditBox fromBox, toBox, boardBox;
     private final List<AbstractWidget> widgets = new ArrayList<>();
     private final List<Action> cards = new ArrayList<>();
     private final List<StationTarget> stationTargets = new ArrayList<>();
     private final List<ScrollTarget> scrollTargets = new ArrayList<>();
     private final List<BoardTarget> boardTargets = new ArrayList<>();
+    private final List<DepartureTarget> departureTargets = new ArrayList<>();
     private final List<Action> clearButtons = new ArrayList<>();
     private final Set<String> expandedLines = new HashSet<>();
     private int draggingScroll = -2;
     private double scrollGrab;
-    private Action queryButton, sortButton, routesTab, departuresTab, activeTab, startButton, progressButton, backButton, requeryButton, cancelButton, allStationsButton;
+    private Action queryButton, sortButton, routesTab, departuresTab, activeTab, startButton, progressButton, backButton, requeryButton, cancelButton, allStationsButton, reminderButton;
     private int selectedJourney, scroll, contentHeight, left, top, panelWidth, panelHeight, bodyTop, bodyBottom, detailX, detailTop, footerY;
     private boolean wide, collapsed, showAllStops;
     private boolean searchCollapsed = tracking != null || !journeys.isEmpty();
@@ -81,7 +86,7 @@ public final class NavigationScreen extends Screen {
     }
     @Override protected void init() {
         widgets.clear(); cards.clear(); stationTargets.clear();
-        clearButtons.clear(); scrollTargets.clear(); boardTargets.clear(); draggingScroll = -2;
+        clearButtons.clear(); scrollTargets.clear(); boardTargets.clear(); departureTargets.clear(); draggingScroll = -2;
         panelWidth = Math.min(width - 20, Math.min(760, Math.max(360, (int)(width * .82))));
         panelHeight = Math.min(height - 16, Math.min(460, Math.max(220, (int)(height * .88))));
         left = (width - panelWidth) / 2; top = (height - panelHeight) / 2;
@@ -89,13 +94,18 @@ public final class NavigationScreen extends Screen {
         collapsed = view == View.ACTIVE || view == View.JOURNEYS && searchCollapsed && panelHeight < 310;
         int x = left + 12, inner = panelWidth - 24;
         int tabWidth = panelWidth < 500 ? 63 : 76;
-        int tabsX = left + panelWidth - 66 - (tracking == null ? 2 : 3) * (tabWidth + 3);
+        int tabsX = left + panelWidth - 106 - (tracking == null ? 2 : 3) * (tabWidth + 3);
         routesTab = button("mtrnav.query_tab", tabsX, top + 6, tabWidth, 19, () -> changeView(View.JOURNEYS)); routesTab.tab = true;
         departuresTab = button("mtrnav.departures", tabsX + tabWidth + 3, top + 6, tabWidth, 19, () -> changeView(View.DEPARTURES)); departuresTab.tab = true;
         activeTab = button("mtrnav.active_trip", tabsX + (tabWidth + 3) * 2, top + 6, tabWidth, 19, () -> changeView(View.ACTIVE)); activeTab.tab = true;
         button("mtrnav.close", left + panelWidth - 26, top + 7, 16, 16, this::onClose);
         button("mtrnav.hud_settings_short", left + panelWidth - 58, top + 7, 28, 16, () -> minecraft.setScreen(new HudSettingsScreen(this)))
                 .setTooltip(Tooltip.create(Component.translatable("mtrnav.hud_settings")));
+        reminderButton = button("mtrnav.reminder_short", left + panelWidth - 98, top + 7, 36, 16, () -> {
+            if (reminder == null) changeView(View.DEPARTURES);
+            else minecraft.setScreen(new ReminderSettingsScreen(this, reminder.stationId(), reminder.event(), reminder.minutes()));
+        });
+        reminderButton.setTooltip(Tooltip.create(Component.translatable("mtrnav.reminder_entry_hint")));
         int queryWidth = 68, fieldWidth = (inner - queryWidth - 40) / 2, right = x + fieldWidth + 28;
         fromBox = new EditBox(font, x, top + 44, fieldWidth - 22, 20, Component.translatable("mtrnav.origin"));
         toBox = new EditBox(font, right, top + 44, fieldWidth - 22, 20, Component.translatable("mtrnav.destination"));
@@ -205,6 +215,7 @@ public final class NavigationScreen extends Screen {
     private void updateControls() {
         boolean active = view == View.ACTIVE && tracking != null;
         boolean retry = usingNative && status.equals("mtrnav.native_unavailable");
+        reminderButton.primary = reminder != null;
         allStationsButton.visible = !collapsed && !active;
         allStationsButton.active = catalog != null && !catalog.stations().isEmpty();
         for (int i = 0; i < clearButtons.size(); i++) {
@@ -264,6 +275,10 @@ public final class NavigationScreen extends Screen {
         if (button == 0) for (var target : boardTargets) if (target.contains(x, y)) {
             if (!expandedLines.add(target.key())) expandedLines.remove(target.key()); return true;
         }
+        if (button == 0) for (var target : departureTargets) if (target.contains(x, y)) {
+            int lead = reminder != null && reminder.stationId().equals(boardStation) && ArrivalReminder.sameEvent(reminder.event(), target.event()) ? reminder.minutes() : ArrivalReminder.DEFAULT_MINUTES;
+            minecraft.setScreen(new ReminderSettingsScreen(this, boardStation, target.event(), lead)); return true;
+        }
         if (button == 0) for (var target : stationTargets) if (target.contains(x, y)) { openBoard(target.id()); return true; }
         int contentX = wide && view == View.JOURNEYS ? detailX : left + 12;
         if (button == 0 && scroll == 0 && x >= contentX && x < left + panelWidth - 12 && y >= detailTop && y < detailTop + 22 && view != View.DEPARTURES && (tracking != null || !journeys.isEmpty() || referencePlan != null)) { showAllStops = !showAllStops; return true; }
@@ -305,7 +320,7 @@ public final class NavigationScreen extends Screen {
             text(g, label, left + 12 + (view == View.ACTIVE ? 0 : 76), top + 39, panelWidth - 36 - (view == View.ACTIVE ? 0 : 180), MUTED);
         }
         g.fill(left + 12, bodyTop - 4, left + panelWidth - 12, bodyTop - 3, BORDER);
-        stationTargets.clear(); boardTargets.clear(); scrollTargets.clear();
+        stationTargets.clear(); boardTargets.clear(); departureTargets.clear(); scrollTargets.clear();
         if (view == View.DEPARTURES) renderBoard(g, mouseX, mouseY);
         else renderJourney(g, mouseX, mouseY);
         railDivider(g, left + 12, footerY - 1, panelWidth - 24);
@@ -343,7 +358,7 @@ public final class NavigationScreen extends Screen {
         }
         g.disableScissor(); scrollbar(g, contentX + contentWidth - 3, detailTop, viewport);
     }
-    private boolean boardStale() { return boardUpdatedNanos == 0 || System.nanoTime() - boardUpdatedNanos >= 5_000_000_000L || CLOCK.stale(System.nanoTime()); }
+    private boolean boardStale() { return !boardFresh(); }
     private String boardTime(long time) { return boardStale() ? "—" : remaining(time); }
     private void renderBoard(GuiGraphics g, int mouseX, int mouseY) {
         int x = left + 12, w = panelWidth - 24, right = x + w;
@@ -391,6 +406,10 @@ public final class NavigationScreen extends Screen {
             for (var event : group.events()) {
                 if (y + 28 <= rowTop || y >= bodyBottom) { y += 28; index++; continue; }
                 if ((index++ & 1) == 0) g.fill(x + 8, y, right - 8, y + 27, RAISED);
+                var target = new DepartureTarget(event, x + 8, Math.max(y, rowTop), w - 18, Math.min(y + 28, bodyBottom) - Math.max(y, rowTop));
+                departureTargets.add(target);
+                boolean activeReminder = reminder != null && reminder.stationId().equals(boardStation) && ArrivalReminder.sameEvent(reminder.event(), event);
+                if (target.contains(mouseX, mouseY) || activeReminder) outline(g, x + 8, y + 1, w - 16, 26, ACCENT);
                 g.fill(x + 8, y + 4, x + 10, y + 24, tint);
                 text(g, "→ " + primary(event.destination()), x + 17, y + 10, platformX - x - 23, TEXT);
                 text(g, platform(event.platformId()), platformX, y + 10, 54, TEXT);

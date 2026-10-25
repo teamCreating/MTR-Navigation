@@ -43,6 +43,8 @@ Overlay 应将 Navigation 作为可选依赖。在检测到 `mtrnav` 后，才�
 
 v1 不包含轨道 ID 列表、车辆身份、当前活动段索引或各段到发时间。请勿根据 `UPDATED` 次数推断乘车进度，也不要从此接口构建到发看板。
 
+班次到站提醒是独立的客户端状态，不属于 `JourneySelection`：设置、更新或取消提醒不会选择另一条地图行程。没有活动导航时，关闭主界面也可能因提醒而继续订阅一个车站；Overlay 无需参与其轮询或提示条渲染。
+
 ## 事件及生命周期
 
 `NavigationApi.current()` 返回 `Optional<JourneySelection>`，可供 Overlay 刚打开地图或刚完成适配器注册时恢复当前选择。

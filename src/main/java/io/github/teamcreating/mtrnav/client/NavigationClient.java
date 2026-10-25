@@ -19,8 +19,9 @@ public final class NavigationClient {
     public static String referenceReason = "";
     public static List<StopEvent> arrivals = List.of();
     public static JourneyTracker.State tracking;
+    public static ArrivalReminder reminder;
     public static boolean boardLoading;
-    public static long boardUpdatedNanos;
+    public static long boardUpdatedNanos, boardSampleMillis;
     public static String status = "mtrnav.connecting";
     public static String origin = "", destination = "", boardStation = "";
     public static Sort sort = Sort.FASTEST;
@@ -34,13 +35,19 @@ public final class NavigationClient {
     private static long oldestResponseId, lastCatalogId, lastHello, boardRequestId;
     private static long lastTickNanos;
     private static boolean helloSent;
+    private record PollContext(String station, String reminderId) {}
+    private static final Map<Long, PollContext> pollContexts = new LinkedHashMap<>();
     public static boolean usingNative;
     public static Supplier<String> openKey = () -> "N";
 
     public static void transport(BooleanSupplier canSend, Consumer<NavRequest> send) { available = canSend; sender = send; }
     public static void open() {
         var mc = Minecraft.getInstance();
-        if (mc.player != null) { NativeMtrClient.opened(); mc.setScreen(new NavigationScreen()); }
+        if (mc.player != null) {
+            NativeMtrClient.opened(); var navigation = new NavigationScreen();
+            if (reminder != null && tracking == null) mc.setScreen(new ReminderSettingsScreen(navigation, reminder.stationId(), reminder.event(), reminder.minutes()));
+            else mc.setScreen(navigation);
+        }
     }
     public static void tick() {
         var mc = Minecraft.getInstance();
@@ -55,6 +62,7 @@ public final class NavigationClient {
         }
         if (mc.player == null || mc.level == null) return;
         long now = System.nanoTime();
+        tickReminder(now);
         if (!available.getAsBoolean() || Boolean.getBoolean("mtrnav.forceNative")) {
             usingNative = true;
             NativeMtrClient.tick(dim);
@@ -62,13 +70,16 @@ public final class NavigationClient {
         }
         if (usingNative) { NativeMtrClient.reset(); usingNative = false; catalog = null; }
         if (!helloSent || (catalog == null && now - lastHello > 3_000_000_000L)) { helloSent = true; lastHello = now; send("hello", "", ""); }
-        if ((mc.screen instanceof NavigationScreen || tracking != null) && now - lastPoll > 1_000_000_000L) {
-            lastPoll = now; send("poll", "", "");
+        if ((mc.screen instanceof NavigationScreen || mc.screen instanceof ReminderSettingsScreen || tracking != null || reminder != null) && now - lastPoll > 1_000_000_000L) {
+            lastPoll = now;
+            String primary = !boardStation.isEmpty() ? boardStation : reminder == null ? "" : reminder.stationId();
+            send("poll", "", "", primary);
+            if (reminder != null && !primary.equals(reminder.stationId())) send("poll", "", "", reminder.stationId());
         }
     }
     public static void reset() {
-        catalog = null; journeys = List.of(); referencePlan = null; referenceReason = ""; arrivals = List.of(); tracking = null;
-        boardLoading = false; boardUpdatedNanos = 0;
+        catalog = null; journeys = List.of(); referencePlan = null; referenceReason = ""; arrivals = List.of(); tracking = null; reminder = null;
+        boardLoading = false; boardUpdatedNanos = boardSampleMillis = 0; pollContexts.clear(); ReminderHud.reset();
         origin = destination = boardStation = ""; status = "mtrnav.connecting";
         queryId = lastTrackingId = lastPoll = lastSample = 0; helloSent = false;
         oldestResponseId = nextId + 1; lastCatalogId = lastHello = 0;
@@ -91,14 +102,45 @@ public final class NavigationClient {
     public static void correct(String action) { if (usingNative) NativeMtrClient.correct(action); else send("correct", tracking == null ? "" : tracking.journey().id(), action); }
     public static void cancel() { if (usingNative) NativeMtrClient.cancel(); else lastTrackingId = send("cancel", "", ""); tracking = null; NavigationApi.cancel(); }
     public static void board(String station) {
-        boardStation = station; arrivals = List.of(); boardLoading = true; boardUpdatedNanos = 0;
+        boardStation = station; arrivals = List.of(); boardLoading = true; boardUpdatedNanos = boardSampleMillis = 0;
         if (usingNative) NativeMtrClient.refreshBoard(); else boardRequestId = send("poll", "", "");
     }
-    public static void stopBoard() { boardStation = ""; arrivals = List.of(); boardLoading = false; boardUpdatedNanos = 0; }
+    public static void stopBoard() { boardStation = ""; arrivals = List.of(); boardLoading = false; boardUpdatedNanos = boardSampleMillis = 0; }
+    public static boolean boardFresh() {
+        long now = System.nanoTime();
+        return boardSampleMillis > 0 && boardUpdatedNanos != 0 && now - boardUpdatedNanos < ArrivalReminder.STALE_NANOS
+                && !CLOCK.stale(now) && CLOCK.now(now) - boardSampleMillis < 5000;
+    }
+    public static boolean armReminder(String station, StopEvent selected, int minutes) {
+        var event = ArrivalReminder.unique(selected, arrivals);
+        if (!station.equals(boardStation) || !boardFresh() || event.isEmpty() || event.get().departure() < CLOCK.now(System.nanoTime()) || catalog == null) return false;
+        reminder = new ArrivalReminder(catalog.dimension(), station, event.get(), minutes, boardSampleMillis, boardUpdatedNanos);
+        ReminderHud.armed(); tickReminder(System.nanoTime()); return true;
+    }
+    public static void cancelReminder() { reminder = null; ReminderHud.reset(); }
+    public static void observeReminder(String station, List<StopEvent> events, long sampleMillis, String expectedId) {
+        if (reminder != null && reminder.id().equals(expectedId)) reminder.observe(dimension, station, events, sampleMillis, System.nanoTime());
+    }
+    private static void tickReminder(long now) {
+        if (reminder == null) return;
+        if (!reminder.dimension().equals(dimension) || reminder.expired(CLOCK.now(now))) { cancelReminder(); return; }
+        if (reminder.tick(CLOCK.now(now), now, !CLOCK.stale(now))) {
+            ReminderHud.triggered();
+            var player = Minecraft.getInstance().player;
+            if (player != null) player.playSound(net.minecraft.sounds.SoundEvents.EXPERIENCE_ORB_PICKUP, .4F, 1.2F);
+        }
+    }
     private static long send(String action, String journeyId, String correction) {
+        return send(action, journeyId, correction, boardStation);
+    }
+    private static long send(String action, String journeyId, String correction, String station) {
         long id = ++nextId;
+        if (action.equals("poll")) {
+            pollContexts.put(id, new PollContext(station, reminder == null ? "" : reminder.id()));
+            while (pollContexts.size() > 16) pollContexts.remove(pollContexts.keySet().iterator().next());
+        }
         if (available.getAsBoolean()) sender.accept(new NavRequest(WireCodec.GSON.toJson(new Messages.Request(action, dimension, id,
-                catalog == null ? 0 : catalog.revision(), origin, destination, sort, journeyId, boardStation, correction))));
+                catalog == null ? 0 : catalog.revision(), origin, destination, sort, journeyId, station, correction))));
         return id;
     }
     public static void chunk(NavChunk chunk) {
@@ -126,8 +168,13 @@ public final class NavigationClient {
             referenceReason = response.message().equals("reference_limit") ? "mtrnav.reference_limit"
                     : response.message().isEmpty() || response.message().equals("reference_no_service") ? "mtrnav.reference_no_service" : "mtrnav.reference_incomplete";
         } else if (response.kind().equals("hello")) status = "mtrnav.ready";
-        if (response.kind().equals("poll") && response.id() >= Math.max(lastTrackingId, boardRequestId) && !boardStation.isEmpty()) {
-            arrivals = response.arrivals(); boardLoading = false; boardUpdatedNanos = System.nanoTime();
+        var poll = response.kind().equals("poll") ? pollContexts.remove(response.id()) : null;
+        if (poll != null && response.sampleMillis() > 0 && response.message().isEmpty()) {
+            observeReminder(poll.station(), response.arrivals(), response.sampleMillis(), poll.reminderId());
+            if (response.id() >= boardRequestId && !boardStation.isEmpty() && boardStation.equals(poll.station())) {
+                boardRequestId = response.id(); arrivals = response.arrivals(); boardLoading = false;
+                if (response.sampleMillis() > boardSampleMillis) { boardUpdatedNanos = System.nanoTime(); boardSampleMillis = response.sampleMillis(); }
+            }
         }
         if ((response.kind().equals("poll") || response.kind().equals("select") || response.kind().equals("correct") || response.kind().equals("cancel"))
                 && response.id() >= lastTrackingId) {
@@ -148,5 +195,6 @@ public final class NavigationClient {
     public static String tr(String key, Object... args) { return Component.translatable(key, args).getString(); }
     public static void renderHud(GuiGraphics graphics) {
         NavigationHud.render(graphics);
+        ReminderHud.render(graphics);
     }
 }
