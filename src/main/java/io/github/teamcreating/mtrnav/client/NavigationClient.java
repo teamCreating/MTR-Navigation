@@ -82,6 +82,11 @@ public final class NavigationClient {
         referenceReason = "mtrnav.reference_pending";
         if (usingNative) NativeMtrClient.query(); else queryId = send("query", "", "");
     }
+    public static void clearSearchResults() {
+        journeys = List.of(); referencePlan = null; referenceReason = ""; queryId = 0;
+        status = "mtrnav.choose_stations";
+        NativeMtrClient.cancelQuery();
+    }
     public static void select(Journey journey) { if (usingNative) NativeMtrClient.select(journey); else send("select", journey.id(), ""); }
     public static void correct(String action) { if (usingNative) NativeMtrClient.correct(action); else send("correct", tracking == null ? "" : tracking.journey().id(), action); }
     public static void cancel() { if (usingNative) NativeMtrClient.cancel(); else lastTrackingId = send("cancel", "", ""); tracking = null; NavigationApi.cancel(); }

@@ -72,7 +72,7 @@
   "mtrnav.confirm_alighted": "到站下车后点击，进入换乘或完成行程",
   "mtrnav.option": "方案 %s",
   "mtrnav.minutes": "%s 分钟",
-  "mtrnav.board_summary": "%s 班到发 · 自动更新",
+  "mtrnav.board_summary": "%s 班到发 · 按线路展开 · 自动更新",
   "mtrnav.option_summary": "方案 %s / %s · 滚轮查看详情",
   "mtrnav.search_help": "输入起终点，查询可乘方案",
   "mtrnav.empty_help": "支持中文和英文搜索；同名车站请核对候选项的坐标。",
@@ -110,7 +110,7 @@
   "mtrnav.refresh_board": "刷新到发",
   "mtrnav.board_search_hint": "输入或选择车站，独立查看该站的站台到发",
   "mtrnav.options_found": "已找到 %s 个方案",
-  "mtrnav.board_detail_hint": "到达、发车分别倒计时 · 实时／计划以数据源标识为准",
+  "mtrnav.board_detail_hint": "点击线路展开班次 · 到达、发车分别倒计时 · 实时／计划以数据来源为准",
   "mtrnav.station_click_hint": "点击站名查看到发 · 点击详情标题展开途经站",
   "mtrnav.station_board_hint": "查看 %s 的站台到发",
   "mtrnav.choose_board_station": "输入车站名称后，点击候选项或按回车查看到发",
@@ -150,5 +150,10 @@
   "mtrnav.reference_limit": "线路可以换乘，但超过当前班次查询的换乘次数限制",
   "mtrnav.reference_incomplete": "线路可以换乘，但班次计算未完成；这不代表停运，请稍后重试",
   "mtrnav.reference_transfer": "换乘：请核对相邻乘车段的车站与站台",
-  "mtrnav.scroll_matches": "滚轮查看更多车站"
+  "mtrnav.scroll_matches": "滚轮查看更多车站",
+  "mtrnav.clear_symbol": "×",
+  "mtrnav.clear_input": "清空输入",
+  "mtrnav.expand_matches": "展开更多 ▾  %s–%s / %s",
+  "mtrnav.collapse_matches": "收起列表 ▴  %s–%s / %s",
+  "mtrnav.line_departures": "%s 班已同步 · 下一班发车 %s"
 }

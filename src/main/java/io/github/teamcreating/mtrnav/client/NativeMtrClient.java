@@ -119,7 +119,7 @@ public final class NativeMtrClient {
         var expected = network;
         var currentCatalog = NavigationClient.catalog;
         var body = new JsonObject(); var stationIds = new JsonArray(); stationIds.add(station);
-        body.add("stationIdsHex", stationIds); body.addProperty("maxCountPerPlatform", 3); body.addProperty("maxCountTotal", 60);
+        body.add("stationIdsHex", stationIds); body.addProperty("maxCountPerPlatform", DepartureBoard.PER_PLATFORM); body.addProperty("maxCountTotal", DepartureBoard.TOTAL);
         if (request("arrivals", body.toString(), json -> {
             var data = NativeTimetable.data(json);
             var events = new ArrayList<StopEvent>(); var platforms = new LinkedHashMap<String, Platform>(); currentCatalog.platforms().forEach(p -> platforms.put(p.id(), p));
@@ -149,6 +149,11 @@ public final class NativeMtrClient {
         if (network == null) { waitingQuery = true; lastCatalog = 0; NavigationClient.status = "mtrnav.loading_times"; return; }
         if (timetable == null || NavigationClient.CLOCK.stale(System.nanoTime())) { waitingQuery = true; departures(); return; }
         calculate();
+    }
+    public static void cancelQuery() {
+        queryGeneration++; waitingQuery = false;
+        if (activeSearch != null) activeSearch.cancel(true);
+        search.purge(); search.getQueue().clear();
     }
     private static void calculate() {
         if (timetable == null || NavigationClient.origin.isEmpty() || NavigationClient.destination.isEmpty()) return;

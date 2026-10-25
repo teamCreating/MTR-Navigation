@@ -2,6 +2,8 @@ package io.github.teamcreating.mtrnav.client;
 
 import io.github.teamcreating.mtrnav.core.JourneyTracker;
 import io.github.teamcreating.mtrnav.core.StationSearch;
+import io.github.teamcreating.mtrnav.core.DepartureBoard;
+import io.github.teamcreating.mtrnav.core.ScrollBarGeometry;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.*;
 import net.minecraft.client.gui.screens.Screen;
@@ -20,10 +22,23 @@ public final class NavigationScreen extends Screen {
     private record StationTarget(String id, int x, int y, int w, int h) {
         boolean contains(double px, double py) { return px >= x && px < x + w && py >= y && py < y + h; }
     }
+    private record ScrollTarget(int input, int x, ScrollBarGeometry geometry) {
+        boolean contains(double px, double py) { return px >= x - 4 && px <= x + 6 && py >= geometry.top() && py < geometry.top() + geometry.height(); }
+    }
+    private record BoardTarget(String key, int x, int y, int w, int h) {
+        boolean contains(double px, double py) { return px >= x && px < x + w && py >= y && py < y + h; }
+    }
     private EditBox fromBox, toBox, boardBox;
     private final List<AbstractWidget> widgets = new ArrayList<>();
     private final List<Action> fromMatches = new ArrayList<>(), toMatches = new ArrayList<>(), boardMatches = new ArrayList<>(), cards = new ArrayList<>();
     private final List<StationTarget> stationTargets = new ArrayList<>();
+    private final List<ScrollTarget> scrollTargets = new ArrayList<>();
+    private final List<BoardTarget> boardTargets = new ArrayList<>();
+    private final List<Action> clearButtons = new ArrayList<>(), matchExpandButtons = new ArrayList<>();
+    private final Set<String> expandedLines = new HashSet<>();
+    private final boolean[] expandedMatches = new boolean[3];
+    private int draggingScroll = -2;
+    private double scrollGrab;
     private List<Station> fromStations = List.of(), toStations = List.of(), boardStations = List.of();
     private final int[] matchOffsets = new int[3];
     private Action queryButton, sortButton, routesTab, departuresTab, activeTab, startButton, progressButton, backButton, requeryButton, cancelButton;
@@ -33,6 +48,10 @@ public final class NavigationScreen extends Screen {
     private View view = tracking == null ? View.JOURNEYS : View.ACTIVE;
     private String fromText, toText, boardText, selectedBoard = "", pendingSelection = "";
     private List<Journey> lastJourneys = journeys;
+    private String lastBoardStation = "";
+    private Catalog groupedCatalog;
+    private List<StopEvent> groupedArrivals;
+    private List<DepartureBoard.Group> boardGroups = List.of();
 
     public NavigationScreen() { super(Component.translatable("mtrnav.title")); }
     boolean wantsBoard() { return view == View.DEPARTURES; }
@@ -44,7 +63,7 @@ public final class NavigationScreen extends Screen {
     private void changeView(View next) {
         if (view == next) return;
         if (view == View.DEPARTURES) stopBoard();
-        view = next; scroll = 0;
+        view = next; scroll = 0; draggingScroll = -2;
         if (next == View.DEPARTURES && selectedBoard.isEmpty() && !origin.isEmpty()) selectedBoard = origin;
         if (next == View.DEPARTURES && catalog != null && !selectedBoard.isEmpty()) {
             boardText = catalog.stationName(selectedBoard); board(selectedBoard);
@@ -65,6 +84,7 @@ public final class NavigationScreen extends Screen {
     }
     @Override protected void init() {
         widgets.clear(); fromMatches.clear(); toMatches.clear(); boardMatches.clear(); cards.clear(); stationTargets.clear();
+        clearButtons.clear(); matchExpandButtons.clear(); scrollTargets.clear(); boardTargets.clear(); draggingScroll = -2;
         panelWidth = Math.min(width - 20, Math.min(760, Math.max(360, (int)(width * .82))));
         panelHeight = Math.min(height - 16, Math.min(460, Math.max(220, (int)(height * .88))));
         left = (width - panelWidth) / 2; top = (height - panelHeight) / 2;
@@ -80,9 +100,9 @@ public final class NavigationScreen extends Screen {
         button("mtrnav.hud_settings_short", left + panelWidth - 58, top + 7, 28, 16, () -> minecraft.setScreen(new HudSettingsScreen(this)))
                 .setTooltip(Tooltip.create(Component.translatable("mtrnav.hud_settings")));
         int queryWidth = 68, fieldWidth = (inner - queryWidth - 40) / 2, right = x + fieldWidth + 28;
-        fromBox = new EditBox(font, x, top + 44, fieldWidth, 20, Component.translatable("mtrnav.origin"));
-        toBox = new EditBox(font, right, top + 44, fieldWidth, 20, Component.translatable("mtrnav.destination"));
-        boardBox = new EditBox(font, x, top + 44, inner - queryWidth - 8, 20, Component.translatable("mtrnav.board_station"));
+        fromBox = new EditBox(font, x, top + 44, fieldWidth - 22, 20, Component.translatable("mtrnav.origin"));
+        toBox = new EditBox(font, right, top + 44, fieldWidth - 22, 20, Component.translatable("mtrnav.destination"));
+        boardBox = new EditBox(font, x, top + 44, inner - queryWidth - 30, 20, Component.translatable("mtrnav.board_station"));
         for (var box : List.of(fromBox, toBox, boardBox)) {
             box.setMaxLength(128); box.setTextColor(TEXT); box.setTextColorUneditable(MUTED);
             box.setHint(Component.translatable("mtrnav.station_hint")); addRenderableWidget(box); widgets.add(box);
@@ -95,6 +115,11 @@ public final class NavigationScreen extends Screen {
         boardBox.setResponder(value -> { boardText = value; matchOffsets[2] = 0; selectedBoard = resolve(value); refreshMatches(); });
         fromBox.visible = toBox.visible = !collapsed && view == View.JOURNEYS;
         boardBox.visible = view == View.DEPARTURES;
+        for (int i = 0; i < 3; i++) {
+            final int input = i; var box = inputBox(i);
+            var clear = button("mtrnav.clear_symbol", box.getX() + box.getWidth() + 2, box.getY(), 20, 20, () -> clearInput(input));
+            clear.setTooltip(Tooltip.create(Component.translatable("mtrnav.clear_input"))); clearButtons.add(clear);
+        }
         var swap = button("mtrnav.swap_short", x + fieldWidth + 4, top + 44, 20, 20, () -> {
             String a = origin, b = destination, value = fromBox.getValue();
             fromBox.setValue(toBox.getValue()); toBox.setValue(value); origin = b; destination = a; refreshMatches();
@@ -133,18 +158,45 @@ public final class NavigationScreen extends Screen {
             changeView(View.JOURNEYS); scroll = 0; query();
         });
         cancelButton = button("mtrnav.end_trip", x + (secondaryWidth + 4) * 2, footerY + 6, secondaryWidth, 22, () -> { cancel(); changeView(View.JOURNEYS); });
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 8; i++) {
             final int index = i;
             fromMatches.add(button("", x, top + 66 + i * 22, fieldWidth, 22, () -> choose(0, index)));
             toMatches.add(button("", right, top + 66 + i * 22, fieldWidth, 22, () -> choose(1, index)));
-            boardMatches.add(button("", x, top + 66 + i * 22, boardBox.getWidth(), 22, () -> choose(2, index)));
+            boardMatches.add(button("", x, top + 66 + i * 22, boardBox.getWidth() + 22, 22, () -> choose(2, index)));
+        }
+        for (int i = 0; i < 3; i++) {
+            final int input = i; var box = inputBox(i);
+            matchExpandButtons.add(button("mtrnav.expand_matches", box.getX(), top + 132, box.getWidth() + 22, 16, () -> {
+                expandedMatches[input] = !expandedMatches[input]; setFocused(inputBox(input)); refreshMatches();
+            }));
         }
         if (view == View.DEPARTURES && !selectedBoard.isEmpty() && boardStation.isEmpty()) board(selectedBoard);
         refreshMatches(); updateControls();
     }
+    private EditBox inputBox(int input) { return input == 0 ? fromBox : input == 1 ? toBox : boardBox; }
+    private List<Action> matchButtons(int input) { return input == 0 ? fromMatches : input == 1 ? toMatches : boardMatches; }
+    private List<Station> matchStations(int input) { return input == 0 ? fromStations : input == 1 ? toStations : boardStations; }
+    private int matchCapacity() { return Math.max(1, Math.min(8, (footerY - 6 - (top + 66) - 16) / 22)); }
+    private int visibleMatches(int input) { return Math.min(matchStations(input).size(), Math.min(expandedMatches[input] ? 8 : 3, matchCapacity())); }
+    private boolean popupContains(double x, double y) {
+        for (int i = 0; i < 3; i++) if (matchButtons(i).getFirst().visible) {
+            var first = matchButtons(i).getFirst(); var last = matchExpandButtons.get(i);
+            int bottom = last.visible ? last.getY() + last.getHeight() : first.getY() + visibleMatches(i) * 22;
+            if (x >= first.getX() && x < first.getX() + first.getWidth() && y >= first.getY() && y < bottom) return true;
+        }
+        return false;
+    }
+    private void clearInput(int input) {
+        var box = inputBox(input); box.setValue(""); matchOffsets[input] = 0; expandedMatches[input] = false;
+        if (input == 2) { selectedBoard = ""; stopBoard(); expandedLines.clear(); scroll = 0; }
+        else clearSearchResults();
+        setFocused(box); refreshMatches(); updateControls();
+    }
     private String resolve(String value) { return catalog == null ? "" : StationSearch.exact(catalog.stations(), value); }
     private void edited(boolean from, String value) {
-        String id = resolve(value); if (from) origin = id; else destination = id;
+        String id = resolve(value), previous = from ? origin : destination;
+        if (from) origin = id; else destination = id;
+        if (!previous.equals(id)) clearSearchResults();
         if (Set.of("mtrnav.search_failed", "mtrnav.search_budget", "mtrnav.station_refreshed", "mtrnav.no_route").contains(status)) status = "mtrnav.ready";
     }
     private void choose(int input, int index) {
@@ -171,13 +223,18 @@ public final class NavigationScreen extends Screen {
         updateMatches(2, boardMatches, boardStations, boardBox.visible && boardBox.isFocused() && selectedBoard.isEmpty());
     }
     private void updateMatches(int input, List<Action> buttons, List<Station> stations, boolean show) {
-        matchOffsets[input] = Math.max(0, Math.min(matchOffsets[input], stations.size() - buttons.size()));
+        int count = visibleMatches(input);
+        matchOffsets[input] = Math.max(0, Math.min(matchOffsets[input], stations.size() - count));
         for (int i = 0; i < buttons.size(); i++) {
             int index = i + matchOffsets[input];
-            var b = buttons.get(i); b.visible = show && index < stations.size();
+            var b = buttons.get(i); b.visible = show && i < count && index < stations.size();
             if (b.visible) { var s = stations.get(index); String label = displayName(s.name()) + " (" + s.x() + ", " + s.z() + ")";
                 b.setMessage(Component.literal(label)); b.setTooltip(Tooltip.create(Component.literal(label + (stations.size() > 3 ? " · " + (index + 1) + "/" + stations.size() + " · " + tr("mtrnav.scroll_matches") : "")))); }
         }
+        var expand = matchExpandButtons.get(input); expand.visible = show && stations.size() > 3;
+        expand.setY(top + 66 + count * 22);
+        expand.setMessage(Component.translatable(expandedMatches[input] ? "mtrnav.collapse_matches" : "mtrnav.expand_matches", matchOffsets[input] + 1, matchOffsets[input] + count, stations.size()));
+        expand.active = expandedMatches[input] || count < Math.min(matchCapacity(), stations.size());
     }
     @Override public void tick() {
         if (origin.isEmpty()) edited(true, fromBox.getValue());
@@ -195,6 +252,10 @@ public final class NavigationScreen extends Screen {
     private void updateControls() {
         boolean active = view == View.ACTIVE && tracking != null;
         boolean retry = usingNative && status.equals("mtrnav.native_unavailable");
+        for (int i = 0; i < clearButtons.size(); i++) {
+            var box = inputBox(i); clearButtons.get(i).visible = box.visible;
+            clearButtons.get(i).active = !box.getValue().isEmpty();
+        }
         routesTab.selected = view == View.JOURNEYS; departuresTab.selected = view == View.DEPARTURES;
         activeTab.visible = tracking != null; activeTab.selected = active;
         queryButton.visible = !active;
@@ -237,11 +298,40 @@ public final class NavigationScreen extends Screen {
         return super.keyPressed(key, scan, modifiers);
     }
     @Override public boolean mouseClicked(double x, double y, int button) {
+        if (button == 0) for (var target : scrollTargets) if (target.contains(x, y) && (target.input() >= 0 || !popupContains(x, y))) {
+            var bar = target.geometry(); draggingScroll = target.input();
+            scrollGrab = bar.onThumb(y) ? y - bar.thumbTop() : bar.thumbHeight() / 2.0;
+            dragScroll(target, y); return true;
+        }
+        for (var b : matchExpandButtons) if (b.visible && b.isMouseOver(x, y)) return b.mouseClicked(x, y, button);
+        // Handle these directly so the container cannot focus the button after
+        // the action has returned focus to the newly cleared input field.
+        for (var b : clearButtons) if (b.visible && b.isMouseOver(x, y)) return b.mouseClicked(x, y, button);
         for (var list : List.of(fromMatches, toMatches, boardMatches)) for (var b : list) if (b.visible && b.isMouseOver(x, y)) return b.mouseClicked(x, y, button);
+        if (popupContains(x, y)) return true;
+        if (button == 0) for (var target : boardTargets) if (target.contains(x, y)) {
+            if (!expandedLines.add(target.key())) expandedLines.remove(target.key()); return true;
+        }
         if (button == 0) for (var target : stationTargets) if (target.contains(x, y)) { openBoard(target.id()); return true; }
         int contentX = wide && view == View.JOURNEYS ? detailX : left + 12;
         if (button == 0 && scroll == 0 && x >= contentX && x < left + panelWidth - 12 && y >= detailTop && y < detailTop + 22 && view != View.DEPARTURES && (tracking != null || !journeys.isEmpty() || referencePlan != null)) { showAllStops = !showAllStops; return true; }
         return super.mouseClicked(x, y, button);
+    }
+    private void dragScroll(ScrollTarget target, double mouseY) {
+        int offset = target.geometry().offsetAtThumbTop(mouseY - scrollGrab);
+        if (target.input() < 0) scroll = offset;
+        else { matchOffsets[target.input()] = offset; refreshMatches(); }
+    }
+    @Override public boolean mouseDragged(double x, double y, int button, double dx, double dy) {
+        if (draggingScroll != -2 && button == 0) {
+            for (var target : scrollTargets) if (target.input() == draggingScroll) { dragScroll(target, y); break; }
+            return true;
+        }
+        return super.mouseDragged(x, y, button, dx, dy);
+    }
+    @Override public boolean mouseReleased(double x, double y, int button) {
+        if (button == 0 && draggingScroll != -2) { draggingScroll = -2; return true; }
+        return super.mouseReleased(x, y, button);
     }
     @Override public boolean isPauseScreen() { return false; }
     @Override public void removed() { if (view == View.DEPARTURES) stopBoard(); super.removed(); }
@@ -264,8 +354,8 @@ public final class NavigationScreen extends Screen {
             text(g, label, left + 12 + (view == View.ACTIVE ? 0 : 76), top + 39, panelWidth - 36 - (view == View.ACTIVE ? 0 : 180), MUTED);
         }
         g.fill(left + 12, bodyTop - 4, left + panelWidth - 12, bodyTop - 3, BORDER);
-        stationTargets.clear();
-        if (view == View.DEPARTURES) renderBoard(g);
+        stationTargets.clear(); boardTargets.clear(); scrollTargets.clear();
+        if (view == View.DEPARTURES) renderBoard(g, mouseX, mouseY);
         else renderJourney(g, mouseX, mouseY);
         railDivider(g, left + 12, footerY - 1, panelWidth - 24);
         if (view != View.ACTIVE) {
@@ -275,20 +365,25 @@ public final class NavigationScreen extends Screen {
         boolean stale = view == View.DEPARTURES ? boardStale() : CLOCK.stale(System.nanoTime());
         String footer = stale && catalog != null ? tr("mtrnav.stale") : view == View.ACTIVE ? tr(usingNative ? "mtrnav.manual_short" : "mtrnav.progress_hint") : tr(view == View.DEPARTURES ? "mtrnav.board_detail_hint" : "mtrnav.station_click_hint");
         text(g, footer, left + 12, top + panelHeight - 10, panelWidth - 24, stale ? WARNING : MUTED);
-        for (var widget : widgets) if (widget.visible) widget.render(g, mouseX, mouseY, delta);
+        boolean overPopup = popupContains(mouseX, mouseY);
+        for (var widget : widgets) if (widget.visible && !isPopupWidget(widget)) widget.render(g, overPopup ? -10000 : mouseX, overPopup ? -10000 : mouseY, delta);
+        g.pose().pushPose(); g.pose().translate(0, 0, 200);
         for (int i = 0; i < 3; i++) {
-            var list = i == 0 ? fromMatches : i == 1 ? toMatches : boardMatches;
-            var stations = i == 0 ? fromStations : i == 1 ? toStations : boardStations;
-            if (!list.getFirst().visible || stations.size() <= 3) continue;
-            var first = list.getFirst(); int h = list.size() * 22;
-            int thumb = Math.max(6, h * 3 / stations.size());
-            int barX = first.getX() + first.getWidth() - 3;
-            g.fill(barX, first.getY(), barX + 2, first.getY() + h, BORDER);
-            int barY = first.getY() + (h - thumb) * matchOffsets[i] / Math.max(1, stations.size() - 3);
-            g.fill(barX, barY, barX + 2, barY + thumb, ACCENT);
+            var list = matchButtons(i); var stations = matchStations(i);
+            if (!list.getFirst().visible) continue;
+            for (var item : list) if (item.visible) item.render(g, mouseX, mouseY, delta);
+            var expand = matchExpandButtons.get(i); if (expand.visible) expand.render(g, mouseX, mouseY, delta);
+            if (stations.size() <= visibleMatches(i)) continue;
+            var first = list.getFirst(); int h = visibleMatches(i) * 22;
+            var geometry = ScrollBarGeometry.of(first.getY(), h, stations.size(), visibleMatches(i), matchOffsets[i], 8);
+            drawScrollbar(g, new ScrollTarget(i, first.getX() + first.getWidth() - 5, geometry));
         }
+        g.pose().popPose();
         boolean popup = fromMatches.stream().anyMatch(b -> b.visible) || toMatches.stream().anyMatch(b -> b.visible) || boardMatches.stream().anyMatch(b -> b.visible);
         if (!popup) for (var target : stationTargets) if (target.contains(mouseX, mouseY)) { g.renderTooltip(font, Component.translatable("mtrnav.station_board_hint", station(target.id())), mouseX, mouseY); break; }
+    }
+    private boolean isPopupWidget(AbstractWidget widget) {
+        return fromMatches.contains(widget) || toMatches.contains(widget) || boardMatches.contains(widget) || matchExpandButtons.contains(widget);
     }
     private void renderJourney(GuiGraphics g, int mouseX, int mouseY) {
         int contentX = wide && view == View.JOURNEYS ? detailX : left + 12;
@@ -316,7 +411,7 @@ public final class NavigationScreen extends Screen {
     }
     private boolean boardStale() { return boardUpdatedNanos == 0 || System.nanoTime() - boardUpdatedNanos >= 5_000_000_000L || CLOCK.stale(System.nanoTime()); }
     private String boardTime(long time) { return boardStale() ? "—" : remaining(time); }
-    private void renderBoard(GuiGraphics g) {
+    private void renderBoard(GuiGraphics g, int mouseX, int mouseY) {
         int x = left + 12, w = panelWidth - 24, right = x + w;
         if (catalog == null || boardStation.isEmpty()) { wrapped(g, tr(catalog == null ? status : "mtrnav.choose_board_station"), x + 8, bodyTop + 10, w - 16, MUTED); return; }
         text(g, station(boardStation), x + 5, bodyTop + 6, w - 12, TEXT);
@@ -328,30 +423,60 @@ public final class NavigationScreen extends Screen {
         text(g, tr("mtrnav.departure"), departureX, labelY, 44, MUTED);
         text(g, tr("mtrnav.time_source"), stateX, labelY, 34, MUTED);
         g.fill(x, rowTop - 5, right, rowTop - 4, BORDER);
-        int viewport = Math.max(0, bodyBottom - rowTop); contentHeight = arrivals.size() * 34; clampScroll(viewport);
-        if (arrivals.isEmpty()) { wrapped(g, tr(boardLoading ? "mtrnav.board_loading" : status.equals("mtrnav.native_unavailable") ? status : "mtrnav.no_departures"), x + 6, rowTop + 8, w - 12, MUTED); return; }
+        if (!lastBoardStation.equals(boardStation)) { lastBoardStation = boardStation; groupedArrivals = null; expandedLines.clear(); scroll = 0; }
+        if (groupedCatalog != catalog || groupedArrivals != arrivals) {
+            groupedCatalog = catalog; groupedArrivals = arrivals;
+            boardGroups = DepartureBoard.groups(catalog, boardStation, arrivals);
+        }
+        var groups = boardGroups;
+        int viewport = Math.max(0, bodyBottom - rowTop);
+        contentHeight = groups.stream().mapToInt(group -> 30 + (expandedLines.contains(group.key()) ? Math.max(1, group.events().size()) * 28 : 0)).sum(); clampScroll(viewport);
+        if (groups.isEmpty()) { wrapped(g, tr(boardLoading ? "mtrnav.board_loading" : status.equals("mtrnav.native_unavailable") ? status : "mtrnav.no_departures"), x + 6, rowTop + 8, w - 12, MUTED); return; }
         if (viewport <= 0) return;
         g.enableScissor(x, rowTop, right, bodyBottom);
-        int index = 0;
-        for (var event : arrivals) {
-            int y = rowTop + index * 34 - scroll;
-            if ((index++ & 1) == 0) g.fill(x, y, right, y + 33, RAISED);
-            g.fill(x, y + 4, x + 2, y + 27, routeColor(event.routeId()));
-            text(g, route(event.routeId()), x + 6, y + 4, platformX - x - 12, TEXT);
-            text(g, "→ " + primary(event.destination()), x + 6, y + 18, platformX - x - 12, MUTED);
-            text(g, platform(event.platformId()), platformX, y + 11, 54, TEXT);
-            text(g, boardTime(event.arrival()), arrivalX, y + 11, 44, TEXT);
-            text(g, boardTime(event.departure()), departureX, y + 11, 44, ACCENT);
-            text(g, tr(event.realtime() ? "mtrnav.live_short" : "mtrnav.schedule_short"), stateX, y + 11, 33, event.realtime() ? ACCENT : MUTED);
+        int y = rowTop - scroll;
+        for (var group : groups) {
+            boolean expanded = expandedLines.contains(group.key());
+            int groupHeight = 30 + (expanded ? Math.max(1, group.events().size()) * 28 : 0);
+            if (y + groupHeight <= rowTop || y >= bodyBottom) { y += groupHeight; continue; }
+            int tint = 0xFF000000 | group.color() & 0xFFFFFF;
+            g.fill(x, y, right - 8, y + 29, RAISED); g.fill(x, y + 2, x + 3, y + 27, tint);
+            if (y + 30 > rowTop && y < bodyBottom) {
+                var target = new BoardTarget(group.key(), x, Math.max(y, rowTop), w - 10, Math.min(y + 30, bodyBottom) - Math.max(y, rowTop));
+                boardTargets.add(target);
+                if (!popupContains(mouseX, mouseY) && target.contains(mouseX, mouseY)) outline(g, x + 1, y + 1, w - 10, 28, ACCENT);
+            }
+            text(g, expanded ? "▾" : "▸", x + 7, y + 5, 12, ACCENT);
+            text(g, group.name().isEmpty() ? tr("mtrnav.route_pending") : primary(group.name()), x + 22, y + 5, w - 40, TEXT);
+            String next = group.events().isEmpty() ? tr(boardLoading ? "mtrnav.board_loading" : "mtrnav.no_departures")
+                    : tr("mtrnav.line_departures", group.events().size(), boardTime(group.events().getFirst().departure()));
+            text(g, next, x + 22, y + 18, w - 40, MUTED); y += 30;
+            if (!expanded) continue;
+            if (group.events().isEmpty()) { text(g, tr(boardLoading ? "mtrnav.board_loading" : "mtrnav.no_departures"), x + 14, y + 8, w - 30, MUTED); y += 28; }
+            int index = 0;
+            for (var event : group.events()) {
+                if (y + 28 <= rowTop || y >= bodyBottom) { y += 28; index++; continue; }
+                if ((index++ & 1) == 0) g.fill(x + 8, y, right - 8, y + 27, RAISED);
+                g.fill(x + 8, y + 4, x + 10, y + 24, tint);
+                text(g, "→ " + primary(event.destination()), x + 17, y + 10, platformX - x - 23, TEXT);
+                text(g, platform(event.platformId()), platformX, y + 10, 54, TEXT);
+                text(g, boardTime(event.arrival()), arrivalX, y + 10, 44, TEXT);
+                text(g, boardTime(event.departure()), departureX, y + 10, 44, ACCENT);
+                text(g, tr(event.realtime() ? "mtrnav.live_short" : "mtrnav.schedule_short"), stateX, y + 10, 27, event.realtime() ? ACCENT : MUTED);
+                y += 28;
+            }
         }
-        g.disableScissor(); scrollbar(g, right - 3, rowTop, viewport);
+        g.disableScissor(); scrollbar(g, right - 4, rowTop, viewport);
     }
     private void clampScroll(int viewport) { scroll = Math.max(0, Math.min(scroll, Math.max(0, contentHeight - viewport))); }
     private void scrollbar(GuiGraphics g, int x, int y, int viewport) {
         if (contentHeight <= viewport || viewport <= 0) return;
-        int thumb = Math.min(viewport, Math.max(8, viewport * viewport / contentHeight));
-        int offset = (viewport - thumb) * scroll / Math.max(1, contentHeight - viewport);
-        g.fill(x, y, x + 2, y + viewport, BORDER); g.fill(x, y + offset, x + 2, y + offset + thumb, ACCENT);
+        drawScrollbar(g, new ScrollTarget(-1, x, ScrollBarGeometry.of(y, viewport, contentHeight, viewport, scroll, 8)));
+    }
+    private void drawScrollbar(GuiGraphics g, ScrollTarget target) {
+        scrollTargets.add(target); var geometry = target.geometry(); int x = target.x();
+        g.fill(x, geometry.top(), x + 4, geometry.top() + geometry.height(), BORDER);
+        g.fill(x, geometry.thumbTop(), x + 4, geometry.thumbTop() + geometry.thumbHeight(), ACCENT);
     }
     private List<Row> rows(int width) {
         var rows = new ArrayList<Row>();
@@ -419,7 +544,7 @@ public final class NavigationScreen extends Screen {
         var lists = List.of(fromMatches, toMatches, boardMatches);
         for (int i = 0; i < lists.size(); i++) {
             var list = lists.get(i); var first = list.getFirst();
-            if (vertical != 0 && first.visible && x >= first.getX() && x <= first.getX() + first.getWidth() && y >= first.getY() && y <= first.getY() + list.size() * 22) {
+            if (vertical != 0 && first.visible && x >= first.getX() && x <= first.getX() + first.getWidth() && y >= first.getY() && y <= matchExpandButtons.get(i).getY() + 16) {
                 matchOffsets[i] += vertical < 0 ? 1 : -1; refreshMatches(); return true;
             }
         }

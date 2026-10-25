@@ -150,7 +150,7 @@ public final class NavigationServer {
                 snapshot.catalog().platforms().stream().filter(p -> p.stationId().equals(request.stationId())).forEach(p -> platformIds.add(p.id()));
                 var counts = new HashMap<String, Integer>();
                 var arrivals = snapshot.events().stream().filter(e -> platformIds.contains(e.platformId()) && e.departure() >= snapshot.sampleMillis())
-                        .sorted(Comparator.comparingLong(StopEvent::departure)).filter(e -> counts.merge(e.platformId(), 1, Integer::sum) <= 3).limit(60).toList();
+                        .sorted(Comparator.comparingLong(StopEvent::departure)).filter(e -> counts.merge(e.platformId(), 1, Integer::sum) <= DepartureBoard.PER_PLATFORM).limit(DepartureBoard.TOTAL).toList();
                 reply(player, session, response(request, snapshot, catalogChanged ? snapshot.catalog() : null, List.of(), arrivals, tracking, ""));
             }
             default -> { }

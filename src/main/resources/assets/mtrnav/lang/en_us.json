@@ -72,7 +72,7 @@
   "mtrnav.confirm_alighted": "Confirm after alighting to change trains or finish",
   "mtrnav.option": "Option %s",
   "mtrnav.minutes": "%s min",
-  "mtrnav.board_summary": "%s arrivals · Updates automatically",
+  "mtrnav.board_summary": "%s trains · Expand by line · Auto refresh",
   "mtrnav.option_summary": "Option %s / %s · Scroll for details",
   "mtrnav.search_help": "Choose stations to find connections",
   "mtrnav.empty_help": "Search in Chinese or English. Check coordinates to distinguish stations sharing a name.",
@@ -110,7 +110,7 @@
   "mtrnav.refresh_board": "Refresh",
   "mtrnav.board_search_hint": "Search a station to view its platform arrivals and departures",
   "mtrnav.options_found": "%s connections found",
-  "mtrnav.board_detail_hint": "Arrival and departure countdowns · Live / scheduled as reported by source",
+  "mtrnav.board_detail_hint": "Click a line to expand trains · Separate arrival / departure countdowns · Source live / plan labels",
   "mtrnav.station_click_hint": "Click a station for arrivals · Click the heading for calling points",
   "mtrnav.station_board_hint": "View arrivals and departures at %s",
   "mtrnav.choose_board_station": "Type a station name, then choose a match or press Enter",
@@ -150,5 +150,10 @@
   "mtrnav.reference_limit": "A connection exists, but exceeds the timetable search transfer limit.",
   "mtrnav.reference_incomplete": "A connection exists, but timetable search did not finish. This does not confirm a service suspension. Please retry later.",
   "mtrnav.reference_transfer": "Change trains: check the stations and platforms of both legs",
-  "mtrnav.scroll_matches": "Scroll for more stations"
+  "mtrnav.scroll_matches": "Scroll for more stations",
+  "mtrnav.clear_symbol": "×",
+  "mtrnav.clear_input": "Clear input",
+  "mtrnav.expand_matches": "Expand ▾  %s–%s / %s",
+  "mtrnav.collapse_matches": "Collapse ▴  %s–%s / %s",
+  "mtrnav.line_departures": "%s trains received · Next departure %s"
 }
