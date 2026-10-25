@@ -1,0 +1,52 @@
+plugins { id 'net.neoforged.moddev' version '2.0.146' }
+version = project.mod_version
+group = project.maven_group
+base.archivesName = 'MTR-Navigation-neoforge'
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+neoForge {
+    version = project.neoforge_version
+    runs {
+        client {
+            client()
+            gameDirectory = file('run')
+            if (project.hasProperty('quickplay')) programArguments.addAll('--quickPlaySingleplayer', project.property('quickplay').toString())
+            if (project.hasProperty('nativeSmoke')) systemProperty 'mtrnav.forceNative', 'true'
+        }
+        server { server(); gameDirectory = file('run-server'); programArguments.add('--nogui') }
+    }
+    mods { mtrnav { sourceSet sourceSets.main } }
+}
+repositories { mavenCentral() }
+def mtrJar = file('.cache/downloads/MTR-neoforge-4.1.0-beta.2+1.21.1.jar')
+dependencies {
+    compileOnly files(mtrJar)
+    testImplementation files(mtrJar)
+    testImplementation platform('org.junit:junit-bom:5.10.2')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testImplementation 'com.google.code.gson:gson:2.10.1'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    if (project.hasProperty('testOverlay')) testRuntimeOnly files('.cache/downloads/CRTools-MTR-Map-Overlay-1.5.2-MC1.21.1-MTR4.1.0-beta.2-neoforge.jar')
+}
+tasks.withType(JavaCompile).configureEach { options.encoding = 'UTF-8' }
+test {
+    useJUnitPlatform()
+    systemProperty 'java.io.tmpdir', rootProject.file('.tmp').absolutePath
+    systemProperty 'mtrnav.root', rootProject.projectDir.absolutePath
+    systemProperty 'mtrnav.generateFixture', project.hasProperty('generateFixture')
+    systemProperty 'mtrnav.testOverlay', project.hasProperty('testOverlay')
+    systemProperty 'mtrnav.fixtureRoot', rootProject.file(project.findProperty('fixtureRoot') ?: 'build/fixtures/mtr').absolutePath
+}
+tasks.register('testFabricCore', Test) {
+    description = 'Runs the same pure navigation and real Core adapter tests against the Fabric MTR bundle.'
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath.filter { !it.name.startsWith('MTR-neoforge-') } + files('.cache/downloads/MTR-fabric-4.1.0-beta.2+1.21.1.jar')
+    useJUnitPlatform()
+    systemProperty 'java.io.tmpdir', rootProject.file('.tmp').absolutePath
+    systemProperty 'mtrnav.root', rootProject.projectDir.absolutePath
+    shouldRunAfter test
+}
+processResources {
+    inputs.property 'version', project.version
+    filesMatching('META-INF/neoforge.mods.toml') { expand(version: project.version) }
+}
+jar { from('LICENSE', 'NOTICE'); manifest.attributes('MixinConfigs': 'mtrnav.mixins.json') }

@@ -1,0 +1,27 @@
+modLoader="javafml"
+loaderVersion="[4,)"
+license="MIT"
+[[mods]]
+modId="mtrnav"
+version="${version}"
+displayName="MTR Navigation"
+authors="TeamCreating"
+description='''Native MTR journey planning, live departures and journey guidance.'''
+[[dependencies.mtrnav]]
+modId="neoforge"
+type="required"
+versionRange="[21.1,)"
+side="BOTH"
+[[dependencies.mtrnav]]
+modId="minecraft"
+type="required"
+versionRange="[1.21.1,1.21.2)"
+side="BOTH"
+[[dependencies.mtrnav]]
+modId="mtr"
+type="required"
+versionRange="[4.1.0-beta.2,4.1.0-beta.3)"
+ordering="AFTER"
+side="BOTH"
+[[mixins]]
+config="mtrnav.mixins.json"

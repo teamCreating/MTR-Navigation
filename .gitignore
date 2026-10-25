@@ -1,0 +1,12 @@
+.cache/
+.tmp/
+.gradle/
+**/build/
+run/
+run-server/
+fabric/run/
+fabric/run-server/
+*.log
+.idea/
+.vscode/
+__pycache__/

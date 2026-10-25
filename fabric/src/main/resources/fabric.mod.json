@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "id": "mtrnav",
+  "version": "${version}",
+  "name": "MTR Navigation",
+  "description": "Native MTR journey planning, live departures and journey guidance.",
+  "authors": ["TeamCreating"],
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {
+    "main": ["io.github.teamcreating.mtrnav.platform.fabric.FabricNavigation"],
+    "client": ["io.github.teamcreating.mtrnav.platform.fabric.FabricNavigationClient"]
+  },
+  "mixins": ["mtrnav.mixins.json"],
+  "depends": {"fabricloader": ">=0.16.14", "fabric-api": "*", "minecraft": "1.21.1", "java": ">=21", "mtr": "4.1.0-beta.2"}
+}

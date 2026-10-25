@@ -1,0 +1,39 @@
+plugins { id 'fabric-loom' version '1.16.3' }
+def shared = new Properties()
+file('../gradle.properties').withInputStream { shared.load(it) }
+version = shared.getProperty('mod_version')
+group = shared.getProperty('maven_group')
+base.archivesName = 'MTR-Navigation-fabric'
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+repositories {
+    maven { url = uri('../.cache/maven'); content { includeModule 'net.fabricmc', 'sponge-mixin' } }
+    mavenCentral()
+}
+dependencies {
+    minecraft 'com.mojang:minecraft:1.21.1'
+    mappings loom.officialMojangMappings()
+    modImplementation 'net.fabricmc:fabric-loader:0.16.14'
+    modImplementation 'net.fabricmc.fabric-api:fabric-api:0.116.17+1.21.1'
+    modCompileOnly files('../.cache/downloads/MTR-fabric-4.1.0-beta.2+1.21.1.jar')
+    if (project.hasProperty('runtimeMtr')) modRuntimeOnly files('../.cache/downloads/MTR-fabric-4.1.0-beta.2+1.21.1.jar')
+}
+sourceSets.main.java.srcDir('../src/main/java')
+sourceSets.main.java.exclude('io/github/teamcreating/mtrnav/platform/neoforge/**')
+sourceSets.main.resources.srcDir('../src/main/resources')
+sourceSets.main.resources.exclude('META-INF/neoforge.mods.toml')
+tasks.withType(JavaCompile).configureEach { options.encoding = 'UTF-8' }
+processResources {
+    inputs.property 'version', project.version
+    filesMatching('fabric.mod.json') { expand(version: project.version) }
+}
+loom {
+    runs {
+        client {
+            runDir '../run/fabric'
+            if (project.hasProperty('quickplay')) { programArg '--quickPlaySingleplayer'; programArg project.property('quickplay').toString() }
+            if (project.hasProperty('nativeSmoke')) vmArg '-Dmtrnav.forceNative=true'
+        }
+        server { runDir '../run-server/fabric'; programArg '--nogui' }
+    }
+}
+jar { from('../LICENSE', '../NOTICE') }
