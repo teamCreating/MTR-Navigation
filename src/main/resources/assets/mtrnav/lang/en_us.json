@@ -75,7 +75,7 @@
   "mtrnav.board_summary": "%s trains · Expand by line · Auto refresh",
   "mtrnav.option_summary": "Option %s / %s · Scroll for details",
   "mtrnav.search_help": "Choose stations to find connections",
-  "mtrnav.empty_help": "Search in Chinese or English. Check coordinates to distinguish stations sharing a name.",
+  "mtrnav.empty_help": "Type a complete name, or use All stations to search and select. Check coordinates for duplicate names.",
   "mtrnav.manual_short": "Confirm Boarded after boarding, then Alighted after leaving the train",
   "mtrnav.native_short": "MTR timetable estimates · Live status on departures",
   "mtrnav.authoritative_short": "Server timetable · Scroll for details",
@@ -150,10 +150,15 @@
   "mtrnav.reference_limit": "A connection exists, but exceeds the timetable search transfer limit.",
   "mtrnav.reference_incomplete": "A connection exists, but timetable search did not finish. This does not confirm a service suspension. Please retry later.",
   "mtrnav.reference_transfer": "Change trains: check the stations and platforms of both legs",
-  "mtrnav.scroll_matches": "Scroll for more stations",
   "mtrnav.clear_symbol": "×",
   "mtrnav.clear_input": "Clear input",
-  "mtrnav.expand_matches": "Expand ▾  %s–%s / %s",
-  "mtrnav.collapse_matches": "Collapse ▴  %s–%s / %s",
-  "mtrnav.line_departures": "%s trains received · Next departure %s"
+  "mtrnav.line_departures": "%s trains received · Next departure %s",
+  "mtrnav.all_stations": "All stations",
+  "mtrnav.all_stations_hint": "Open the full station directory and choose an origin, destination or arrivals station",
+  "mtrnav.directory_search": "Search all stations",
+  "mtrnav.directory_count": "%s / %s stations · Current dimension",
+  "mtrnav.directory_empty": "No matching stations. Try another search.",
+  "mtrnav.directory_hint": "Select a station and its use · Double-click / Enter for default use · Esc to return",
+  "mtrnav.use_as_origin": "Set origin",
+  "mtrnav.use_as_destination": "Set destination"
 }

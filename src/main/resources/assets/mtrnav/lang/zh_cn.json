@@ -75,7 +75,7 @@
   "mtrnav.board_summary": "%s 班到发 · 按线路展开 · 自动更新",
   "mtrnav.option_summary": "方案 %s / %s · 滚轮查看详情",
   "mtrnav.search_help": "输入起终点，查询可乘方案",
-  "mtrnav.empty_help": "支持中文和英文搜索；同名车站请核对候选项的坐标。",
+  "mtrnav.empty_help": "可直接输入完整站名，或点击“全部车站”搜索并选择；同名站请核对坐标",
   "mtrnav.manual_short": "上车后点“已上车”，下车后点“已下车，继续”",
   "mtrnav.native_short": "MTR 时刻估算 · 到发页保留实时标识",
   "mtrnav.authoritative_short": "服务端时刻 · 滚轮查看详情",
@@ -150,10 +150,15 @@
   "mtrnav.reference_limit": "线路可以换乘，但超过当前班次查询的换乘次数限制",
   "mtrnav.reference_incomplete": "线路可以换乘，但班次计算未完成；这不代表停运，请稍后重试",
   "mtrnav.reference_transfer": "换乘：请核对相邻乘车段的车站与站台",
-  "mtrnav.scroll_matches": "滚轮查看更多车站",
   "mtrnav.clear_symbol": "×",
   "mtrnav.clear_input": "清空输入",
-  "mtrnav.expand_matches": "展开更多 ▾  %s–%s / %s",
-  "mtrnav.collapse_matches": "收起列表 ▴  %s–%s / %s",
-  "mtrnav.line_departures": "%s 班已同步 · 下一班发车 %s"
+  "mtrnav.line_departures": "%s 班已同步 · 下一班发车 %s",
+  "mtrnav.all_stations": "全部车站",
+  "mtrnav.all_stations_hint": "打开独立选站页面，查看全部车站并选择起点、终点或到发站",
+  "mtrnav.directory_search": "搜索全部车站",
+  "mtrnav.directory_count": "找到 %s / %s 个车站 · 当前维度",
+  "mtrnav.directory_empty": "没有匹配的车站，请更换搜索词",
+  "mtrnav.directory_hint": "选择车站后点击用途按钮 · 双击或回车使用默认用途 · Esc 返回",
+  "mtrnav.use_as_origin": "设为起点",
+  "mtrnav.use_as_destination": "设为终点"
 }
