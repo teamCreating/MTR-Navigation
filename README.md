@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/logo.png" width="168" alt="MTR：站间物语">
+  <img src="src/main/resources/assets/mtrnav/icon.png" width="168" alt="MTR：站间物语">
 </p>
 
 <h1 align="center">MTR：站间物语</h1>
