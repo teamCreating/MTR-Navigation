@@ -15,7 +15,7 @@ final class ReminderSettingsScreen extends Screen {
     private final String stationId;
     private final StopEvent selected;
     private final List<Action> buttons = new ArrayList<>();
-    private Action leadLabel, armButton, cancelButton;
+    private Action leadLabel, armButton, cancelButton, displayButton;
     private int minutes, left, top, panelWidth, panelHeight, infoBottom, infoScroll;
     private StopEvent live;
     ReminderSettingsScreen(Screen previous, String stationId, StopEvent selected, int minutes) {
@@ -26,14 +26,16 @@ final class ReminderSettingsScreen extends Screen {
     }
     @Override protected void init() {
         buttons.clear();
-        panelWidth = Math.min(width - 20, 440); panelHeight = Math.min(height - 16, 250);
+        panelWidth = Math.min(width - 20, 440); panelHeight = Math.min(height - 16, 278);
         left = (width - panelWidth) / 2; top = (height - panelHeight) / 2;
         int x = left + 12, inner = panelWidth - 24, controlsY = top + panelHeight - 84;
-        infoBottom = controlsY - 7;
+        infoBottom = controlsY - 21;
         button("mtrnav.close", left + panelWidth - 30, top + 7, 18, this::onClose);
         button("mtrnav.size_minus", x, controlsY, 24, () -> minutes = Math.max(1, minutes - 1));
         leadLabel = button("mtrnav.reminder_lead", x + 28, controlsY, inner - 56, () -> {}); leadLabel.active = false;
         button("mtrnav.size_plus", x + inner - 24, controlsY, 24, () -> minutes = Math.min(60, minutes + 1));
+        displayButton = button("mtrnav.reminder_display_mode", x, controlsY + 24, inner, NavigationPreferences::toggleReminderExpanded);
+        displayButton.setTooltip(net.minecraft.client.gui.components.Tooltip.create(Component.translatable("mtrnav.reminder_display_hint")));
         cancelButton = button("mtrnav.back", x, top + panelHeight - 36, (inner - 6) / 2, () -> { if (isCurrent()) cancelReminder(); onClose(); });
         armButton = button("mtrnav.reminder_arm", x + (inner + 6) / 2, top + panelHeight - 36, (inner - 6) / 2, () -> {
             if (live != null && armReminder(stationId, live, minutes)) onClose();
@@ -47,6 +49,7 @@ final class ReminderSettingsScreen extends Screen {
         armButton.setMessage(Component.translatable(reminder == null ? "mtrnav.reminder_arm" : isCurrent() ? "mtrnav.reminder_update" : "mtrnav.reminder_replace"));
         cancelButton.setMessage(Component.translatable(isCurrent() ? "mtrnav.reminder_cancel" : "mtrnav.back"));
         leadLabel.setMessage(Component.translatable("mtrnav.reminder_lead", minutes));
+        displayButton.setMessage(Component.translatable("mtrnav.reminder_display_mode", tr(NavigationPreferences.reminderExpanded() ? "mtrnav.reminder_display_expanded" : "mtrnav.reminder_display_auto")));
     }
     @Override public void tick() { refresh(); }
     @Override public boolean isPauseScreen() { return false; }
@@ -66,7 +69,7 @@ final class ReminderSettingsScreen extends Screen {
         g.disableScissor();
         String state = live == null ? tr("mtrnav.reminder_unconfirmed") : event.departure() < CLOCK.now(System.nanoTime()) ? tr("mtrnav.reminder_stage.passed")
                 : event.arrival() - CLOCK.now(System.nanoTime()) <= minutes * 60_000L ? tr("mtrnav.reminder_immediate") : tr("mtrnav.reminder_keeps_running");
-        text(g, state, x, top + panelHeight - 57, w, live == null || event.departure() < CLOCK.now(System.nanoTime()) ? WARNING : MUTED);
+        text(g, state, x, top + panelHeight - 98, w, live == null || event.departure() < CLOCK.now(System.nanoTime()) ? WARNING : MUTED);
         for (var button : buttons) button.render(g, mouseX, mouseY, delta);
     }
     @Override public boolean mouseScrolled(double x, double y, double horizontal, double vertical) {

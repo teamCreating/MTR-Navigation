@@ -338,5 +338,20 @@
   "mtrnav.walk_form.error.same": "同站换乘请选不同站台；跨站步行请选另一个车站。",
   "mtrnav.walk_form.error.time": "请填写步行用时：至少10秒、最多60分钟，秒数为0～59。",
   "mtrnav.walk_form.error.invalid": "请检查所选车站、站台和文字内容是否仍然有效。",
-  "mtrnav.walk_form.error.save": "保存失败，请检查个人连接数量或本地文件。"
+  "mtrnav.walk_form.error.save": "保存失败，请检查个人连接数量或本地文件。",
+  "mtrnav.station_replace_hint": "点击或用Tab进入时全选原站名，直接输入即可替换；再次点击可局部编辑。",
+  "mtrnav.reminder_display_mode": "提醒条显示：%s",
+  "mtrnav.reminder_display_expanded": "保持展开",
+  "mtrnav.reminder_display_auto": "自动收起（保留方向与站台）",
+  "mtrnav.reminder_display_hint": "自动收起时仍显示方向、站台和状态；保持展开则持续显示完整提醒信息。",
+  "mtrnav.hud_edit_navigation": "导航框",
+  "mtrnav.hud_edit_reminder": "班次提醒框",
+  "mtrnav.hud_editing": "HUD设置 · 正在调整：%s",
+  "mtrnav.hud_reset_selected": "恢复所选框默认值",
+  "mtrnav.hud_both_drag_hint": "点击或拖动任一框，滚轮调大小；拖动时设置面板收起。",
+  "mtrnav.hud_both_settings_hint": "两框独立保存并自动避让；提醒按展开尺寸预留空间。",
+  "mtrnav.hud_both_fit_hint": "同时自动适配两个框；关闭后仍保留防重叠保护。",
+  "mtrnav.hud_reminder_preview": "班次提醒框预览",
+  "mtrnav.hud_reminder_direction": "→ 示例方向 · 2站台",
+  "mtrnav.hud_reminder_reserve": "按展开大小预览 · 已为展开预留空间"
 }

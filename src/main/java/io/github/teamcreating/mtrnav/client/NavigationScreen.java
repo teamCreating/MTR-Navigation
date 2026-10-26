@@ -76,6 +76,7 @@ public final class NavigationScreen extends Screen {
             boardText = catalog.stationName(selectedBoard); board(selectedBoard);
         }
         rebuild();
+        if (next == View.DEPARTURES) { setFocused(boardBox); selectStationText(boardBox); }
     }
     private void openBoard(String stationId) {
         if (catalog == null || catalog.station(stationId) == null) return;
@@ -117,6 +118,7 @@ public final class NavigationScreen extends Screen {
         boardBox = new EditBox(font, x, top + 44, inner - queryWidth - 30, 20, Component.translatable("mtrnav.board_station"));
         for (var box : List.of(fromBox, toBox, boardBox)) {
             box.setMaxLength(128); box.setTextColor(TEXT); box.setTextColorUneditable(MUTED);
+            box.setTooltip(Tooltip.create(Component.translatable("mtrnav.station_replace_hint")));
             box.setHint(Component.translatable("mtrnav.station_hint")); addRenderableWidget(box); widgets.add(box);
         }
         fromBox.setValue(fromText != null ? fromText : catalog == null ? "" : catalog.stationName(origin));
@@ -310,6 +312,11 @@ public final class NavigationScreen extends Screen {
         detailTop = bodyTop + (!wide && view == View.JOURNEYS && (!journeys.isEmpty() || referencePlan != null) ? cardBottom - bodyTop + 5 : 0);
     }
     @Override public boolean keyPressed(int key, int scan, int modifiers) {
+        if (key == 258) {
+            var previous = getFocused(); boolean handled = super.keyPressed(key, scan, modifiers);
+            if (getFocused() instanceof EditBox box && getFocused() != previous) selectStationText(box);
+            return handled;
+        }
         if ((key == 264 || key == 265) && view == View.JOURNEYS && !journeys.isEmpty() && !(getFocused() instanceof EditBox)) {
             selectedJourney = Math.clamp(selectedJourney + (key == 264 ? 1 : -1), 0, journeys.size() - 1); scroll = 0;
             int row = selectedJourney * (cardHeight + 4);
@@ -320,6 +327,10 @@ public final class NavigationScreen extends Screen {
         return super.keyPressed(key, scan, modifiers);
     }
     @Override public boolean mouseClicked(double x, double y, int button) {
+        if (button == 0) for (var box : List.of(fromBox, toBox, boardBox))
+            if (box.visible && box.isMouseOver(x, y) && !box.isFocused()) {
+                boolean handled = super.mouseClicked(x, y, button); selectStationText(box); return handled;
+            }
         if (button == 0) for (var target : scrollTargets) if (target.contains(x, y)) {
             var bar = target.geometry(); draggingScroll = target.input();
             scrollGrab = bar.onThumb(y) ? y - bar.thumbTop() : bar.thumbHeight() / 2.0;
@@ -342,6 +353,7 @@ public final class NavigationScreen extends Screen {
         if (button == 0 && scroll == 0 && x >= contentX && x < left + panelWidth - 12 && y >= detailTop && y < detailTop + 22 && view != View.DEPARTURES && (tracking != null || !journeys.isEmpty() || referencePlan != null)) { showAllStops = !showAllStops; return true; }
         return super.mouseClicked(x, y, button);
     }
+    private static void selectStationText(EditBox box) { box.setCursorPosition(box.getValue().length()); box.setHighlightPos(0); }
     private void dragScroll(ScrollTarget target, double mouseY) {
         int offset = target.geometry().offsetAtThumbTop(mouseY - scrollGrab);
         if (target.input() == -3) cardScroll = offset; else scroll = offset;

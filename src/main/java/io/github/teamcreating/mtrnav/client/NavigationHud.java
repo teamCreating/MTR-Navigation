@@ -13,9 +13,7 @@ import static io.github.teamcreating.mtrnav.core.Model.displayName;
 final class NavigationHud {
     private NavigationHud() {}
     static HudPlacement placement() {
-        var window = Minecraft.getInstance().getWindow();
-        return HudPlacement.at(window.getGuiScale(), window.getWidth(), window.getHeight(), NavigationPreferences.hudPercent(),
-                NavigationPreferences.hudX(), NavigationPreferences.hudY(), NavigationPreferences.autoFit());
+        return HudPositions.layout(false).navigation();
     }
     static void render(GuiGraphics g) { render(g, false); }
     static void preview(GuiGraphics g) { render(g, true); }
@@ -23,7 +21,7 @@ final class NavigationHud {
         var mc = Minecraft.getInstance();
         boolean example = tracking == null || catalog == null;
         if (!preview && (example || mc.options.hideGui || mc.screen != null)) return;
-        var placement = placement();
+        var placement = HudPositions.layout(preview).navigation();
         float scale = (float)placement.scale();
         int w = HudScale.WIDTH, h = HudScale.HEIGHT;
         int x = 0, y = 0;

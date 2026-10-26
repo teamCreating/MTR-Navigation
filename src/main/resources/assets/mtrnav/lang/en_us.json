@@ -338,5 +338,20 @@
   "mtrnav.walk_form.error.same": "Choose different platforms for a same-station walk, or choose another station.",
   "mtrnav.walk_form.error.time": "Enter 10 sec–60 min. The seconds field must be between 0 and 59.",
   "mtrnav.walk_form.error.invalid": "Check that the selected stations, platforms and text are still valid.",
-  "mtrnav.walk_form.error.save": "Could not save. Check your personal connection limit or local file."
+  "mtrnav.walk_form.error.save": "Could not save. Check your personal connection limit or local file.",
+  "mtrnav.station_replace_hint": "Click or Tab into the field to select its name and type a replacement. Click again to edit part of the name.",
+  "mtrnav.reminder_display_mode": "Reminder display: %s",
+  "mtrnav.reminder_display_expanded": "Keep expanded",
+  "mtrnav.reminder_display_auto": "Auto-collapse (keep direction and platform)",
+  "mtrnav.reminder_display_hint": "Collapsed reminders keep direction, platform and status. Keep expanded to show full details continuously.",
+  "mtrnav.hud_edit_navigation": "Navigation HUD",
+  "mtrnav.hud_edit_reminder": "Train reminder HUD",
+  "mtrnav.hud_editing": "HUD settings · Editing: %s",
+  "mtrnav.hud_reset_selected": "Reset selected HUD",
+  "mtrnav.hud_both_drag_hint": "Click or drag either HUD; scroll to resize. Controls hide while dragging.",
+  "mtrnav.hud_both_settings_hint": "Positions and sizes are independent; expanded reminder space is reserved.",
+  "mtrnav.hud_both_fit_hint": "Fit both HUDs automatically. Overlap protection remains active when this is off.",
+  "mtrnav.hud_reminder_preview": "Train reminder preview",
+  "mtrnav.hud_reminder_direction": "→ Example destination · Platform 2",
+  "mtrnav.hud_reminder_reserve": "Expanded preview · expansion space reserved"
 }

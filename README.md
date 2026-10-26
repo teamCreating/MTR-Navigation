@@ -65,7 +65,7 @@ MTR：站间物语是一个独立的 Minecraft Transit Railway 导航附属模�
 4. 上车后点 **已上车**，下车后点 **已下车，继续**；操作错误时用 **上一步** 校正。
 5. 关闭窗口后 HUD 继续提示，按打开键返回。
 
-点击行程详情中的车站可查看到发；点击详情标题可展开途经站。重新查询不会直接替换正在执行的行程，需要再次选择方案。三个搜索框右侧的 **×** 可清空输入。
+点击行程详情中的车站可查看到发；点击详情标题可展开途经站。重新查询不会直接替换正在执行的行程，需要再次选择方案。点击或用Tab进入车站输入框时会全选原站名，直接输入新站名即可替换；再次点击可局部编辑，右侧 **×** 仍可清空。切到到发页也会自动选中当前站名，输入后按回车查询。
 
 **起点定位**：每次连接首次进入换乘查询、起点为空且未经编辑时，自动根据玩家位置选择附近车站。也可点击准星图标 **定位** 重新选择；窄窗口仅显示图标。最近站在512格内，且比第二近站近超过64格时自动填入；否则打开独立的 **附近车站** 页面，按距离排序后由你确认。页面保留搜索、滚轮、拖动滚动条和键盘操作；点击 **重新定位** 才更新距离基准。
 
@@ -77,7 +77,7 @@ MTR：站间物语是一个独立的 Minecraft Transit Railway 导航附属模�
 
 点击某一班次可设置提醒，时间以**该列车到达所选车站**为准。保存时已经进入提前窗口，会在数据确认后立即触发。
 
-- 提醒条位于顶部中央，平时收起，设置和触发时短暂展开；大小跟随 HUD 缩放设置。
+- 提醒条默认位于顶部中央，自动收起时仍保留线路、车站、倒计时、方向、站台与状态；设置和触发时短暂展开。**HUD设置**或提醒设置中均可切换 **保持展开**。提醒框的位置和大小可独立调整。
 - 数据超过五秒未更新、采样过旧或不能确认所选记录时，显示 **班次待确认**，暂停可靠倒计时与提醒。
 - 发车时间已过时显示相应提示，不直接判断你是否已经上车，也不会自动换成下一班。
 - 顶部 **提醒** 可更新或取消提醒。只有提醒、没有导航行程时，按打开键优先进入提醒管理。
@@ -88,7 +88,9 @@ MTR：站间物语是一个独立的 Minecraft Transit Railway 导航附属模�
 
 ### 调整 HUD
 
-点顶部 **HUD** 打开设置：拖动提示框选择位置，滚轮或加减按钮调节大小，支持四角预设、自动适配与恢复默认。拖动时设置面板收起，提示框移到底部后面板自动避让。
+点顶部 **HUD** 打开统一设置页，选择 **导航框** 或 **班次提醒框**；也可直接点击要调整的预览框。拖动改位置，滚轮或加减按钮改所选框的大小，四角预设和恢复默认也只作用于所选框。两个框各自保存位置与大小，设置页同时预览，拖动时设置面板收起。
+
+两个提示框同时显示时会自动避让，提醒框即使收起也按展开尺寸预留空间。小窗口放不下时会临时缩小，**关闭自动适配也保留防重叠保护**，不会覆盖保存的位置。自动收起／保持展开也在同一页设置，详见[双HUD设置说明](docs/hud-settings.md)。
 
 大小范围为 75%～200%。位置按可用屏幕区域的比例保存，切换分辨率后仍保持在屏幕内；配置位于游戏实例的 `config/mtrnav-client.properties`。
 
@@ -96,7 +98,7 @@ MTR：站间物语是一个独立的 Minecraft Transit Railway 导航附属模�
 
 点击查询页的 **步行换乘**，可以调整晚到范围为15、30、60分钟或不限，也可管理 **服务器共享／仅自己／我的提交／审核管理**。没有 Navigation 服务端时默认打开个人连接；客户端仍可通过 MTR 原生时刻服务计算。
 
-新建时选择两个车站及可选站台，再填写完整步行秒数（10～3600秒）。保存个人连接与提交共享建议是两个不同操作。默认同时保存反向个人连接；两条方向可分别修改，共享时逐方向提交审核。未知或失效端点不参加查询。
+新建时依次选择出发站、到达站及可选站台，直接填写分钟和秒（总计10秒～60分钟），名称和说明可选填。保存个人连接与提交共享建议是两个不同操作。默认同时保存反向个人连接；两条方向可分别修改，共享时逐方向提交审核。未知或失效端点不参加查询。
 
 服务端查询个人连接前会征得同意。服务器只为本人计算，不把个人规则写入共享库或发给其他玩家；该选择按服务器保存，可随时关闭。共享连接优先于个人连接，人工步行时间不会再叠加坐标距离估算，上车余量单独计一次。
 
@@ -144,11 +146,11 @@ Linux／macOS 对应使用 `./dev.sh neoforge build testFabricCore` 和 `./dev.s
 
 Requires **Minecraft 1.21.1, Java 21 and MTR 4.1.0-beta.2**. Separate NeoForge 21.1.x and Fabric builds are available; Fabric also requires Fabric API. Install one matching JAR on the client. Installing Navigation on the server is optional, but client-only operation requires the server's native MTR map service to work.
 
-Press **N** or use **`/mtrnav`**. Use **All stations** to choose an origin, destination or arrivals station. Compare connections, start a journey, and confirm boarding or alighting when automatic progress is unavailable. Close the screen to keep the journey HUD active.
+Press **N** or use **`/mtrnav`**. Use **All stations** to choose an origin, destination or arrivals station. Clicking or tabbing into a station field selects its existing name so typing replaces it; switching to arrivals also selects the current station name. Compare connections, start a journey, and confirm boarding or alighting when automatic progress is unavailable. Close the screen to keep the journey HUD active.
 
 An untouched, empty origin is located automatically once per connection; the crosshair **Locate** button samples your position again. A clear nearest station within 512 blocks is filled directly (more than 64 blocks nearer than the runner-up); ambiguous or distant choices open a separate **Nearby stations** page. Distances are horizontal estimates to station coordinates, not walking routes. Editing or clearing the origin disables automatic refill. Unknown coordinates are excluded, and location adds no network polling.
 
-Click a train on the arrivals board to set a reminder, **9 minutes before arrival** by default, adjustable from 1 to 60 minutes. A compact notification at the top centre expands when triggered. Stale or ambiguous data pauses the reminder; it never silently switches to the next train. One reminder is retained per connection and is cleared on disconnect or dimension change.
+Click a train on the arrivals board to set a reminder, **9 minutes before arrival** by default, adjustable from 1 to 60 minutes. A compact notification, at the top centre by default, expands when triggered. The shared **HUD** settings page edits the navigation and reminder panels separately: drag either preview, scroll to resize it, or choose a corner preset. Their positions and sizes are saved independently. Expanded reminder space is reserved to prevent overlap; very small windows may temporarily shrink both panels. Keep-expanded mode is available in the same page. Stale or ambiguous data pauses the reminder; it never silently switches to the next train. One reminder is retained per connection and is cleared on disconnect or dimension change.
 
 Native compatibility mode cannot reliably identify the player's actual train, so journey progress needs manual confirmation. Live and scheduled labels follow the source data. Queries cover passenger rail in the current dimension; a route reference without confirmed train times cannot start a timed journey. Full-day timetables and map-track highlighting are not included.
 
