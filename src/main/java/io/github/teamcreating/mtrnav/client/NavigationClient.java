@@ -72,7 +72,7 @@ public final class NavigationClient {
         if (mc.player == null || mc.level == null) return;
         long now = System.nanoTime();
         tickReminder(now);
-        WalkingClient.tick(mc.screen instanceof NavigationScreen || mc.screen instanceof WalkingListScreen || mc.screen instanceof WalkingTextScreen || tracking != null);
+        WalkingClient.tick(mc.screen instanceof NavigationScreen || mc.screen instanceof WalkingListScreen || mc.screen instanceof WalkingEditorScreen || mc.screen instanceof WalkingTextScreen || tracking != null);
         if (!available.getAsBoolean() || Boolean.getBoolean("mtrnav.forceNative")) {
             usingNative = true;
             NativeMtrClient.tick(dim);
