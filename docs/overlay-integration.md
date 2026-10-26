@@ -1,6 +1,6 @@
 # MTR Map Overlay 对接指南
 
-本文对应 MTR：站间物语（MTR Navigation）0.1.0 的 `JourneySelection` **v1**。目标环境为 Minecraft 1.21.1、MTR 4.1.0-beta.2，NeoForge 与 Fabric 共用此接口。
+本文对应 MTR：站间物语（MTR Navigation）0.1.0-alpha.1 的 `JourneySelection` **v1**。目标环境为 Minecraft 1.21.1、MTR 4.1.0-beta.2，NeoForge 与 Fabric 共用此接口。
 
 源码仓库：[teamCreating/MTR-Navigation](https://github.com/teamCreating/MTR-Navigation)。本文描述当前已实现的接口；地图区间高亮仍需要 Overlay 侧实现。
 

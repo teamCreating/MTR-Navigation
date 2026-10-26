@@ -4,7 +4,11 @@ $projectRoot = Split-Path $PSScriptRoot -Parent
 $profile = [IO.Path]::GetFullPath($ProfileRoot).TrimEnd('\')
 $mods = [IO.Path]::GetFullPath((Join-Path $profile 'mods'))
 if ($mods -ne "$profile\mods" -or -not (Test-Path -LiteralPath $mods -PathType Container)) { throw 'Invalid profile mods directory' }
-$source = Join-Path $projectRoot 'build\libs\MTR-Navigation-neoforge-0.1.0.jar'
+$versionLine = @(Get-Content -LiteralPath (Join-Path $projectRoot 'gradle.properties') | Where-Object { $_ -match '^mod_version=' })
+if ($versionLine.Count -ne 1) { throw 'Expected one mod_version property' }
+$modVersion = $versionLine[0].Substring('mod_version='.Length).Trim()
+if ($modVersion -notmatch '^[0-9A-Za-z][0-9A-Za-z.+-]*$') { throw 'Invalid mod_version' }
+$source = Join-Path $projectRoot ('build\libs\MTR-Navigation-neoforge-' + $modVersion + '.jar')
 if (-not (Test-Path -LiteralPath $source -PathType Leaf)) { throw 'Build the NeoForge JAR first' }
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 function Test-NavigationJar([string]$JarPath) {

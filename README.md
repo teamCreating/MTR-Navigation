@@ -26,7 +26,7 @@
 
 MTR：站间物语是一个独立的 Minecraft Transit Railway 导航附属模组。你可以查找车站、比较换乘方案、查看站台到发，或为某一班列车设置到站提醒。界面采用 Minecraft 原版控件，配合像素边框与黄铜装饰；**不需要安装机械动力**。
 
-**当前为开发测试版。** 提供 NeoForge 和 Fabric 构建包；NeoForge 已有联机实测记录，Fabric 的游戏内完整验证及两个加载器的专服完整验收尚未完成。新增界面和提醒也仍需实机复查，详见[验证记录](docs/validation/verification.md)。
+**当前版本：0.1.0-alpha.1（公开测试版）。** [下载本次 Alpha](https://github.com/teamCreating/MTR-Navigation/releases/tag/v0.1.0-alpha.1) · [更新记录](CHANGELOG.md)。 提供 NeoForge 和 Fabric 构建包；NeoForge 已有联机实测记录，Fabric 的游戏内完整验证及两个加载器的专服完整验收尚未完成。新增界面和提醒也仍需实机复查，详见[验证记录](docs/validation/verification.md)。
 
 ## 可以做什么
 
@@ -80,8 +80,8 @@ MTR：站间物语是一个独立的 Minecraft Transit Railway 导航附属模�
 
 需要 **Minecraft 1.21.1、Java 21、MTR 4.1.0-beta.2**。
 
-- **NeoForge 21.1.x**：安装 `MTR-Navigation-neoforge-0.1.0.jar`。
-- **Fabric Loader 0.16.14 或更新版本**：安装 `MTR-Navigation-fabric-0.1.0.jar`，另需 Minecraft 1.21.1 对应的 [Fabric API](https://modrinth.com/mod/fabric-api)。
+- **NeoForge 21.1.x**：安装 `MTR-Navigation-neoforge-0.1.0-alpha.1.jar`。
+- **Fabric Loader 0.16.14 或更新版本**：安装 `MTR-Navigation-fabric-0.1.0-alpha.1.jar`，另需 Minecraft 1.21.1 对应的 [Fabric API](https://modrinth.com/mod/fabric-api)。
 
 将对应的一个 JAR 放进游戏实例的 `mods` 文件夹。更新前退出游戏，移走旧 Navigation JAR，确保只保留一份；不要把两个加载器的包一起安装。
 
@@ -200,7 +200,7 @@ New queries return up to **five distinct route patterns**, with a default extra-
 
 With an updated Navigation server, players may submit proposals for moderators (operator level 2+) to approve. Pending proposals are visible only to their author and authorized moderators. Personal rules require explicit consent before being sent for a private server-side query; they are not published or included in shared audit data. Servers with only the old v1 protocol retain the original rail-only queries. See the [walking guide](docs/walking-transfers.md) for limits and verification details.
 
-This is a **development build**. NeoForge has multiplayer test records; complete Fabric in-game and dedicated-server validation remain unfinished. See the [verification notes](docs/validation/verification.md) and [Overlay integration guide](docs/overlay-integration.md) for precise scope.
+Current version: **0.1.0-alpha.1 (public alpha)**. [Download](https://github.com/teamCreating/MTR-Navigation/releases/tag/v0.1.0-alpha.1) · [Changelog](CHANGELOG.md). NeoForge has multiplayer test records; complete Fabric in-game and dedicated-server validation remain unfinished. See the [verification notes](docs/validation/verification.md) and [Overlay integration guide](docs/overlay-integration.md) for precise scope.
 
 ## 许可与致谢
 

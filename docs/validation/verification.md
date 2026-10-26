@@ -230,3 +230,13 @@ HUD设置页同时预览导航框和班次提醒框，可通过按钮或直接�
 用户最终要求先不脱敏，公开目录保留未脱敏客户区JPEG；不公开中间遮挡版本。截图排除标题栏／任务栏，没有更改游戏世界、发出聊天、保存步行规则或提交共享建议。没有关闭、重启客户端或更换安装包，12GB设置未改。
 
 原生兼容查询期间也观察到过数据过期和重试状态，重试后取得实际数据；本次截图不作为连接或内存稳定性验收。HUD图中03:20是设置预览，步行编辑图未填写有效端点；未借此将途中推进、共享审核或Fabric完整游戏验收标记为通过。
+
+## 2026-10-26：0.1.0-alpha.1发行包核验
+
+首次Alpha统一版本为0.1.0-alpha.1，NeoForge/Fabric重新构建通过。两个目标Core仍各97项，分别96通过／1跳过与95通过／2跳过，无失败。发行包检查了内部版本、中文显示名、Minecraft依赖、Java21字节码、图标、MIT/LICENSE及NOTICE；不打入MTR或开发存档。安装脚本改为从gradle.properties读取当前版本，语法检查及对应产物路径核对通过。
+
+发行附件为两个对应加载器JAR及SHA256SUMS.txt，工作副本位于项目忽略的 `build/release/v0.1.0-alpha.1`。更新记录与公开Alpha限制见 `CHANGELOG.md` 和 `docs/releases/0.1.0-alpha.1.md`。GitHub交付使用预发布标识，不替代尚未完成的Fabric世界内、双完整客户端及长期稳定性验收。
+
+MTR-Navigation-neoforge-0.1.0-alpha.1.jar SHA256：cdaa26c40e21d8a2f3f005a4d73dd597424d0e77bbfd334e0b6b77ed0fbe2b6d。
+
+MTR-Navigation-fabric-0.1.0-alpha.1.jar SHA256：361a876f6f4539e933841a78b1cf337d266ba6cdaae4f866ecb02cef95f49fe1。
