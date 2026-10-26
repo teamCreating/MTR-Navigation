@@ -87,6 +87,18 @@ final class NavigationTheme {
     static String remaining(long timestamp) { return CLOCK.stale(System.nanoTime()) ? "—" : countdown(timestamp); }
     static String guidance() {
         if (tracking == null) return "";
+        if (WalkingClient.rulesChanged()) return tr("mtrnav.notice.walking_changed");
+        if (tracking.walk() != null) {
+            var walk = tracking.walk(); var player = Minecraft.getInstance().player;
+            var target = catalog == null ? null : catalog.platform(walk.toPlatformId());
+            var stationTarget = catalog == null ? null : catalog.station(walk.toStationId());
+            if (!tracking.notice().isEmpty() && !tracking.notice().equals("manual_walk")) return tr("mtrnav.notice." + tracking.notice());
+            if (player != null && stationTarget != null) {
+                double tx = target == null ? stationTarget.x() : target.x(), tz = target == null ? stationTarget.z() : target.z();
+                if (Math.hypot(player.getX() - tx, player.getZ() - tz) <= 16) return tr("mtrnav.walk_nearby");
+            }
+            return tr("mtrnav.walk_manual_key", openKey.get());
+        }
         if (!tracking.notice().isEmpty() && !tracking.notice().equals("manual_check")) return tr("mtrnav.notice." + tracking.notice());
         if (usingNative && !CLOCK.stale(System.nanoTime()) && tracking.legIndex() < tracking.journey().legs().size()) {
             var leg = tracking.journey().legs().get(tracking.legIndex());

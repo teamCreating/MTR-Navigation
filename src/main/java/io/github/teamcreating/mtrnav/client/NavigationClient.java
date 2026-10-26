@@ -25,6 +25,8 @@ public final class NavigationClient {
     public static String status = "mtrnav.connecting";
     public static String origin = "", destination = "", boardStation = "";
     public static Sort sort = Sort.FASTEST;
+    public static long fastestArrival;
+    public static boolean partialResults;
     public static final ServerClock CLOCK = new ServerClock();
     static final StationLocator.Session originLocation = new StationLocator.Session();
     static Set<String> locatedStations() { return usingNative ? NativeMtrClient.locatedStations(dimension) : null; }
@@ -70,6 +72,7 @@ public final class NavigationClient {
         if (mc.player == null || mc.level == null) return;
         long now = System.nanoTime();
         tickReminder(now);
+        WalkingClient.tick(mc.screen instanceof NavigationScreen || mc.screen instanceof WalkingListScreen || mc.screen instanceof WalkingTextScreen || tracking != null);
         if (!available.getAsBoolean() || Boolean.getBoolean("mtrnav.forceNative")) {
             usingNative = true;
             NativeMtrClient.tick(dim);
@@ -85,7 +88,7 @@ public final class NavigationClient {
         }
     }
     public static void reset() {
-        originLocation.reset();
+        originLocation.reset(); WalkingClient.reset(); fastestArrival = 0; partialResults = false;
         catalog = null; journeys = List.of(); referencePlan = null; referenceReason = ""; arrivals = List.of(); tracking = null; reminder = null;
         boardLoading = false; boardUpdatedNanos = boardSampleMillis = 0; pollContexts.clear(); ReminderHud.reset();
         origin = destination = boardStation = ""; status = "mtrnav.connecting";
@@ -96,12 +99,16 @@ public final class NavigationClient {
     }
     public static void query() {
         if (origin.isEmpty() || destination.isEmpty()) { status = "mtrnav.choose_stations"; return; }
-        status = "mtrnav.searching"; journeys = List.of();
-        referencePlan = ConnectionPlan.find(catalog, origin, destination).orElse(null);
+        if (!usingNative && WalkingClient.supportsQuery() && WalkingClient.needsConsent()) {
+            WalkingManagementScreen.confirmConsent(Minecraft.getInstance().screen, NavigationClient::query); return;
+        }
+        status = "mtrnav.searching"; journeys = List.of(); partialResults = false; fastestArrival = 0;
+        referencePlan = ConnectionPlan.find(catalog, origin, destination, usingNative ? List.of() : WalkingClient.sharedConnections(), usingNative || WalkingClient.consent() ? WalkingClient.activeLocal() : List.of()).orElse(null);
         referenceReason = "mtrnav.reference_pending";
         if (usingNative) NativeMtrClient.query(); else queryId = send("query", "", "");
     }
     public static void clearSearchResults() {
+        if (queryId != 0 && !usingNative && WalkingClient.supportsQuery()) send("cancel_query", "", "");
         journeys = List.of(); referencePlan = null; referenceReason = ""; queryId = 0;
         status = "mtrnav.choose_stations";
         NativeMtrClient.cancelQuery();
@@ -147,8 +154,11 @@ public final class NavigationClient {
             pollContexts.put(id, new PollContext(station, reminder == null ? "" : reminder.id()));
             while (pollContexts.size() > 16) pollContexts.remove(pollContexts.keySet().iterator().next());
         }
-        if (available.getAsBoolean()) sender.accept(new NavRequest(WireCodec.GSON.toJson(new Messages.Request(action, dimension, id,
-                catalog == null ? 0 : catalog.revision(), origin, destination, sort, journeyId, station, correction))));
+        if (available.getAsBoolean()) {
+            var request = new Messages.Request(action, dimension, id, catalog == null ? 0 : catalog.revision(), origin, destination, sort, journeyId, station, correction);
+            if (action.equals("query") && WalkingClient.supportsQuery()) WalkingClient.sendQuery(request);
+            else sender.accept(new NavRequest(WireCodec.GSON.toJson(request)));
+        }
         return id;
     }
     public static void chunk(NavChunk chunk) {
@@ -171,8 +181,11 @@ public final class NavigationClient {
             lastSample = response.sampleMillis(); CLOCK.sample(lastSample, System.nanoTime());
         }
         if (response.kind().equals("query")) {
-            journeys = response.journeys(); status = journeys.isEmpty() ? "mtrnav.no_route" : "mtrnav.ready";
-            referencePlan = journeys.isEmpty() ? ConnectionPlan.find(catalog, origin, destination).orElse(null) : null;
+            journeys = response.journeys();
+            fastestArrival = response.report() == null ? journeys.stream().mapToLong(Journey::arrival).min().orElse(0) : response.report().fastestArrival();
+            partialResults = response.report() != null && response.report().incomplete();
+            status = journeys.isEmpty() ? "mtrnav.no_route" : "mtrnav.ready";
+            referencePlan = journeys.isEmpty() ? ConnectionPlan.find(catalog, origin, destination, usingNative ? List.of() : WalkingClient.sharedConnections(), usingNative || WalkingClient.consent() ? WalkingClient.activeLocal() : List.of()).orElse(null) : null;
             referenceReason = response.message().equals("reference_limit") ? "mtrnav.reference_limit"
                     : response.message().isEmpty() || response.message().equals("reference_no_service") ? "mtrnav.reference_no_service" : "mtrnav.reference_incomplete";
         } else if (response.kind().equals("hello")) status = "mtrnav.ready";

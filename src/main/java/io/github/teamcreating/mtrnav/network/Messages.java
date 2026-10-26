@@ -16,7 +16,11 @@ public final class Messages {
         }
     }
     public record Response(String kind, String dimension, long id, long revision, long sampleMillis, Catalog catalog,
-                           List<Journey> journeys, List<StopEvent> arrivals, JourneyTracker.State tracking, String message) {
+                           List<Journey> journeys, List<StopEvent> arrivals, JourneyTracker.State tracking, String message, QueryV2.Report report) {
         public Response { journeys = List.copyOf(journeys); arrivals = List.copyOf(arrivals); }
+        public Response(String kind, String dimension, long id, long revision, long sampleMillis, Catalog catalog,
+                        List<Journey> journeys, List<StopEvent> arrivals, JourneyTracker.State tracking, String message) {
+            this(kind, dimension, id, revision, sampleMillis, catalog, journeys, arrivals, tracking, message, null);
+        }
     }
 }

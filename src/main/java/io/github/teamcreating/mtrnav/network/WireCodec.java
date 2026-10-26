@@ -24,7 +24,8 @@ public final class WireCodec {
         try (var gzip = new GZIPInputStream(new ByteArrayInputStream(bytes))) {
             byte[] json = gzip.readNBytes(MAX_JSON + 1);
             if (json.length > MAX_JSON) throw new IOException("Expanded navigation response too large");
-            var response = GSON.fromJson(new String(json, StandardCharsets.UTF_8), Messages.Response.class);
+            String text = new String(json, StandardCharsets.UTF_8); NetworkLimits.structure(text, 32);
+            var response = GSON.fromJson(text, Messages.Response.class);
             if (response == null || response.dimension() == null || response.kind() == null) throw new IOException("Invalid navigation response");
             return response;
         } catch (RuntimeException e) { throw new IOException("Invalid navigation response", e); }

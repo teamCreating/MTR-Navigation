@@ -2,6 +2,7 @@ package io.github.teamcreating.mtrnav.platform.fabric;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import io.github.teamcreating.mtrnav.client.NavigationClient;
+import io.github.teamcreating.mtrnav.client.WalkingClient;
 import io.github.teamcreating.mtrnav.network.*;
 import net.minecraft.client.KeyMapping;
 import net.fabricmc.api.ClientModInitializer;
@@ -17,6 +18,8 @@ public final class FabricNavigationClient implements ClientModInitializer {
         var open = KeyBindingHelper.registerKeyBinding(new KeyMapping("key.mtrnav.open", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_N, "category.mtrnav"));
         NavigationClient.openKey = () -> open.getTranslatedKeyMessage().getString();
         NavigationClient.transport(() -> ClientPlayNetworking.canSend(NavRequest.TYPE), ClientPlayNetworking::send);
+        WalkingClient.transport(() -> ClientPlayNetworking.canSend(WalkingRequest.TYPE), ClientPlayNetworking::send, () -> ClientPlayNetworking.canSend(NavRequestV2.TYPE), ClientPlayNetworking::send);
+        ClientPlayNetworking.registerGlobalReceiver(WalkingChunk.TYPE, (chunk, context) -> context.client().execute(() -> WalkingClient.chunk(chunk)));
         ClientPlayNetworking.registerGlobalReceiver(NavChunk.TYPE, (chunk, context) -> context.client().execute(() -> NavigationClient.chunk(chunk)));
         ClientTickEvents.END_CLIENT_TICK.register(client -> { NavigationClient.tick(); while (open.consumeClick()) NavigationClient.open(); });
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registry) -> dispatcher.register(ClientCommandManager.literal("mtrnav").executes(context -> { NavigationClient.open(); return 1; })));

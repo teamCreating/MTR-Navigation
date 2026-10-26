@@ -40,6 +40,14 @@ final class NavigationHud {
                 text(g, tr("mtrnav.hud_preview_line"), 8, 18, w - 16, MUTED);
                 text(g, tr("mtrnav.hud_preview_hint"), 8, 31, w - 16, MUTED); return;
             }
+            if (tracking.walk() != null) {
+                var walk = tracking.walk();
+                text(g, tr("mtrnav.walk_to", station(walk.toStationId())) + (walk.toPlatformId().isEmpty() ? "" : " / " + platform(walk.toPlatformId())), 8, 5, w - 16, TEXT);
+                String nextDeparture = tracking.legIndex() < tracking.journey().legs().size() ? " · " + tr("mtrnav.walk_next_departure", remaining(tracking.journey().legs().get(tracking.legIndex()).departure())) : "";
+                text(g, tr("mtrnav.walk_estimated", walk.seconds()) + nextDeparture, 8, 18, w - 16, ACCENT);
+                String hint = guidance();
+                text(g, hint.isEmpty() ? tr("mtrnav.walk_manual_key", openKey.get()) : hint, 8, 31, w - 16, MUTED); return;
+            }
             String action = complete ? tr("mtrnav.complete") : tr(riding ? "mtrnav.hud_alight" : "mtrnav.hud_board") + " " + station(riding ? leg.toStationId() : leg.fromStationId());
             text(g, action, x + 8, y + 5, w - 61, TEXT);
             if (!complete) {

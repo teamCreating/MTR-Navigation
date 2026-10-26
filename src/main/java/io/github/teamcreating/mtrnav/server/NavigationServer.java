@@ -26,11 +26,13 @@ public final class NavigationServer {
     private static final System.Logger LOG = System.getLogger("MTR Navigation");
 
     private static final class Session {
+        ServerPlayer playerIdentity;
         long seen, queryId;
-        final RequestBudget budget = new RequestBudget();
+        final RequestBudget budget = new RequestBudget(), v2Uploads = new RequestBudget();
         String dimension;
         Map<String, Journey> offered = Map.of();
         JourneyTracker tracker;
+        FutureTask<Void> searchTask;
         final ArrayDeque<NavChunk> outbound = new ArrayDeque<>();
         Session(String dimension) { this.dimension = dimension; }
     }
@@ -42,21 +44,29 @@ public final class NavigationServer {
         long capturedNanos;
         Source(Simulator simulator) { this.simulator = simulator; }
     }
-    public static void start(MinecraftServer server, Path configDirectory, BiConsumer<ServerPlayer, NavChunk> send) {
+    public static void start(MinecraftServer server, Path configDirectory, BiConsumer<ServerPlayer, NavChunk> send, BiConsumer<ServerPlayer, WalkingChunk> walkingSend) {
         stop(); owner = server; sender = send; settings = NavigationConfig.load(configDirectory);
+        WalkingServer.start(server, walkingSend, NavigationServer::snapshot);
         workers = new ThreadPoolExecutor(2, 2, 30, TimeUnit.SECONDS, new ArrayBlockingQueue<>(32), runnable -> {
             var thread = new Thread(runnable, "mtrnav-query"); thread.setDaemon(true); return thread;
         }, new ThreadPoolExecutor.AbortPolicy());
     }
     public static void stop() {
+        WalkingServer.stop();
+        sessions.values().forEach(NavigationServer::cancelSearch);
         if (workers != null) workers.shutdownNow();
         sources.values().forEach(s -> { if (s.pending != null) s.pending.cancel(false); });
         sources.clear(); sessions.clear(); owner = null;
     }
     public static void tick() {
         if (owner == null) return;
+        WalkingServer.tick();
         long now = System.nanoTime();
-        sessions.entrySet().removeIf(entry -> now - entry.getValue().seen > 10_000_000_000L || owner.getPlayerList().getPlayer(entry.getKey()) == null);
+        sessions.entrySet().removeIf(entry -> {
+            boolean expired = now - entry.getValue().seen > 10_000_000_000L || owner.getPlayerList().getPlayer(entry.getKey()) != entry.getValue().playerIdentity;
+            if (expired) cancelSearch(entry.getValue());
+            return expired;
+        });
         for (var entry : sessions.entrySet()) {
             var player = owner.getPlayerList().getPlayer(entry.getKey());
             if (player == null || !dimension(player).equals(entry.getValue().dimension)) continue;
@@ -67,30 +77,50 @@ public final class NavigationServer {
     public static void receive(ServerPlayer player, NavRequest packet) {
         if (owner == null || player.getServer() != owner) return;
         final Messages.Request request;
-        try { request = WireCodec.GSON.fromJson(packet.json(), Messages.Request.class); }
+        try { NetworkLimits.upload(packet.json()); request = WireCodec.GSON.fromJson(packet.json(), Messages.Request.class); }
         catch (RuntimeException e) { return; }
-        if (request == null || !dimension(player).equals(request.dimension())) return;
-        var session = sessions.computeIfAbsent(player.getUUID(), ignored -> new Session(request.dimension()));
+        receive(player, request, null);
+    }
+    public static void receiveV2(ServerPlayer player, NavRequestV2 packet) {
+        if (owner == null || player.getServer() != owner) return;
+        var upload = session(player, dimension(player));
+        upload.seen = System.nanoTime(); if (!upload.v2Uploads.allow(upload.seen)) return;
+        try { var request = WireCodec.GSON.fromJson(packet.json(), QueryV2.Request.class); if (request != null) receive(player, request.request(), request); }
+        catch (RuntimeException ignored) { }
+    }
+    private static void receive(ServerPlayer player, Messages.Request request, QueryV2.Request extended) {
+        if (owner == null || player.getServer() != owner || request == null || !dimension(player).equals(request.dimension())) return;
+        WalkingServer.touch(player);
+        var session = session(player, request.dimension());
         long now = System.nanoTime(); session.seen = now;
         if (!session.budget.allow(now) && !request.action().equals("cancel")) {
             if (!request.action().equals("poll")) fail(player, session, request, "rate_limited");
             return;
         }
         if (!session.dimension.equals(request.dimension())) {
-            sessions.remove(player.getUUID()); session = new Session(request.dimension()); sessions.put(player.getUUID(), session);
+            cancelSearch(session);
+            sessions.remove(player.getUUID()); session = new Session(request.dimension()); session.playerIdentity = player; sessions.put(player.getUUID(), session);
         }
-        if (request.action().equals("query")) session.queryId = request.id();
+        if (request.action().equals("cancel_query") || request.action().equals("cancel")) {
+            cancelSearch(session); session.offered = Map.of(); session.queryId = Math.max(session.queryId, request.id());
+            if (request.action().equals("cancel_query")) {
+                reply(player, session, new Messages.Response("cancel_query", request.dimension(), request.id(), request.revision(), 0, null, List.of(), List.of(), null, ""));
+                return;
+            }
+        }
+        if (request.action().equals("query")) { if (request.id() <= session.queryId) return; cancelSearch(session); session.offered = Map.of(); session.queryId = request.id(); }
         var context = session;
         var server = owner;
         try {
             snapshot(request.dimension()).orTimeout(8, TimeUnit.SECONDS).whenComplete((snapshot, error) -> server.execute(() -> {
                 if (owner != server || sessions.get(player.getUUID()) != context || !dimension(player).equals(request.dimension())) return;
+                if (request.action().equals("query") && context.queryId != request.id()) return;
                 if (error != null) { fail(player, context, request, "core_unavailable"); LOG.log(System.Logger.Level.WARNING, "MTR read failed", error); return; }
-                handle(player, context, request, snapshot);
+                handle(player, context, request, snapshot, extended);
             }));
         } catch (RuntimeException e) { fail(player, context, request, "core_unavailable"); }
     }
-    private static CompletableFuture<Snapshot> snapshot(String dimension) {
+    static CompletableFuture<Snapshot> snapshot(String dimension) {
         var main = MtrAccessor.navigationMain();
         if (main == null) return CompletableFuture.failedFuture(new IllegalStateException("MTR not ready"));
         var simulator = ((MainAccessor) main).navigationSimulators().stream().filter(s -> s.dimension.equals(dimension)).findFirst().orElseThrow();
@@ -110,29 +140,43 @@ public final class NavigationServer {
         });
         return result;
     }
-    private static void handle(ServerPlayer player, Session session, Messages.Request request, Snapshot snapshot) {
+    private static void handle(ServerPlayer player, Session session, Messages.Request request, Snapshot snapshot, QueryV2.Request extended) {
         boolean catalogChanged = request.revision() != snapshot.catalog().revision();
         switch (request.action()) {
             case "hello" -> reply(player, session, response(request, snapshot, snapshot.catalog(), List.of(), List.of(), null, ""));
             case "query" -> {
                 var server = owner; var config = settings;
-                execute(() -> {
+                if (extended != null && !WalkingServer.ready()) { fail(player, session, request, "storage_unavailable"); return; }
+                List<WalkingConnection> personal = extended == null ? List.of() : extended.personal();
+                try { for (var edge : personal) edge.validate(snapshot.catalog()); }
+                catch (RuntimeException error) { fail(player, session, request, "invalid_connection"); return; }
+                var shared = extended == null ? List.<WalkingConnection>of() : WalkingServer.connections(request.dimension());
+                long walkRevision = extended == null ? 0 : WalkingServer.revision();
+                var task = new FutureTask<Void>(() -> {
                     try {
-                        var results = new RoutePlanner().find(snapshot, request.origin(), request.destination(), request.sort(), config);
-                        var reference = results.isEmpty() ? io.github.teamcreating.mtrnav.core.ConnectionPlan.find(snapshot.catalog(), request.origin(), request.destination()).orElse(null) : null;
+                        var search = new RoutePlanner().search(snapshot, request.origin(), request.destination(), request.sort(), config,
+                                extended == null ? QueryOptions.legacy() : extended.options(), shared, personal, walkRevision);
+                        var results = search.journeys();
+                        var reference = results.isEmpty() ? io.github.teamcreating.mtrnav.core.ConnectionPlan.find(snapshot.catalog(), request.origin(), request.destination(), shared, personal).orElse(null) : null;
                         String message = reference == null ? "" : reference.transfers() > config.maxTransfers() ? "reference_limit" : "reference_no_service";
                         server.execute(() -> {
                             if (owner != server || sessions.get(player.getUUID()) != session || session.queryId != request.id()) return;
+                            if (extended != null && WalkingServer.revision() != walkRevision) { fail(player, session, request, "walking_changed"); return; }
                             var offered = new HashMap<String, Journey>(); results.forEach(j -> offered.put(j.id(), j)); session.offered = Map.copyOf(offered);
-                            reply(player, session, response(request, snapshot, catalogChanged ? snapshot.catalog() : null, results, List.of(), null, message));
+                            var reply = response(request, snapshot, catalogChanged ? snapshot.catalog() : null, results, List.of(), null, search.incomplete() ? "partial_results" : message);
+                            reply(player, session, new Messages.Response(reply.kind(), reply.dimension(), reply.id(), reply.revision(), reply.sampleMillis(), reply.catalog(), reply.journeys(), reply.arrivals(), reply.tracking(), reply.message(),
+                                    extended == null ? null : new QueryV2.Report(search.fastestArrival(), search.incomplete(), walkRevision)));
                         });
                     } catch (RoutePlanner.SearchLimitException e) { server.execute(() -> fail(player, session, request, "search_budget")); }
                     catch (Exception e) { server.execute(() -> fail(player, session, request, "search_failed")); }
-                }, () -> fail(player, session, request, "busy"));
+                }, null);
+                session.searchTask = task;
+                try { workers.execute(task); } catch (RejectedExecutionException e) { task.cancel(false); fail(player, session, request, "busy"); }
             }
             case "select" -> {
                 var journey = session.offered.get(request.journeyId());
                 if (journey == null || journey.revision() != snapshot.catalog().revision()) { fail(player, session, request, "network_changed"); return; }
+                if (WalkingServer.changed(journey, snapshot.catalog())) { fail(player, session, request, "walking_changed"); return; }
                 session.tracker = new JourneyTracker(journey);
                 reply(player, session, response(request, snapshot, catalogChanged ? snapshot.catalog() : null, List.of(), List.of(), session.tracker.update(snapshot, player.getUUID()), ""));
             }
@@ -145,6 +189,7 @@ public final class NavigationServer {
                 if (session.tracker != null) {
                     if (request.action().equals("correct") && session.tracker.state(false).journey().id().equals(request.journeyId())) session.tracker.correct(request.correction());
                     tracking = session.tracker.update(snapshot, player.getUUID());
+                    if (WalkingServer.changed(tracking.journey(), snapshot.catalog())) tracking = new JourneyTracker.State(tracking.journey(), tracking.legIndex(), tracking.phase(), "walking_changed", false, tracking.stepIndex());
                 }
                 var platformIds = new HashSet<String>();
                 snapshot.catalog().platforms().stream().filter(p -> p.stationId().equals(request.stationId())).forEach(p -> platformIds.add(p.id()));
@@ -161,7 +206,7 @@ public final class NavigationServer {
         return new Messages.Response(request.action(), request.dimension(), request.id(), snapshot.catalog().revision(), snapshot.sampleMillis(), catalog, journeys, arrivals, tracking, message);
     }
     private static void fail(ServerPlayer player, Session session, Messages.Request request, String message) {
-        if (owner == null || sessions.get(player.getUUID()) != session) return;
+        if (owner == null || sessions.get(player.getUUID()) != session || request.action().equals("query") && session.queryId != request.id()) return;
         reply(player, session, new Messages.Response(request.action(), request.dimension(), request.id(), request.revision(), 0, null, List.of(), List.of(),
                 session.tracker == null ? null : session.tracker.state(false), message));
     }
@@ -185,6 +230,16 @@ public final class NavigationServer {
     private static void execute(Runnable work, Runnable rejected) {
         try { if (workers == null || workers.isShutdown()) rejected.run(); else workers.execute(work); }
         catch (RejectedExecutionException e) { rejected.run(); }
+    }
+    private static Session session(ServerPlayer player, String dimension) {
+        var current = sessions.get(player.getUUID());
+        if (current == null || current.playerIdentity != player) { if (current != null) cancelSearch(current); current = new Session(dimension); current.playerIdentity = player; sessions.put(player.getUUID(), current); }
+        return current;
+    }
+    private static void cancelSearch(Session session) {
+        if (session.searchTask == null) return;
+        var task = session.searchTask; session.searchTask = null; task.cancel(true);
+        if (workers != null) workers.remove(task);
     }
     private static String dimension(ServerPlayer player) {
         var location = player.serverLevel().dimension().location(); return location.getNamespace() + "/" + location.getPath();

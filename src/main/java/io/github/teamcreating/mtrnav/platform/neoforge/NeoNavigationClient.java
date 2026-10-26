@@ -2,6 +2,7 @@ package io.github.teamcreating.mtrnav.platform.neoforge;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import io.github.teamcreating.mtrnav.client.NavigationClient;
+import io.github.teamcreating.mtrnav.client.WalkingClient;
 import io.github.teamcreating.mtrnav.network.*;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -22,6 +23,8 @@ public final class NeoNavigationClient {
         NavigationClient.openKey = () -> OPEN.getTranslatedKeyMessage().getString();
         bus.addListener((RegisterKeyMappingsEvent event) -> event.register(OPEN));
         NavigationClient.transport(() -> Minecraft.getInstance().getConnection() != null && Minecraft.getInstance().getConnection().hasChannel(NavRequest.TYPE), PacketDistributor::sendToServer);
+        WalkingClient.transport(() -> Minecraft.getInstance().getConnection() != null && Minecraft.getInstance().getConnection().hasChannel(WalkingRequest.TYPE), PacketDistributor::sendToServer,
+                () -> Minecraft.getInstance().getConnection() != null && Minecraft.getInstance().getConnection().hasChannel(NavRequestV2.TYPE), PacketDistributor::sendToServer);
         NeoForge.EVENT_BUS.addListener((ClientTickEvent.Post event) -> {
             NavigationClient.tick();
             while (OPEN.consumeClick()) NavigationClient.open();
@@ -30,5 +33,6 @@ public final class NeoNavigationClient {
         NeoForge.EVENT_BUS.addListener((RenderGuiEvent.Post event) -> NavigationClient.renderHud(event.getGuiGraphics()));
         NeoForge.EVENT_BUS.addListener((ClientPlayerNetworkEvent.LoggingOut event) -> NavigationClient.reset());
     }
+    static void walking(WalkingChunk chunk, IPayloadContext context) { context.enqueueWork(() -> WalkingClient.chunk(chunk)); }
     static void chunk(NavChunk chunk, IPayloadContext context) { context.enqueueWork(() -> NavigationClient.chunk(chunk)); }
 }

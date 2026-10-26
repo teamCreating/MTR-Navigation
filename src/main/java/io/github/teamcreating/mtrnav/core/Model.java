@@ -38,8 +38,36 @@ public final class Model {
         public RideLeg { viaStations = List.copyOf(viaStations); }
     }
     public record Journey(String id, String dimension, long revision, String originStationId, String destinationStationId,
-                          long queryTime, long arrival, int transfers, List<RideLeg> legs) {
-        public Journey { legs = List.copyOf(legs); }
+                          long queryTime, long arrival, int transfers, List<RideLeg> legs, List<WalkLeg> walks, long walkingRevision, int transferBufferSeconds) {
+        public Journey { legs = List.copyOf(legs); walks = walks == null ? List.of() : List.copyOf(walks); }
+        public Journey(String id, String dimension, long revision, String origin, String destination, long queryTime, long arrival, int transfers, List<RideLeg> legs, List<WalkLeg> walks, long walkingRevision) {
+            this(id, dimension, revision, origin, destination, queryTime, arrival, transfers, legs, walks, walkingRevision, 30);
+        }
+        public Journey(String id, String dimension, long revision, String origin, String destination, long queryTime, long arrival, int transfers, List<RideLeg> legs) {
+            this(id, dimension, revision, origin, destination, queryTime, arrival, transfers, legs, List.of(), 0, 30);
+        }
+        public List<Step> steps() {
+            var result = new ArrayList<Step>();
+            for (int i = 0; i <= legs.size(); i++) {
+                for (int j = 0; j < walks.size(); j++) if (walks.get(j).beforeRideIndex() == i) result.add(new Step(true, j));
+                if (i < legs.size()) result.add(new Step(false, i));
+            }
+            return List.copyOf(result);
+        }
+        public long walkingMillis() { return walks.stream().mapToLong(w -> w.seconds() * 1000L).sum(); }
+    }
+    public record Step(boolean walking, int index) {}
+    public record WalkLeg(String connectionId, String fromStationId, String toStationId, String fromPlatformId,
+                          String toPlatformId, int seconds, long departure, int beforeRideIndex, String source) {
+        public long arrival() { return departure + seconds * 1000L; }
+    }
+    public record QueryOptions(int limit, int extraMinutes, boolean distinct) {
+        public QueryOptions { if (limit < 1 || limit > 5 || !Set.of(-1, 15, 30, 60).contains(extraMinutes)) throw new IllegalArgumentException("Invalid query options"); }
+        public static QueryOptions defaults() { return new QueryOptions(5, 30, true); }
+        public static QueryOptions legacy() { return new QueryOptions(3, -1, false); }
+    }
+    public record SearchResult(List<Journey> journeys, long fastestArrival, boolean incomplete) {
+        public SearchResult { journeys = List.copyOf(journeys); }
     }
     public record Riding(String vehicleId, String routeId, String platformId, int stopIndex, boolean atPlatform, RunKey run) {}
     public record Snapshot(Catalog catalog, long sampleMillis, List<StopEvent> events, Map<UUID, Riding> riders) {

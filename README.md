@@ -30,7 +30,9 @@ MTR：站间物语是一个独立的 Minecraft Transit Railway 导航附属模�
 ## 可以做什么
 
 - **找车站**：直接输入中文或英文完整站名，或打开独立的“全部车站”页面搜索、滚动选择。同名站显示坐标，选站列表不会盖住换乘方案。
-- **查换乘**：支持“最快到达”“少换乘”排序，最多展示三个候选；查看方向、上下车站台、途经站、候车时间和预计到达。
+- **查换乘**：支持“最快到达”“少换乘”排序，最多展示五种不同走法；同一走法的后续车次不重复占名额。默认只保留比本次最快晚到不超过30分钟的备选，可在查询设置中调整。
+- **步行换乘**：在独立页面录入站到站或站台到站台的连接，支持双向个人保存和 JSON 导入、导出。步行时间计入赶车判断，HUD 提示后由玩家手动确认到达；不会仅凭距离近就认定可通行。
+- **共享审核**：安装新版服务端后，玩家可以提交共享建议，OP等级2及以上管理员审核通过才发布。个人连接与共享库分开；用于服务端查询前需要明确同意，不会自动公开。
 - **看班次**：到发页按线路分组，展开查看已同步的班次，分别显示到达与发车倒计时，以及来源提供的实时／计划标识。
 - **设提醒**：点击具体班次，默认到站前 **9 分钟**提醒，可调为 **1～60 分钟**。关闭窗口后继续更新，顶部通知条在触发时展开并播放一次提示音。
 - **途中导航**：开始行程后，由 HUD 提示下一操作；可手动确认上车、下车或返回上一步，也可调整 HUD 的位置和大小。
@@ -45,7 +47,7 @@ MTR：站间物语是一个独立的 Minecraft Transit Railway 导航附属模�
 
 将对应的一个 JAR 放进游戏实例的 `mods` 文件夹。更新前退出游戏，移走旧 Navigation JAR，确保只保留一份；不要把两个加载器的包一起安装。
 
-**客户端需要安装本模组，服务端可选。**
+**客户端需要安装本模组，服务端可选。** 新版多方案与步行查询需要原生兼容模式或新版 Navigation 服务端；连接仅支持旧 v1 协议的服务端时，保留最多三个纯乘车方案，新功能明确显示不可用。
 
 - **服务端只有 MTR**：客户端尝试通过 MTR 原生地图服务获取线路和到发数据。该服务必须可用，行程进度需手动确认。
 - **服务端也安装本模组**：使用专用全网查询服务；只有可靠关联到玩家乘坐的车辆时，才使用自动进度，否则继续提供手动校正。
@@ -90,11 +92,24 @@ MTR：站间物语是一个独立的 Minecraft Transit Railway 导航附属模�
 
 大小范围为 75%～200%。位置按可用屏幕区域的比例保存，切换分辨率后仍保持在屏幕内；配置位于游戏实例的 `config/mtrnav-client.properties`。
 
+### 步行连接与更多方案
+
+点击查询页的 **步行换乘**，可以调整晚到范围为15、30、60分钟或不限，也可管理 **服务器共享／仅自己／我的提交／审核管理**。没有 Navigation 服务端时默认打开个人连接；客户端仍可通过 MTR 原生时刻服务计算。
+
+新建时选择两个车站及可选站台，再填写完整步行秒数（10～3600秒）。保存个人连接与提交共享建议是两个不同操作。默认同时保存反向个人连接；两条方向可分别修改，共享时逐方向提交审核。未知或失效端点不参加查询。
+
+服务端查询个人连接前会征得同意。服务器只为本人计算，不把个人规则写入共享库或发给其他玩家；该选择按服务器保存，可随时关闭。共享连接优先于个人连接，人工步行时间不会再叠加坐标距离估算，上车余量单独计一次。
+
+步行阶段点击 **已到达，继续** 才进入下一步。接近目标只是提示；规则变化、步行超时或赶不上原班次时会提示重新查询，不自动替换活动行程。
+
+详见[步行换乘与共享管理](docs/walking-transfers.md)，包含数据位置、权限、限制、导入格式及验证范围。
+
 ## 数据与使用边界
 
 **查到时刻，不等于知道你实际上了哪一班车。** 原生兼容模式缺少完整车辆身份，上车和下车需手动确认；预计到站提醒也不是对玩家所在列车的定位。到发页的“实时／计划”标识以 MTR 返回的数据为准。
 
-默认有时间方案的查询范围是未来六小时、最多四次换乘，换乘额外预留 30 秒；只允许同站及 MTR 明确连接的车站之间换乘。服务端安装本模组后，可通过 `config/mtrnav.properties` 调整这些参数。
+默认有时间方案的查询范围是未来六小时、最多四次换乘，换乘额外预留 30 秒；基础换乘使用同站及 MTR 明确连接的车站。服务端安装本模组后，可通过 `config/mtrnav.properties` 调整这些参数。
+额外步行连接必须由玩家明确录入或经服务器审核发布；不包括道路寻路和通行检查。首尾可包含一条步行连接，但不生成纯步行方案，不串联多条站外步行连接。
 
 “暂无可乘班次”只描述当前查询结果，可能是不在运营时段、超出查询范围或时刻数据不完整，不能据此确认整条线路停运。线路参考可以展示更远的拓扑路径，但没有确认班次时不能启动班次导航。
 
@@ -103,6 +118,7 @@ MTR：站间物语是一个独立的 Minecraft Transit Railway 导航附属模�
 ## 给开发者
 
 - [Overlay 对接指南](docs/overlay-integration.md)：公共 API、选择／更新／取消事件、环线重复停靠、精确乘车区间与接入示例。
+- [步行换乘与共享管理](docs/walking-transfers.md)：个人配置、审核、发布、网络边界与开发验证方法。
 - [验证记录](docs/validation/verification.md)：已完成的构建、回归、实测及尚未覆盖的边界。
 - [早期布局演示](docs/ui-preview/README.md)：浏览器原型与示例数据，供布局讨论使用，不代表当前界面截图。
 
@@ -135,6 +151,10 @@ An untouched, empty origin is located automatically once per connection; the cro
 Click a train on the arrivals board to set a reminder, **9 minutes before arrival** by default, adjustable from 1 to 60 minutes. A compact notification at the top centre expands when triggered. Stale or ambiguous data pauses the reminder; it never silently switches to the next train. One reminder is retained per connection and is cleared on disconnect or dimension change.
 
 Native compatibility mode cannot reliably identify the player's actual train, so journey progress needs manual confirmation. Live and scheduled labels follow the source data. Queries cover passenger rail in the current dimension; a route reference without confirmed train times cannot start a timed journey. Full-day timetables and map-track highlighting are not included.
+
+New queries return up to **five distinct route patterns**, with a default extra-arrival window of **30 minutes** (15 / 30 / 60 / unlimited). Explicit walking links can be managed in-game and imported or exported as JSON. Walking durations and the boarding buffer are counted separately; walking progress requires manual confirmation. Nearby stations are never automatically assumed to have a passable connection.
+
+With an updated Navigation server, players may submit proposals for moderators (operator level 2+) to approve. Pending proposals are visible only to their author and authorized moderators. Personal rules require explicit consent before being sent for a private server-side query; they are not published or included in shared audit data. Servers with only the old v1 protocol retain the original rail-only queries. See the [walking guide](docs/walking-transfers.md) for limits and verification details.
 
 This is a **development build**. NeoForge has multiplayer test records; complete Fabric in-game and dedicated-server validation remain unfinished. See the [verification notes](docs/validation/verification.md) and [Overlay integration guide](docs/overlay-integration.md) for precise scope.
 

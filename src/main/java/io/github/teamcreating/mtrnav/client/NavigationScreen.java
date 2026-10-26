@@ -47,6 +47,8 @@ public final class NavigationScreen extends Screen {
     private Action queryButton, sortButton, routesTab, departuresTab, activeTab, startButton, progressButton, backButton, requeryButton, cancelButton, allStationsButton, reminderButton, locateButton;
     private String locationMessage = "";
     private Catalog locationCatalog;
+    private int cardScroll, cardBottom, cardHeight;
+    private Action walkingButton;
     private int selectedJourney, scroll, contentHeight, left, top, panelWidth, panelHeight, bodyTop, bodyBottom, detailX, detailTop, footerY;
     private boolean wide, collapsed, showAllStops;
     private boolean searchCollapsed = tracking != null || !journeys.isEmpty();
@@ -150,15 +152,17 @@ public final class NavigationScreen extends Screen {
         locateButton = button("mtrnav.locate", x + 88, top + 70, panelWidth < 500 ? 20 : 76, 16, this::locateOrigin);
         locateButton.locateIcon = true; locateButton.primary = true;
         locateButton.setTooltip(Tooltip.create(Component.translatable("mtrnav.locate_hint")));
+        walkingButton = button("mtrnav.walk_short", locateButton.getX() + locateButton.getWidth() + 4, top + 70, panelWidth < 500 ? 44 : 72, 16, () -> minecraft.setScreen(new WalkingManagementScreen(this)));
         bodyTop = top + (collapsed ? 61 : 92);
         footerY = top + panelHeight - 43; bodyBottom = footerY - 7;
         detailX = wide ? x + Math.min(220, inner / 3) + 12 : x;
-        int cardHeight = wide ? Math.min(56, Math.max(18, (bodyBottom - bodyTop - 12) / 3)) : 36;
-        for (int i = 0; i < 3; i++) {
+        cardHeight = wide ? 78 : 34;
+        cardBottom = wide ? bodyBottom : Math.min(bodyBottom, bodyTop + 72);
+        for (int i = 0; i < 5; i++) {
             final int index = i;
-            int cw = wide ? detailX - x - 12 : (inner - 10) / 3;
-            var card = button("", wide ? x : x + i * (cw + 5), bodyTop + (wide ? i * (cardHeight + 5) : 0), cw, cardHeight, () -> { selectedJourney = index; scroll = 0; setFocused(null); });
-            cards.add(card);
+            int cw = wide ? detailX - x - 18 : inner - 8;
+            var card = new Action(x, bodyTop + i * (cardHeight + 4), cw, cardHeight, "", () -> { selectedJourney = index; scroll = 0; setFocused(null); });
+            widgets.add(card); cards.add(card);
         }
         int primaryWidth = Math.min(140, inner / 3 + 12);
         startButton = button("mtrnav.start", x + inner - primaryWidth, footerY + 6, primaryWidth, 22, () -> {
@@ -166,12 +170,15 @@ public final class NavigationScreen extends Screen {
             else if (!journeys.isEmpty()) { var selected = journeys.get(selectedJourney); pendingSelection = selected.id(); select(selected); }
         }); startButton.primary = true;
         progressButton = button("mtrnav.boarded", startButton.getX(), footerY + 6, primaryWidth, 22, () -> {
-            if (tracking != null) { scroll = 0; correct(tracking.phase() == JourneyTracker.Phase.RIDING ? "next" : "board"); }
+            if (tracking != null) { scroll = 0; correct(tracking.phase() == JourneyTracker.Phase.RIDING || tracking.phase() == JourneyTracker.Phase.WALKING ? "next" : "board"); }
         }); progressButton.primary = true;
         int secondaryWidth = (inner - primaryWidth - 15) / 3;
         backButton = button("mtrnav.previous_step", x, footerY + 6, secondaryWidth, 22, () -> { scroll = 0; correct("previous"); });
         requeryButton = button("mtrnav.requery", x + secondaryWidth + 4, footerY + 6, secondaryWidth, 22, () -> {
-            if (tracking != null && tracking.legIndex() < tracking.journey().legs().size()) {
+            if (tracking != null && tracking.walk() != null) {
+                originLocation.edited(); origin = tracking.walk().fromStationId(); destination = tracking.journey().destinationStationId();
+                fromText = catalog.stationName(origin); toText = catalog.stationName(destination);
+            } else if (tracking != null && tracking.legIndex() < tracking.journey().legs().size()) {
                 originLocation.edited(); locationMessage = "";
                 var leg = tracking.journey().legs().get(tracking.legIndex());
                 origin = leg.fromStationId(); destination = tracking.journey().destinationStationId();
@@ -243,7 +250,7 @@ public final class NavigationScreen extends Screen {
         if (!pendingSelection.isEmpty() && tracking != null && tracking.journey().id().equals(pendingSelection)) { pendingSelection = ""; changeView(View.ACTIVE); }
         if (activeTab.visible != (tracking != null)) rebuild();
         if (lastJourneys != journeys) {
-            lastJourneys = journeys; selectedJourney = 0; scroll = 0;
+            lastJourneys = journeys; selectedJourney = 0; scroll = cardScroll = 0;
             if (view == View.JOURNEYS && !journeys.isEmpty() && !searchCollapsed && panelHeight < 310) { searchCollapsed = true; rebuild(); }
         }
         if (view == View.ACTIVE && tracking == null) changeView(View.JOURNEYS);
@@ -253,6 +260,7 @@ public final class NavigationScreen extends Screen {
         boolean active = view == View.ACTIVE && tracking != null;
         boolean retry = usingNative && status.equals("mtrnav.native_unavailable");
         reminderButton.primary = reminder != null;
+        walkingButton.visible = view == View.JOURNEYS && !collapsed;
         allStationsButton.visible = !collapsed && !active;
         allStationsButton.active = catalog != null && !catalog.stations().isEmpty();
         locateButton.visible = view == View.JOURNEYS && !collapsed;
@@ -274,14 +282,16 @@ public final class NavigationScreen extends Screen {
         progressButton.visible = backButton.visible = requeryButton.visible = cancelButton.visible = active;
         if (active) {
             var phase = tracking.phase();
-            progressButton.setMessage(Component.translatable(phase == JourneyTracker.Phase.COMPLETE ? "mtrnav.complete" : phase == JourneyTracker.Phase.RIDING ? "mtrnav.alighted" : "mtrnav.boarded"));
+            progressButton.setMessage(Component.translatable(phase == JourneyTracker.Phase.COMPLETE ? "mtrnav.complete" : phase == JourneyTracker.Phase.RIDING ? "mtrnav.alighted" : phase == JourneyTracker.Phase.WALKING ? "mtrnav.walk_arrived" : "mtrnav.boarded"));
             progressButton.active = phase != JourneyTracker.Phase.COMPLETE;
-            progressButton.setTooltip(Tooltip.create(Component.translatable(phase == JourneyTracker.Phase.RIDING ? "mtrnav.confirm_alighted" : "mtrnav.confirm_boarded")));
-            backButton.active = tracking.legIndex() > 0 || phase == JourneyTracker.Phase.RIDING; requeryButton.active = phase != JourneyTracker.Phase.COMPLETE;
+            progressButton.setTooltip(Tooltip.create(Component.translatable(phase == JourneyTracker.Phase.RIDING ? "mtrnav.confirm_alighted" : phase == JourneyTracker.Phase.WALKING ? "mtrnav.walk_arrived" : "mtrnav.confirm_boarded")));
+            backButton.active = tracking.stepIndex() > 0 || phase == JourneyTracker.Phase.RIDING; requeryButton.active = phase != JourneyTracker.Phase.COMPLETE;
         }
         selectedJourney = Math.max(0, Math.min(selectedJourney, journeys.size() - 1));
+        int count = journeys.isEmpty() && referencePlan != null ? 1 : journeys.size();
+        cardScroll = Math.clamp(cardScroll, 0, Math.max(0, count * (cardHeight + 4) - Math.max(0, cardBottom - bodyTop)));
         for (int i = 0; i < cards.size(); i++) {
-            var b = cards.get(i); b.visible = view == View.JOURNEYS && (i < journeys.size() || i == 0 && journeys.isEmpty() && referencePlan != null);
+            var b = cards.get(i); b.setY(bodyTop + i * (cardHeight + 4) - cardScroll); b.visible = b.getY() < cardBottom && b.getY() + cardHeight > bodyTop && view == View.JOURNEYS && (i < journeys.size() || i == 0 && journeys.isEmpty() && referencePlan != null);
             if (!b.visible) continue;
             if (journeys.isEmpty()) {
                 b.selected = true; b.setMessage(Component.literal(tr("mtrnav.reference_route")));
@@ -290,15 +300,22 @@ public final class NavigationScreen extends Screen {
                 b.tint = ACCENT; b.setTooltip(Tooltip.create(Component.translatable(referenceReason))); continue;
             }
             var journey = journeys.get(i); b.selected = selectedJourney == i;
-            b.setMessage(Component.literal(tr("mtrnav.option", i + 1) + "  " + duration(journey.arrival() - journey.queryTime())));
-            b.detail = tr("mtrnav.transfers", journey.transfers()) + " · " + remaining(journey.arrival());
+            b.setMessage(Component.literal(tr("mtrnav.option", i + 1) + "  " + duration(journey.arrival() - journey.queryTime()) + (journey.arrival() == fastestArrival ? " · " + tr("mtrnav.walk_fastest") : "")));
+            b.detail = tr("mtrnav.transfers", journey.transfers()) + " · " + remaining(journey.arrival()) + " · " + tr("mtrnav.walk_total", (journey.walkingMillis() + 59999) / 60000);
             b.extra = journey.legs().stream().map(l -> routeCode(l.routeId())).reduce((a, c) -> a + " → " + c).orElse(tr("mtrnav.same_station"));
+            if (journey.arrival() > fastestArrival && fastestArrival > 0) b.extra += " · " + tr("mtrnav.walk_slower", (journey.arrival() - fastestArrival + 59999) / 60000);
             b.tint = journey.legs().isEmpty() ? ACCENT : routeColor(journey.legs().getFirst().routeId());
-            b.setTooltip(Tooltip.create(Component.literal(journey.legs().stream().map(l -> route(l.routeId())).reduce((a, c) -> a + " → " + c).orElse(tr("mtrnav.same_station")))));
+            b.setTooltip(Tooltip.create(Component.literal(b.getMessage().getString() + " · " + b.detail + " · " + b.extra)));
         }
-        detailTop = bodyTop + (!wide && view == View.JOURNEYS && (!journeys.isEmpty() || referencePlan != null) ? 43 : 0);
+        detailTop = bodyTop + (!wide && view == View.JOURNEYS && (!journeys.isEmpty() || referencePlan != null) ? cardBottom - bodyTop + 5 : 0);
     }
     @Override public boolean keyPressed(int key, int scan, int modifiers) {
+        if ((key == 264 || key == 265) && view == View.JOURNEYS && !journeys.isEmpty() && !(getFocused() instanceof EditBox)) {
+            selectedJourney = Math.clamp(selectedJourney + (key == 264 ? 1 : -1), 0, journeys.size() - 1); scroll = 0;
+            int row = selectedJourney * (cardHeight + 4);
+            if (row < cardScroll) cardScroll = row; else if (row + cardHeight > cardScroll + cardBottom - bodyTop) cardScroll = row + cardHeight - (cardBottom - bodyTop);
+            return true;
+        }
         if ((key == 257 || key == 335) && queryButton.visible && queryButton.active && !collapsed && !(getFocused() instanceof Action)) { search(); return true; }
         return super.keyPressed(key, scan, modifiers);
     }
@@ -308,6 +325,8 @@ public final class NavigationScreen extends Screen {
             scrollGrab = bar.onThumb(y) ? y - bar.thumbTop() : bar.thumbHeight() / 2.0;
             dragScroll(target, y); return true;
         }
+        if (button == 0 && view == View.JOURNEYS && y >= bodyTop && y < cardBottom) for (var card : cards)
+            if (card.visible && card.isMouseOver(x, y)) return card.mouseClicked(x, y, button);
         // Handle these directly so the container cannot focus the button after
         // the action has returned focus to the newly cleared input field.
         for (var b : clearButtons) if (b.visible && b.isMouseOver(x, y)) return b.mouseClicked(x, y, button);
@@ -325,7 +344,7 @@ public final class NavigationScreen extends Screen {
     }
     private void dragScroll(ScrollTarget target, double mouseY) {
         int offset = target.geometry().offsetAtThumbTop(mouseY - scrollGrab);
-        scroll = offset;
+        if (target.input() == -3) cardScroll = offset; else scroll = offset;
     }
     @Override public boolean mouseDragged(double x, double y, int button, double dx, double dy) {
         if (draggingScroll != -2 && button == 0) {
@@ -359,7 +378,7 @@ public final class NavigationScreen extends Screen {
                 if (!locationMessage.isEmpty()) message = locationMessage;
                 else if (point != null && located != null) message = tr("mtrnav.location_selected", Math.round(Math.hypot((double)located.x() - point.x(), (double)located.z() - point.z())));
             }
-            int messageX = locateButton.visible ? locateButton.getX() + locateButton.getWidth() + 8 : left + 104;
+            int messageX = walkingButton.visible ? walkingButton.getX() + walkingButton.getWidth() + 6 : left + 104;
             text(g, message, messageX, top + 74, Math.max(0, (view == View.JOURNEYS ? sortButton.getX() - 8 : left + panelWidth - 12) - messageX), MUTED);
         } else {
             String label = view == View.ACTIVE && tracking != null ? station(tracking.journey().originStationId()) + " → " + station(tracking.journey().destinationStationId()) : station(origin) + " → " + station(destination);
@@ -369,6 +388,14 @@ public final class NavigationScreen extends Screen {
         stationTargets.clear(); boardTargets.clear(); departureTargets.clear(); scrollTargets.clear();
         if (view == View.DEPARTURES) renderBoard(g, mouseX, mouseY);
         else renderJourney(g, mouseX, mouseY);
+        if (view == View.JOURNEYS && (!journeys.isEmpty() || referencePlan != null)) {
+            int cw = wide ? detailX - left - 18 : panelWidth - 24;
+            var geometry = ScrollBarGeometry.of(bodyTop, Math.max(1, cardBottom - bodyTop), (journeys.isEmpty() ? 1 : journeys.size()) * (cardHeight + 4), Math.max(1, cardBottom - bodyTop), cardScroll, 8);
+            if ((journeys.isEmpty() ? 1 : journeys.size()) * (cardHeight + 4) > cardBottom - bodyTop) {
+                var target = new ScrollTarget(-3, left + 12 + cw - 4, geometry); scrollTargets.add(target);
+                g.fill(target.x(), bodyTop, target.x() + 4, cardBottom, BORDER); g.fill(target.x(), geometry.thumbTop(), target.x() + 4, geometry.thumbTop() + geometry.thumbHeight(), ACCENT);
+            }
+        }
         railDivider(g, left + 12, footerY - 1, panelWidth - 24);
         if (view != View.ACTIVE) {
             String summary = view == View.DEPARTURES ? tr("mtrnav.board_summary", arrivals.size()) : journeys.isEmpty() ? tr(referencePlan == null ? "mtrnav.search_help" : "mtrnav.reference_only") : tr("mtrnav.option_summary", selectedJourney + 1, journeys.size());
@@ -377,7 +404,12 @@ public final class NavigationScreen extends Screen {
         boolean stale = view == View.DEPARTURES ? boardStale() : CLOCK.stale(System.nanoTime());
         String footer = stale && catalog != null ? tr("mtrnav.stale") : view == View.ACTIVE ? tr(usingNative ? "mtrnav.manual_short" : "mtrnav.progress_hint") : tr(view == View.DEPARTURES ? "mtrnav.board_detail_hint" : "mtrnav.station_click_hint");
         text(g, footer, left + 12, top + panelHeight - 10, panelWidth - 24, stale ? WARNING : MUTED);
-        for (var widget : widgets) if (widget.visible) widget.render(g, mouseX, mouseY, delta);
+        for (var widget : widgets) if (widget.visible) {
+            if (cards.contains(widget)) {
+                g.enableScissor(left + 12, bodyTop, wide ? detailX - 10 : left + panelWidth - 20, Math.max(bodyTop, cardBottom));
+                widget.render(g, mouseX, mouseY, delta); g.disableScissor();
+            } else widget.render(g, mouseX, mouseY, delta);
+        }
         for (var target : stationTargets) if (target.contains(mouseX, mouseY)) { g.renderTooltip(font, Component.translatable("mtrnav.station_board_hint", station(target.id())), mouseX, mouseY); break; }
     }
     private void renderJourney(GuiGraphics g, int mouseX, int mouseY) {
@@ -485,7 +517,14 @@ public final class NavigationScreen extends Screen {
             journey = tracking.journey();
             rows.add(new Row(tr("mtrnav.phase." + tracking.phase().name().toLowerCase(Locale.ROOT)), ACCENT, 21, 1));
             if (tracking.phase() == JourneyTracker.Phase.COMPLETE) wrap(rows, tr("mtrnav.arrived_at", station(journey.destinationStationId())), width, ACCENT);
-            else if (tracking.legIndex() < journey.legs().size()) {
+            else if (tracking.walk() != null) {
+                var walk = tracking.walk();
+                wrap(rows, tr("mtrnav.walk_to", station(walk.toStationId())), width, TEXT);
+                if (!walk.toPlatformId().isEmpty()) wrap(rows, tr("mtrnav.platform", platform(walk.toPlatformId())), width, TEXT);
+                wrap(rows, tr("mtrnav.walk_estimated", walk.seconds()), width, ACCENT);
+                if (tracking.legIndex() < journey.legs().size()) wrap(rows, tr("mtrnav.walk_next_departure", remaining(journey.legs().get(tracking.legIndex()).departure())), width, MUTED);
+                wrap(rows, guidance(), width, WARNING);
+            } else if (tracking.legIndex() < journey.legs().size()) {
                 var leg = journey.legs().get(tracking.legIndex()); boolean riding = tracking.phase() == JourneyTracker.Phase.RIDING;
                 wrap(rows, tr(riding ? "mtrnav.next_alight" : "mtrnav.next_board", station(riding ? leg.toStationId() : leg.fromStationId())), width, TEXT);
                 wrap(rows, tr("mtrnav.platform", platform(riding ? leg.toPlatformId() : leg.fromPlatformId())) + " · " + tr(riding ? "mtrnav.arrival" : "mtrnav.departure") + " " + remaining(riding ? leg.arrival() : leg.departure()), width, ACCENT);
@@ -501,9 +540,22 @@ public final class NavigationScreen extends Screen {
             wrap(rows, station(journey.originStationId()) + " → " + station(journey.destinationStationId()) + " · " + tr("mtrnav.arrival") + " " + remaining(journey.arrival()), width, TEXT);
         }
         if (journey.legs().isEmpty()) wrap(rows, tr("mtrnav.same_station"), width, TEXT);
-        for (int i = 0; i < journey.legs().size(); i++) {
+        if (view != View.ACTIVE) {
+            wrap(rows, tr("mtrnav.walk_total", (journey.walkingMillis() + 59999) / 60000), width, MUTED);
+            if (partialResults) wrap(rows, tr("mtrnav.partial_results"), width, WARNING);
+            if (fastestArrival > 0 && journey.arrival() > fastestArrival) wrap(rows, tr("mtrnav.walk_slower", (journey.arrival() - fastestArrival + 59999) / 60000), width, MUTED);
+        }
+        for (int i = 0; i <= journey.legs().size(); i++) {
+            for (var walk : journey.walks()) if (walk.beforeRideIndex() == i) walkRows(rows, walk, width);
+            if (i == journey.legs().size()) break;
             var leg = journey.legs().get(i); int tint = routeColor(leg.routeId());
-            if (i > 0) { rows.add(new Row("", TEXT, 5, 0)); wrap(rows, tr("mtrnav.transfer_gap", duration(leg.departure() - journey.legs().get(i - 1).arrival())), width, WARNING); }
+            if (i > 0 || journey.walks().stream().anyMatch(w -> w.beforeRideIndex() == 0)) {
+                final int before = i;
+                long walked = journey.walks().stream().filter(w -> w.beforeRideIndex() == before).mapToLong(w -> w.seconds() * 1000L).sum();
+                long gap = leg.departure() - (i == 0 ? journey.queryTime() : journey.legs().get(i - 1).arrival()) - walked;
+                long buffer = Math.min(Math.max(0, gap), journey.transferBufferSeconds() * 1000L);
+                wrap(rows, tr("mtrnav.walk_buffer_wait", buffer / 1000, (Math.max(0, gap - buffer) + 999) / 1000), width, WARNING);
+            }
             rows.add(new Row((i + 1) + "  " + route(leg.routeId()), tint, 20, 1));
             wrap(rows, tr("mtrnav.direction", primary(leg.direction())), width, MUTED);
             rows.add(new Row(station(leg.fromStationId()) + " · " + tr("mtrnav.platform", platform(leg.fromPlatformId())), tint, 18, 2, leg.fromStationId()));
@@ -520,7 +572,9 @@ public final class NavigationScreen extends Screen {
         rows.add(new Row(tr("mtrnav.reference_route") + " · " + tr("mtrnav.transfers", referencePlan.transfers()), ACCENT, 21, 1));
         wrap(rows, tr(referenceReason), width, WARNING);
         wrap(rows, tr("mtrnav.reference_only"), width, MUTED);
-        for (int i = 0; i < referencePlan.legs().size(); i++) {
+        for (int i = 0; i <= referencePlan.legs().size(); i++) {
+            for (var walk : referencePlan.walks()) if (walk.beforeRideIndex() == i) walkRows(rows, walk, width);
+            if (i == referencePlan.legs().size()) break;
             var leg = referencePlan.legs().get(i); int tint = routeColor(leg.routeId());
             if (i > 0) wrap(rows, tr("mtrnav.reference_transfer"), width, WARNING);
             rows.add(new Row((i + 1) + "  " + route(leg.routeId()), tint, 20, 1));
@@ -533,6 +587,12 @@ public final class NavigationScreen extends Screen {
         }
         return rows;
     }
+    private void walkRows(List<Row> rows, WalkLeg walk, int width) {
+        rows.add(new Row(tr("mtrnav.walk_to", station(walk.toStationId())), ACCENT, 20, 1));
+        wrap(rows, station(walk.fromStationId()) + (walk.fromPlatformId().isEmpty() ? "" : " / " + platform(walk.fromPlatformId())) + " → "
+                + station(walk.toStationId()) + (walk.toPlatformId().isEmpty() ? "" : " / " + platform(walk.toPlatformId())), width, TEXT);
+        wrap(rows, tr("mtrnav.walk_estimated", walk.seconds()) + " · " + tr("mtrnav.walk_source." + walk.source()), width, MUTED);
+    }
     private void wrap(List<Row> rows, String text, int width, int color) {
         for (var line : font.split(Component.literal(text), Math.max(30, width))) {
             var plain = new StringBuilder(); line.accept((index, style, point) -> { plain.appendCodePoint(point); return true; }); rows.add(new Row(plain.toString(), color, 12, 0));
@@ -540,6 +600,7 @@ public final class NavigationScreen extends Screen {
     }
     private void wrapped(GuiGraphics g, String text, int x, int y, int width, int color) { for (var line : font.split(Component.literal(text), width)) { g.drawString(font, line, x, y, color, false); y += 13; } }
     @Override public boolean mouseScrolled(double x, double y, double horizontal, double vertical) {
+        if (view == View.JOURNEYS && x >= left + 12 && x < (wide ? detailX - 7 : left + panelWidth - 12) && y >= bodyTop && y < cardBottom) { cardScroll -= (int)(vertical * 38); return true; }
         if (x >= left && x <= left + panelWidth && y >= bodyTop && y <= bodyBottom) { scroll = Math.max(0, scroll - (int)(vertical * 26)); return true; }
         return super.mouseScrolled(x, y, horizontal, vertical);
     }

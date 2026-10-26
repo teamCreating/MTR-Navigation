@@ -71,5 +71,10 @@ class RoutePlannerBudgetTest {
             assertFalse(results.isEmpty()); assertEquals(1, results.getFirst().transfers());
             assertEquals(2, results.getFirst().legs().size());
         });
+        for (var sort : Sort.values()) assertTimeout(Duration.ofSeconds(6), () -> {
+            var results = new RoutePlanner().search(snapshot, "s0", "s75", sort, Settings.defaults(), QueryOptions.defaults(), List.of(), List.of(), 0);
+            assertFalse(results.journeys().isEmpty()); assertTrue(results.journeys().size() <= 5);
+            assertEquals(1, results.journeys().getFirst().transfers());
+        });
     }
 }

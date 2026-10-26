@@ -120,9 +120,9 @@ public final class NativeMtrClient {
             timetable = parsed; sample(timetable.sampleMillis());
             if (waitingQuery) { waitingQuery = false; calculate(); }
             if (tracker != null) {
-                var state = tracker.state(false);
+                var state = tracker.update(timetable, new UUID(0, 0));
                 NavigationClient.tracking = new JourneyTracker.State(state.journey(), state.legIndex(), state.phase(),
-                        state.phase() == JourneyTracker.Phase.COMPLETE ? "" : "manual_check", false);
+                        state.phase() == JourneyTracker.Phase.COMPLETE ? "" : state.phase() == JourneyTracker.Phase.WALKING ? state.notice() : "manual_check", false, state.stepIndex());
             }
         })) lastDepartures = System.nanoTime();
     }
@@ -187,23 +187,24 @@ public final class NativeMtrClient {
         NavigationClient.status = "mtrnav.searching";
         if (activeSearch != null) activeSearch.cancel(true);
         search.purge(); search.getQueue().clear();
+        var queryOptions = WalkingClient.options(); var personalLinks = WalkingClient.activeLocal();
         activeSearch = search.submit(() -> {
-            List<Journey> results; String failure = "";
-            try { results = new RoutePlanner().find(source, origin, destination, sort, Settings.defaults()); }
+            List<Journey> results; String failure = ""; long fastest = 0; boolean partial = false;
+            try { var found = new RoutePlanner().search(source, origin, destination, sort, Settings.defaults(), queryOptions, List.of(), personalLinks, 0); results = found.journeys(); fastest = found.fastestArrival(); partial = found.incomplete(); }
             catch (RoutePlanner.SearchLimitException error) { results = List.of(); failure = "mtrnav.search_budget";
                 com.mojang.logging.LogUtils.getLogger().warn("[MTR Navigation] Query resource limit ({}): {} events, {} -> {}", error.getMessage(), source.events().size(), origin, destination); }
             catch (IllegalArgumentException error) { results = List.of(); failure = "mtrnav.station_refreshed";
                 com.mojang.logging.LogUtils.getLogger().warn("[MTR Navigation] Query station validation failed", error); }
             catch (RuntimeException error) { results = List.of(); failure = "mtrnav.search_failed";
                 com.mojang.logging.LogUtils.getLogger().warn("[MTR Navigation] Query failed", error); }
-            var completed = results; String failedStatus = failure;
-            var reference = results.isEmpty() ? io.github.teamcreating.mtrnav.core.ConnectionPlan.find(source.catalog(), origin, destination).orElse(null) : null;
+            var completed = results; String failedStatus = failure; long fastestFound = fastest; boolean wasPartial = partial;
+            var reference = results.isEmpty() ? io.github.teamcreating.mtrnav.core.ConnectionPlan.find(source.catalog(), origin, destination, List.of(), personalLinks).orElse(null) : null;
             Minecraft.getInstance().execute(() -> {
                     if (epoch != session || generation != queryGeneration) return;
-                    NavigationClient.journeys = completed;
+                    NavigationClient.journeys = completed; NavigationClient.fastestArrival = fastestFound; NavigationClient.partialResults = wasPartial;
                     NavigationClient.referencePlan = reference;
                     NavigationClient.referenceReason = !failedStatus.isEmpty() ? "mtrnav.reference_incomplete" : reference != null && reference.transfers() > Settings.defaults().maxTransfers() ? "mtrnav.reference_limit" : "mtrnav.reference_no_service";
-                    NavigationClient.status = !failedStatus.isEmpty() ? failedStatus : completed.isEmpty() ? "mtrnav.no_route" : "mtrnav.native_results";
+                    NavigationClient.status = !failedStatus.isEmpty() ? failedStatus : completed.isEmpty() ? "mtrnav.no_route" : wasPartial ? "mtrnav.partial_results" : "mtrnav.native_results";
                 });
         });
     }
@@ -211,7 +212,7 @@ public final class NativeMtrClient {
     public static void correct(String action) {
         if (tracker == null) return;
         var state = tracker.correct(action);
-        NavigationClient.tracking = new JourneyTracker.State(state.journey(), state.legIndex(), state.phase(), state.phase() == JourneyTracker.Phase.COMPLETE ? "" : "manual_check", false);
+        NavigationClient.tracking = new JourneyTracker.State(state.journey(), state.legIndex(), state.phase(), state.phase() == JourneyTracker.Phase.COMPLETE ? "" : state.phase() == JourneyTracker.Phase.WALKING ? state.notice() : "manual_check", false, state.stepIndex());
         publish(state.journey());
     }
     public static void cancel() { tracker = null; NavigationClient.tracking = null; NavigationApi.cancel(); }
