@@ -353,5 +353,16 @@
   "mtrnav.hud_both_fit_hint": "Fit both HUDs automatically. Overlap protection remains active when this is off.",
   "mtrnav.hud_reminder_preview": "Train reminder preview",
   "mtrnav.hud_reminder_direction": "→ Example destination · Platform 2",
-  "mtrnav.hud_reminder_reserve": "Expanded preview · expansion space reserved"
+  "mtrnav.hud_reminder_reserve": "Expanded preview · expansion space reserved",
+  "mtrnav.directory_sort.az": "Sort: A–Z",
+  "mtrnav.directory_sort.za": "Sort: Z–A",
+  "mtrnav.directory_sort.distance": "Sort: Nearest",
+  "mtrnav.directory_sort_hint": "Cycle A–Z, Z–A and distance. Distance uses your position when this mode is chosen; unknown positions are last.",
+  "mtrnav.directory_index": "Index",
+  "mtrnav.directory_index_count": "%s · %s stations (jump)",
+  "mtrnav.directory_digits": "Numbers",
+  "mtrnav.directory_other": "Other",
+  "mtrnav.directory_unknown_distance": "Distance unknown",
+  "mtrnav.directory_selected": "Selected: %s · Use a button below",
+  "mtrnav.directory_index_hint": "Jump by English name or supported Chinese pinyin initial. # means numbers; unsupported initials use Other."
 }

@@ -46,6 +46,20 @@ final class NavigationTheme {
         String visible = font.width(text) <= width ? text : font.plainSubstrByWidth(text, Math.max(0, width - font.width("…"))) + "…";
         g.drawString(font, visible, x, y, color, false);
     }
+    static void listRow(GuiGraphics g, int x, int y, int w, int h, boolean selected, boolean hovered, boolean stripe) {
+        if (selected) {
+            g.fill(x, y, x + w, y + h, 0xFF66532E);
+            outline(g, x, y, w, h, 0xFFFFDA88);
+            outline(g, x + 1, y + 1, w - 2, h - 2, 0xFF9F8147);
+            g.fill(x + 2, y + 2, x + 5, y + h - 2, 0xFFFFDA88);
+            int mid = y + h / 2;
+            g.fill(x + 9, mid - 4, x + 11, mid + 5, 0xFFFFEBC0);
+            g.fill(x + 11, mid - 2, x + 13, mid + 3, 0xFFFFEBC0);
+            g.fill(x + 13, mid, x + 15, mid + 1, 0xFFFFEBC0);
+        } else if (hovered) {
+            g.fill(x, y, x + w, y + h, 0xFF455657); outline(g, x, y, w, h, 0xFF97ADAB);
+        } else if (stripe) g.fill(x, y, x + w, y + h, RAISED);
+    }
     static void outline(GuiGraphics g, int x, int y, int w, int h, int color) {
         g.fill(x, y, x + w, y + 1, color); g.fill(x, y + h - 1, x + w, y + h, color);
         g.fill(x, y, x + 1, y + h, color); g.fill(x + w - 1, y, x + w, y + h, color);

@@ -53,8 +53,9 @@ class WalkingListScreen extends Screen {
             for (int i = scroll / 32; i < values.size() && listTop + i * 32 - scroll < bottom; i++) {
                 var item = values.get(i); int y = listTop + i * 32 - scroll;
                 boolean hover = mx >= left + 12 && mx < left + w - 22 && my >= Math.max(y, listTop) && my < Math.min(bottom, y + 32);
-                g.fill(left + 12, y, left + w - 20, y + 31, item.id().equals(selected) ? 0xFF4A493A : hover ? BORDER : RAISED);
-                text(g, item.label(), left + 20, y + 4, w - 48, TEXT); text(g, item.detail(), left + 20, y + 18, w - 48, MUTED);
+                boolean chosen = item.id().equals(selected);
+                listRow(g, left + 12, y, w - 32, 31, chosen, hover, true);
+                text(g, item.label(), left + 32, y + 4, w - 60, chosen ? 0xFFFFEBC0 : TEXT); text(g, item.detail(), left + 32, y + 18, w - 60, chosen ? TEXT : MUTED);
             }
             if (values.isEmpty()) text(g, NavigationClient.tr("mtrnav.directory_empty"), left + 20, listTop + 8, w - 40, MUTED);
             g.disableScissor();

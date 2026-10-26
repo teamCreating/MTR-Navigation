@@ -29,7 +29,7 @@ MTR：站间物语是一个独立的 Minecraft Transit Railway 导航附属模�
 
 ## 可以做什么
 
-- **找车站**：直接输入中文或英文完整站名，或打开独立的“全部车站”页面搜索、滚动选择。同名站显示坐标，选站列表不会盖住换乘方案。
+- **找车站**：直接输入中文或英文完整站名，或打开独立的“全部车站”页面搜索、滚动选择。支持 **A–Z／Z–A／离我最近** 排序和字母索引快速跳转；同名站显示坐标，选中行用金色边框、箭头和亮底色标识。
 - **查换乘**：支持“最快到达”“少换乘”排序，最多展示五种不同走法；同一走法的后续车次不重复占名额。默认只保留比本次最快晚到不超过30分钟的备选，可在查询设置中调整。
 - **步行换乘**：在独立页面录入站到站或站台到站台的连接，支持双向个人保存和 JSON 导入、导出。步行时间计入赶车判断，HUD 提示后由玩家手动确认到达；不会仅凭距离近就认定可通行。
 - **共享审核**：安装新版服务端后，玩家可以提交共享建议，OP等级2及以上管理员审核通过才发布。个人连接与共享库分开；用于服务端查询前需要明确同意，不会自动公开。
@@ -64,6 +64,8 @@ MTR：站间物语是一个独立的 Minecraft Transit Railway 导航附属模�
 3. 点 **查询**，切换排序并比较候选方案，确认后点 **开始导航**。
 4. 上车后点 **已上车**，下车后点 **已下车，继续**；操作错误时用 **上一步** 校正。
 5. 关闭窗口后 HUD 继续提示，按打开键返回。
+
+**快速查站**：全部车站右上可切换排序；宽窗口直接点击字母，窄窗口点击“索引”。英文名优先做字母归组，纯中文按常用汉字拼音首字母归组；数字在“#”，无法归组的在“其他”。距离按当前位置的水平直线估算，点击“重新定位”刷新，未知距离排在最后。详见[车站目录操作](docs/station-directory.md)。
 
 点击行程详情中的车站可查看到发；点击详情标题可展开途经站。重新查询不会直接替换正在执行的行程，需要再次选择方案。点击或用Tab进入车站输入框时会全选原站名，直接输入新站名即可替换；再次点击可局部编辑，右侧 **×** 仍可清空。切到到发页也会自动选中当前站名，输入后按回车查询。
 
@@ -146,7 +148,7 @@ Linux／macOS 对应使用 `./dev.sh neoforge build testFabricCore` 和 `./dev.s
 
 Requires **Minecraft 1.21.1, Java 21 and MTR 4.1.0-beta.2**. Separate NeoForge 21.1.x and Fabric builds are available; Fabric also requires Fabric API. Install one matching JAR on the client. Installing Navigation on the server is optional, but client-only operation requires the server's native MTR map service to work.
 
-Press **N** or use **`/mtrnav`**. Use **All stations** to choose an origin, destination or arrivals station. Clicking or tabbing into a station field selects its existing name so typing replaces it; switching to arrivals also selects the current station name. Compare connections, start a journey, and confirm boarding or alighting when automatic progress is unavailable. Close the screen to keep the journey HUD active.
+Press **N** or use **`/mtrnav`**. Use **All stations** to choose an origin, destination or arrivals station. Cycle A–Z, Z–A or nearest sorting, and jump by letter using the index. English names are preferred for grouping; supported Chinese names use their pinyin initial, with unsupported initials in Other. The selected row has a brass border and arrow. Clicking or tabbing into a station field selects its existing name so typing replaces it; switching to arrivals also selects the current station name. Compare connections, start a journey, and confirm boarding or alighting when automatic progress is unavailable. Close the screen to keep the journey HUD active.
 
 An untouched, empty origin is located automatically once per connection; the crosshair **Locate** button samples your position again. A clear nearest station within 512 blocks is filled directly (more than 64 blocks nearer than the runner-up); ambiguous or distant choices open a separate **Nearby stations** page. Distances are horizontal estimates to station coordinates, not walking routes. Editing or clearing the origin disables automatic refill. Unknown coordinates are excluded, and location adds no network polling.
 

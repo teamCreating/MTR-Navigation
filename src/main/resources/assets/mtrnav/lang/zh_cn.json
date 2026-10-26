@@ -353,5 +353,16 @@
   "mtrnav.hud_both_fit_hint": "同时自动适配两个框；关闭后仍保留防重叠保护。",
   "mtrnav.hud_reminder_preview": "班次提醒框预览",
   "mtrnav.hud_reminder_direction": "→ 示例方向 · 2站台",
-  "mtrnav.hud_reminder_reserve": "按展开大小预览 · 已为展开预留空间"
+  "mtrnav.hud_reminder_reserve": "按展开大小预览 · 已为展开预留空间",
+  "mtrnav.directory_sort.az": "排序：A–Z",
+  "mtrnav.directory_sort.za": "排序：Z–A",
+  "mtrnav.directory_sort.distance": "排序：离我最近",
+  "mtrnav.directory_sort_hint": "点击切换A–Z、Z–A、距离。距离按选用该排序时的位置估算；未知坐标排在最后。",
+  "mtrnav.directory_index": "索引",
+  "mtrnav.directory_index_count": "%s · %s个车站（点击跳转）",
+  "mtrnav.directory_digits": "数字",
+  "mtrnav.directory_other": "其他",
+  "mtrnav.directory_unknown_distance": "距离未知",
+  "mtrnav.directory_selected": "已选：%s · 点击底部按钮使用",
+  "mtrnav.directory_index_hint": "按英文名或常用汉字拼音首字母跳转；数字归#，无法归组的归其他。"
 }
