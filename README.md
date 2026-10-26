@@ -16,6 +16,7 @@
 </p>
 
 <p align="center">
+  <a href="#实际界面">实际界面</a> ·
   <a href="#快速开始">快速开始</a> ·
   <a href="#安装与兼容">安装与兼容</a> ·
   <a href="docs/overlay-integration.md">Overlay 对接</a> ·
@@ -37,6 +38,43 @@ MTR：站间物语是一个独立的 Minecraft Transit Railway 导航附属模�
 - **设提醒**：点击具体班次，默认到站前 **9 分钟**提醒，可调为 **1～60 分钟**。关闭窗口后继续更新，顶部通知条在触发时展开并播放一次提示音。
 - **途中导航**：开始行程后，由 HUD 提示下一操作；可手动确认上车、下车或返回上一步，也可调整 HUD 的位置和大小。
 - **看线路参考**：有换乘路径但暂时找不到可乘班次时，仍展示线路连接，并说明无班次、超出范围或计算未完成；不编造到发时间。
+
+## 实际界面
+
+以下图片于 **2026-10-26** 在 Minecraft 1.21.1／NeoForge 21.1.251 联机客户端拍摄。站名、线路和到发时间来自截图时的服务器数据；HUD 设置页展示的是预览。点击图片可查看原图。
+
+### 比较换乘方案
+
+在左侧比较耗时、换乘次数和线路摘要，右侧查看乘车方向、上下车站台、步行与候车安排。悬停方案卡片可查看完整摘要，列表和详情分别滚动。
+
+[![换乘查询：候选方案、线路摘要与分段行程](docs/screenshots/journey-query.jpg)](docs/screenshots/journey-query.jpg)
+
+### 展开线路，查看车站到发
+
+到发按线路分组。展开后分别显示站台、到达和发车倒计时，以及来源标记的实时／计划状态；点击具体班次可以设置提醒。
+
+[![车站到发：展开线路后的班次、站台和倒计时](docs/screenshots/departures.jpg)](docs/screenshots/departures.jpg)
+
+### 用字母索引快速找站
+
+在独立目录里搜索，切换 A–Z、Z–A 或距离排序，也可点字母快速跳转。金色边框和箭头标明当前选中项，底部直接选择用途。
+
+[![车站目录：字母索引、排序和选中高亮](docs/screenshots/station-directory.jpg)](docs/screenshots/station-directory.jpg)
+
+### 一页调整两个 HUD
+
+导航框和班次提醒框在同一页预览，各自调整位置与大小。拖动提示框、滚轮缩放，也可使用四角预设；两个框自动避让。图中 **03:20 是设置预览示例**。
+
+[![双 HUD 设置：独立预览框、位置缩放和提醒显示模式](docs/screenshots/hud-settings.jpg)](docs/screenshots/hud-settings.jpg)
+
+<details>
+<summary>查看步行连接编辑表单</summary>
+
+依次选择从哪里出发、走到哪里，填写分钟和秒；站台、名称与说明可选填。保存个人连接和提交共享建议是两个独立操作。下图为未填写、未保存的新建表单。
+
+[![步行连接编辑：出发站、到达站和步行用时](docs/screenshots/walking-editor.jpg)](docs/screenshots/walking-editor.jpg)
+
+</details>
 
 ## 安装与兼容
 
@@ -147,6 +185,8 @@ Linux／macOS 对应使用 `./dev.sh neoforge build testFabricCore` 和 `./dev.s
 **MTR: Between Stations** is an independent navigation add-on for Minecraft Transit Railway. It provides a searchable station directory, transfer planning, grouped station arrivals and departures, journey guidance, and reminders for individual trains.
 
 Requires **Minecraft 1.21.1, Java 21 and MTR 4.1.0-beta.2**. Separate NeoForge 21.1.x and Fabric builds are available; Fabric also requires Fabric API. Install one matching JAR on the client. Installing Navigation on the server is optional, but client-only operation requires the server's native MTR map service to work.
+
+The [in-game screenshots](#实际界面) show the current NeoForge multiplayer UI: route comparison, grouped departures, alphabetical station browsing, the shared two-HUD editor, and the walking form. HUD editor countdowns are preview examples.
 
 Press **N** or use **`/mtrnav`**. Use **All stations** to choose an origin, destination or arrivals station. Cycle A–Z, Z–A or nearest sorting, and jump by letter using the index. English names are preferred for grouping; supported Chinese names use their pinyin initial, with unsupported initials in Other. The selected row has a brass border and arrow. Clicking or tabbing into a station field selects its existing name so typing replaces it; switching to arrivals also selects the current station name. Compare connections, start a journey, and confirm boarding or alighting when automatic progress is unavailable. Close the screen to keep the journey HUD active.
 
