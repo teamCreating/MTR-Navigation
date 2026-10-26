@@ -12,6 +12,21 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class NativeTimetableTest {
+    @Test void missingNativeCoordinatesNeverBecomeARealOriginStation() {
+        String json = """
+                {"stations":[{"id":"a","name":"real"},{"id":"b","name":"unknown"},{"id":"c","name":"partial"}],
+                 "routes":[{"id":"1","name":"line","type":"train","circularState":"NONE","stations":[
+                   {"id":"a","name":"1","x":0,"y":0,"z":0},
+                   {"id":"b","name":"2"},{"id":"c","name":"3","x":10}]}]}
+                """;
+        var network = NativeTimetable.network("dim", json, null, Map.of());
+        assertEquals(Set.of("a"), network.locatedStations());
+        assertEquals(3, network.catalog().stations().size(), "unknown positions remain available for manual search");
+        var overlay = new Model.Catalog("dim", 1, List.of(new Model.Station("b", "known", 20, 0, 30, List.of())), List.of(), List.of());
+        var enriched = NativeTimetable.network("dim", json, overlay, Map.of());
+        assertEquals(Set.of("a", "b"), enriched.locatedStations());
+        assertEquals(20, enriched.catalog().station("b").x());
+    }
     @Test void enrichingPlatformIdsPreservesNamesOfAnAlreadySelectedJourney() {
         var previous = new Model.Catalog("dim", 1, List.of(), List.of(new Model.Platform("map:r:0", "s", "C2 内环", 1, 2, 3)), List.of());
         var enriched = new Model.Catalog("dim", 2, List.of(), List.of(new Model.Platform("abc", "s", "C2 内环", 1, 2, 3)), List.of());

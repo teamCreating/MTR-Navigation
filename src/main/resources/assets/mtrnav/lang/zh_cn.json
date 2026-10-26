@@ -180,5 +180,18 @@
   "mtrnav.reminder_stage.due": "已到提醒时间",
   "mtrnav.reminder_stage.arrived": "到站时间已到",
   "mtrnav.reminder_stage.passed": "该班次发车时间已过",
-  "mtrnav.reminder_stage.pending": "班次待确认"
+  "mtrnav.reminder_stage.pending": "班次待确认",
+  "mtrnav.locate": "定位",
+  "mtrnav.locate_hint": "根据当前位置选择附近车站作为起点",
+  "mtrnav.nearby_stations": "附近车站",
+  "mtrnav.relocate": "重新定位",
+  "mtrnav.location_selected": "已定位 · 距离约 %s 格",
+  "mtrnav.location_distance": "约 %s 格",
+  "mtrnav.location_no_player": "暂时无法获取玩家位置",
+  "mtrnav.location_loading": "正在等待当前维度的车站目录",
+  "mtrnav.location_no_coordinates": "暂无具有可靠坐标的车站，可手动搜索",
+  "mtrnav.location_changed": "位置所属连接或维度已变化，请重新定位",
+  "mtrnav.nearby_count": "%s 个车站 · 按距离排序",
+  "mtrnav.nearby_hint": "距离为水平直线估算，非入口或步行距离 · 确认后设为起点",
+  "mtrnav.location_catalog_changed": "车站数据已变化，请重新选择起点"
 }

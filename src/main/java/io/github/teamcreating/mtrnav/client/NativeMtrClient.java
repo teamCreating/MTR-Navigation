@@ -37,6 +37,11 @@ public final class NativeMtrClient {
     private static NativeTimetable.Network network;
     private static Snapshot timetable;
     private static JourneyTracker tracker;
+    static Set<String> locatedStations(String currentDimension) {
+        if (network != null && network.catalog().dimension().equals(currentDimension)) return network.locatedStations();
+        var overlay = OverlayBridge.catalog(currentDimension);
+        return overlay == null ? Set.of() : overlay.stations().stream().map(Station::id).collect(java.util.stream.Collectors.toUnmodifiableSet());
+    }
     public static void opened() {
         boolean retry = !gate.enabled();
         if (gate.resume(System.nanoTime())) {

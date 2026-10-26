@@ -65,6 +65,10 @@ MTR：站间物语是一个独立的 Minecraft Transit Railway 导航附属模�
 
 点击行程详情中的车站可查看到发；点击详情标题可展开途经站。重新查询不会直接替换正在执行的行程，需要再次选择方案。三个搜索框右侧的 **×** 可清空输入。
 
+**起点定位**：每次连接首次进入换乘查询、起点为空且未经编辑时，自动根据玩家位置选择附近车站。也可点击准星图标 **定位** 重新选择；窄窗口仅显示图标。最近站在512格内，且比第二近站近超过64格时自动填入；否则打开独立的 **附近车站** 页面，按距离排序后由你确认。页面保留搜索、滚轮、拖动滚动条和键盘操作；点击 **重新定位** 才更新距离基准。
+
+距离是当前维度内到车站坐标的**水平直线估算**，不代表入口或步行距离。未知坐标的站仍能手动搜索，但不参与定位。手动修改、交换或清空起点后，不会自动填回；定位也不会自动查询或替换活动导航。
+
 ### 到发与班次提醒
 
 打开 **车站到发**，选择车站，点击线路标题展开班次。列表支持滚轮与拖动右侧滚动条；自动刷新保留线路展开状态。
@@ -125,6 +129,8 @@ Linux／macOS 对应使用 `./dev.sh neoforge build testFabricCore` 和 `./dev.s
 Requires **Minecraft 1.21.1, Java 21 and MTR 4.1.0-beta.2**. Separate NeoForge 21.1.x and Fabric builds are available; Fabric also requires Fabric API. Install one matching JAR on the client. Installing Navigation on the server is optional, but client-only operation requires the server's native MTR map service to work.
 
 Press **N** or use **`/mtrnav`**. Use **All stations** to choose an origin, destination or arrivals station. Compare connections, start a journey, and confirm boarding or alighting when automatic progress is unavailable. Close the screen to keep the journey HUD active.
+
+An untouched, empty origin is located automatically once per connection; the crosshair **Locate** button samples your position again. A clear nearest station within 512 blocks is filled directly (more than 64 blocks nearer than the runner-up); ambiguous or distant choices open a separate **Nearby stations** page. Distances are horizontal estimates to station coordinates, not walking routes. Editing or clearing the origin disables automatic refill. Unknown coordinates are excluded, and location adds no network polling.
 
 Click a train on the arrivals board to set a reminder, **9 minutes before arrival** by default, adjustable from 1 to 60 minutes. A compact notification at the top centre expands when triggered. Stale or ambiguous data pauses the reminder; it never silently switches to the next train. One reminder is retained per connection and is cleared on disconnect or dimension change.
 

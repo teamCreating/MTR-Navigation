@@ -5,6 +5,7 @@ import io.github.teamcreating.mtrnav.core.StationSearch;
 import io.github.teamcreating.mtrnav.core.DepartureBoard;
 import io.github.teamcreating.mtrnav.core.ScrollBarGeometry;
 import io.github.teamcreating.mtrnav.core.ArrivalReminder;
+import io.github.teamcreating.mtrnav.core.StationLocator;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.*;
 import net.minecraft.client.gui.screens.Screen;
@@ -43,7 +44,9 @@ public final class NavigationScreen extends Screen {
     private final Set<String> expandedLines = new HashSet<>();
     private int draggingScroll = -2;
     private double scrollGrab;
-    private Action queryButton, sortButton, routesTab, departuresTab, activeTab, startButton, progressButton, backButton, requeryButton, cancelButton, allStationsButton, reminderButton;
+    private Action queryButton, sortButton, routesTab, departuresTab, activeTab, startButton, progressButton, backButton, requeryButton, cancelButton, allStationsButton, reminderButton, locateButton;
+    private String locationMessage = "";
+    private Catalog locationCatalog;
     private int selectedJourney, scroll, contentHeight, left, top, panelWidth, panelHeight, bodyTop, bodyBottom, detailX, detailTop, footerY;
     private boolean wide, collapsed, showAllStops;
     private boolean searchCollapsed = tracking != null || !journeys.isEmpty();
@@ -117,7 +120,7 @@ public final class NavigationScreen extends Screen {
         fromBox.setValue(fromText != null ? fromText : catalog == null ? "" : catalog.stationName(origin));
         toBox.setValue(toText != null ? toText : catalog == null ? "" : catalog.stationName(destination));
         boardBox.setValue(boardText != null ? boardText : catalog == null ? "" : catalog.stationName(selectedBoard));
-        fromBox.setResponder(value -> { fromText = value; edited(true, value); updateControls(); });
+        fromBox.setResponder(value -> { originLocation.edited(); locationMessage = ""; fromText = value; edited(true, value); updateControls(); });
         toBox.setResponder(value -> { toText = value; edited(false, value); updateControls(); });
         boardBox.setResponder(value -> { boardText = value; selectedBoard = resolve(value); updateControls(); });
         fromBox.visible = toBox.visible = !collapsed && view == View.JOURNEYS;
@@ -128,6 +131,7 @@ public final class NavigationScreen extends Screen {
             clear.setTooltip(Tooltip.create(Component.translatable("mtrnav.clear_input"))); clearButtons.add(clear);
         }
         var swap = button("mtrnav.swap_short", x + fieldWidth + 4, top + 44, 20, 20, () -> {
+            originLocation.edited(); locationMessage = "";
             String a = origin, b = destination, value = fromBox.getValue();
             fromBox.setValue(toBox.getValue()); toBox.setValue(value); origin = b; destination = a; updateControls();
         }); swap.visible = fromBox.visible; swap.setTooltip(Tooltip.create(Component.translatable("mtrnav.swap")));
@@ -143,6 +147,9 @@ public final class NavigationScreen extends Screen {
             minecraft.setScreen(new StationDirectoryScreen(this, target));
         });
         allStationsButton.setTooltip(Tooltip.create(Component.translatable("mtrnav.all_stations_hint")));
+        locateButton = button("mtrnav.locate", x + 88, top + 70, panelWidth < 500 ? 20 : 76, 16, this::locateOrigin);
+        locateButton.locateIcon = true; locateButton.primary = true;
+        locateButton.setTooltip(Tooltip.create(Component.translatable("mtrnav.locate_hint")));
         bodyTop = top + (collapsed ? 61 : 92);
         footerY = top + panelHeight - 43; bodyBottom = footerY - 7;
         detailX = wide ? x + Math.min(220, inner / 3) + 12 : x;
@@ -165,6 +172,7 @@ public final class NavigationScreen extends Screen {
         backButton = button("mtrnav.previous_step", x, footerY + 6, secondaryWidth, 22, () -> { scroll = 0; correct("previous"); });
         requeryButton = button("mtrnav.requery", x + secondaryWidth + 4, footerY + 6, secondaryWidth, 22, () -> {
             if (tracking != null && tracking.legIndex() < tracking.journey().legs().size()) {
+                originLocation.edited(); locationMessage = "";
                 var leg = tracking.journey().legs().get(tracking.legIndex());
                 origin = leg.fromStationId(); destination = tracking.journey().destinationStationId();
                 fromText = catalog.stationName(origin); toText = catalog.stationName(destination);
@@ -194,12 +202,41 @@ public final class NavigationScreen extends Screen {
         if (target == StationDirectoryScreen.Target.BOARD) {
             selectedBoard = station.id(); boardText = displayName(station.name()); view = View.DEPARTURES;
         } else {
-            if (target == StationDirectoryScreen.Target.ORIGIN) { origin = station.id(); fromText = displayName(station.name()); }
+            if (target == StationDirectoryScreen.Target.ORIGIN) { originLocation.edited(); locationMessage = ""; origin = station.id(); fromText = displayName(station.name()); }
             else { destination = station.id(); toText = displayName(station.name()); }
             clearSearchResults(); view = View.JOURNEYS; searchCollapsed = false;
         }
     }
+    void useLocatedStation(Station station, StationLocator.Position position) {
+        useStation(station, StationDirectoryScreen.Target.ORIGIN);
+        originLocation.selected(station.id(), position);
+        locationMessage = "";
+    }
+    private void locateOrigin() {
+        originLocation.attempted();
+        var position = playerPosition();
+        if (position == null) { locationMessage = tr("mtrnav.location_no_player"); return; }
+        if (catalog == null || !catalog.dimension().equals(position.dimension()) || catalog.stations().isEmpty()) {
+            locationMessage = tr("mtrnav.location_loading"); return;
+        }
+        var candidates = StationLocator.nearby(catalog, locatedStations(), position);
+        if (candidates.isEmpty()) { locationMessage = tr("mtrnav.location_no_coordinates"); return; }
+        if (StationLocator.unambiguous(candidates)) {
+            useLocatedStation(candidates.getFirst().station(), position); rebuild();
+        } else minecraft.setScreen(new StationDirectoryScreen(this, position));
+    }
     @Override public void tick() {
+        if (view == View.JOURNEYS && !collapsed && tracking == null && originLocation.ready(!origin.isEmpty(), fromBox.getValue().isBlank(),
+                playerPosition() != null, catalog != null && !catalog.stations().isEmpty())) {
+            locateOrigin(); if (minecraft.screen != this) return;
+        }
+        if (locationCatalog != catalog) {
+            locationCatalog = catalog;
+            var position = playerPosition();
+            if (position != null && originLocation.positionFor(origin, position.dimension()) != null
+                    && (catalog == null || !catalog.dimension().equals(position.dimension()) || catalog.station(origin) == null
+                    || locatedStations() != null && !locatedStations().contains(origin))) originLocation.edited();
+        }
         if (origin.isEmpty()) edited(true, fromBox.getValue());
         if (destination.isEmpty()) edited(false, toBox.getValue());
         if (selectedBoard.isEmpty()) selectedBoard = resolve(boardBox.getValue());
@@ -218,6 +255,8 @@ public final class NavigationScreen extends Screen {
         reminderButton.primary = reminder != null;
         allStationsButton.visible = !collapsed && !active;
         allStationsButton.active = catalog != null && !catalog.stations().isEmpty();
+        locateButton.visible = view == View.JOURNEYS && !collapsed;
+        locateButton.active = playerPosition() != null;
         for (int i = 0; i < clearButtons.size(); i++) {
             var box = inputBox(i); clearButtons.get(i).visible = box.visible;
             clearButtons.get(i).active = !box.getValue().isEmpty();
@@ -314,7 +353,14 @@ public final class NavigationScreen extends Screen {
                 text(g, tr("mtrnav.destination") + (destination.isEmpty() ? "" : " ✓"), toBox.getX(), top + 32, toBox.getWidth(), MUTED);
             }
             String message = view == View.DEPARTURES ? tr("mtrnav.board_search_hint") : journeys.isEmpty() ? tr(status) : tr("mtrnav.options_found", journeys.size());
-            text(g, message, left + 104, top + 74, panelWidth - (view == View.JOURNEYS ? 228 : 116), MUTED);
+            if (view == View.JOURNEYS) {
+                var point = catalog == null ? null : originLocation.positionFor(origin, catalog.dimension());
+                var located = catalog == null ? null : catalog.station(origin);
+                if (!locationMessage.isEmpty()) message = locationMessage;
+                else if (point != null && located != null) message = tr("mtrnav.location_selected", Math.round(Math.hypot((double)located.x() - point.x(), (double)located.z() - point.z())));
+            }
+            int messageX = locateButton.visible ? locateButton.getX() + locateButton.getWidth() + 8 : left + 104;
+            text(g, message, messageX, top + 74, Math.max(0, (view == View.JOURNEYS ? sortButton.getX() - 8 : left + panelWidth - 12) - messageX), MUTED);
         } else {
             String label = view == View.ACTIVE && tracking != null ? station(tracking.journey().originStationId()) + " → " + station(tracking.journey().destinationStationId()) : station(origin) + " → " + station(destination);
             text(g, label, left + 12 + (view == View.ACTIVE ? 0 : 76), top + 39, panelWidth - 36 - (view == View.ACTIVE ? 0 : 180), MUTED);

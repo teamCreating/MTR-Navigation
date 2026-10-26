@@ -12,8 +12,8 @@ public final class NativeTimetable {
     public record Line(String id, List<Stop> stops, List<Long> durations) {
         public Line { stops = List.copyOf(stops); durations = List.copyOf(durations); }
     }
-    public record Network(Catalog catalog, Map<String, Line> lines, List<String> dimensions) {
-        public Network { lines = Map.copyOf(lines); dimensions = List.copyOf(dimensions); }
+    public record Network(Catalog catalog, Map<String, Line> lines, List<String> dimensions, Set<String> locatedStations) {
+        public Network { lines = Map.copyOf(lines); dimensions = List.copyOf(dimensions); locatedStations = Set.copyOf(locatedStations); }
     }
     public static JsonObject data(String json) {
         var root = JsonParser.parseString(json).getAsJsonObject();
@@ -55,7 +55,8 @@ public final class NativeTimetable {
                 long x = number(stop, "x"), y = number(stop, "y"), z = number(stop, "z");
                 stops.add(new Stop(stationId, platformId, text(stop, "name"), x, y, z, number(stop, "dwellTime")));
                 platforms.putIfAbsent(platformId, new Platform(platformId, stationId, text(stop, "name"), x, y, z));
-                positions.putIfAbsent(stationId, new long[]{x, y, z}); platformIds.add(platformId); index++;
+                if (hasCoordinate(stop, "x") && hasCoordinate(stop, "z")) positions.putIfAbsent(stationId, new long[]{x, y, z});
+                platformIds.add(platformId); index++;
             }
             if (stops.size() < 2) continue;
             var durations = new ArrayList<Long>(); for (var duration : array(route, "durations")) durations.add(duration.getAsLong());
@@ -76,7 +77,13 @@ public final class NativeTimetable {
         var platformList = platforms.values().stream().sorted(Comparator.comparing(Platform::id)).toList();
         long revision = Objects.hash(stations, platformList, routes);
         var dimensions = new ArrayList<String>(); for (var d : array(object, "dimensions")) dimensions.add(d.getAsString());
-        return new Network(new Catalog(dimension, revision, stations, platformList, routes), lines, dimensions);
+        var located = new HashSet<>(positions.keySet());
+        if (overlay != null) overlay.stations().forEach(s -> located.add(s.id()));
+        return new Network(new Catalog(dimension, revision, stations, platformList, routes), lines, dimensions, located);
+    }
+    private static boolean hasCoordinate(JsonObject object, String key) {
+        return object.has(key) && object.get(key).isJsonPrimitive() && object.getAsJsonPrimitive(key).isNumber()
+                && Double.isFinite(object.get(key).getAsDouble());
     }
     public static Snapshot departures(Network network, String json) {
         var object = data(json); long sample = number(object, "cachedResponseTime");

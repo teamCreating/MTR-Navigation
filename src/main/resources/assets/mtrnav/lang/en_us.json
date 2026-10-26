@@ -180,5 +180,18 @@
   "mtrnav.reminder_stage.due": "Arrival reminder",
   "mtrnav.reminder_stage.arrived": "Arrival time reached",
   "mtrnav.reminder_stage.passed": "Departure time has passed",
-  "mtrnav.reminder_stage.pending": "Train unconfirmed"
+  "mtrnav.reminder_stage.pending": "Train unconfirmed",
+  "mtrnav.locate": "Locate",
+  "mtrnav.locate_hint": "Use your position to choose a nearby origin station",
+  "mtrnav.nearby_stations": "Nearby stations",
+  "mtrnav.relocate": "Locate again",
+  "mtrnav.location_selected": "Located · about %s blocks",
+  "mtrnav.location_distance": "~%s blocks",
+  "mtrnav.location_no_player": "Player position is currently unavailable",
+  "mtrnav.location_loading": "Waiting for this dimension's station directory",
+  "mtrnav.location_no_coordinates": "No stations with known coordinates; use manual search",
+  "mtrnav.location_changed": "Connection or dimension changed; locate again",
+  "mtrnav.nearby_count": "%s stations · sorted by distance",
+  "mtrnav.nearby_hint": "Horizontal straight-line estimates, not entrance or walking distances · Confirm to set origin",
+  "mtrnav.location_catalog_changed": "Station data changed; choose an origin again"
 }

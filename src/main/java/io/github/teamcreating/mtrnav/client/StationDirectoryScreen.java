@@ -2,6 +2,7 @@ package io.github.teamcreating.mtrnav.client;
 
 import io.github.teamcreating.mtrnav.core.ScrollBarGeometry;
 import io.github.teamcreating.mtrnav.core.StationSearch;
+import io.github.teamcreating.mtrnav.core.StationLocator;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.Tooltip;
@@ -21,6 +22,11 @@ final class StationDirectoryScreen extends Screen {
     private final List<Action> buttons = new ArrayList<>(), selectionButtons = new ArrayList<>();
     private EditBox searchBox;
     private Action clearButton;
+    private final boolean nearby;
+    private StationLocator.Position location;
+    private Object locationConnection;
+    private Map<String, Double> distances = Map.of();
+    private String locationNotice = "";
     private Catalog source;
     private List<Station> matches = List.of();
     private String searchText = "", selectedId = "", lastClickedId = "";
@@ -31,7 +37,11 @@ final class StationDirectoryScreen extends Screen {
     private ScrollBarGeometry bar;
 
     StationDirectoryScreen(NavigationScreen previous, Target defaultTarget) {
-        super(Component.translatable("mtrnav.all_stations")); this.previous = previous; this.defaultTarget = defaultTarget;
+        super(Component.translatable("mtrnav.all_stations")); this.previous = previous; this.defaultTarget = defaultTarget; nearby = false;
+    }
+    StationDirectoryScreen(NavigationScreen previous, StationLocator.Position location) {
+        super(Component.translatable("mtrnav.nearby_stations")); this.previous = previous; defaultTarget = Target.ORIGIN;
+        nearby = true; this.location = location; locationConnection = net.minecraft.client.Minecraft.getInstance().getConnection();
     }
     private Action button(String key, int x, int y, int width, int height, Runnable action) {
         var button = new Action(x, y, width, height, tr(key), action);
@@ -51,8 +61,9 @@ final class StationDirectoryScreen extends Screen {
         clearButton = button("mtrnav.clear_symbol", x + inner - 20, top + 38, 20, 20, () -> { searchBox.setValue(""); setFocused(searchBox); });
         clearButton.setTooltip(Tooltip.create(Component.translatable("mtrnav.clear_input")));
         listTop = top + 80; listBottom = top + panelHeight - 48;
-        int buttonWidth = (inner - 8) / 3;
-        for (var target : Target.values()) {
+        if (nearby) button("mtrnav.relocate", x + inner - 88, top + 61, 88, 16, this::relocate);
+        int buttonWidth = nearby ? (inner - 4) / 2 : (inner - 8) / 3;
+        for (var target : nearby ? List.of(Target.ORIGIN) : List.of(Target.values())) {
             var action = button(switch (target) {
                 case ORIGIN -> "mtrnav.use_as_origin";
                 case DESTINATION -> "mtrnav.use_as_destination";
@@ -60,10 +71,19 @@ final class StationDirectoryScreen extends Screen {
             }, x + target.ordinal() * (buttonWidth + 4), listBottom + 12, buttonWidth, 22, () -> apply(target));
             action.primary = target == defaultTarget; selectionButtons.add(action);
         }
+        if (nearby) button("mtrnav.back", x + buttonWidth + 4, listBottom + 12, buttonWidth, 22, this::onClose);
         source = NavigationClient.catalog; filter(); setInitialFocus(searchBox);
     }
     private void filter() {
         matches = source == null ? List.of() : StationSearch.matches(source.stations(), searchText);
+        if (nearby) {
+            var measured = new HashMap<String, Double>();
+            if (sameLocationContext()) for (var candidate : StationLocator.nearby(source, NavigationClient.locatedStations(), location))
+                measured.put(candidate.station().id(), candidate.distance());
+            distances = Map.copyOf(measured);
+            matches = matches.stream().filter(s -> distances.containsKey(s.id()))
+                    .sorted(Comparator.comparingDouble((Station s) -> distances.get(s.id())).thenComparing(Station::id)).toList();
+        }
         if (matches.stream().noneMatch(s -> s.id().equals(selectedId))) selectedId = matches.size() == 1 ? matches.getFirst().id() : "";
         scroll = 0; bar = null; dragging = false; updateButtons();
     }
@@ -76,13 +96,32 @@ final class StationDirectoryScreen extends Screen {
     private void apply(Target target) {
         var station = selected(); if (station == null) return;
         var current = NavigationClient.catalog;
-        if (current == null || source == null || !Objects.equals(source.dimension(), current.dimension()) || current.station(station.id()) == null) {
+        if (current == null || source == null || !Objects.equals(source.dimension(), current.dimension()) || current.station(station.id()) == null
+                || nearby && (!sameLocationContext() || StationLocator.nearby(current, NavigationClient.locatedStations(), location).stream().noneMatch(c -> c.station().id().equals(station.id())))) {
+            if (nearby) locationNotice = tr(sameLocationContext() ? "mtrnav.location_catalog_changed" : "mtrnav.location_changed");
             source = current; selectedId = ""; filter(); return;
         }
-        previous.useStation(current.station(station.id()), target); onClose();
+        if (nearby) previous.useLocatedStation(current.station(station.id()), location);
+        else previous.useStation(current.station(station.id()), target);
+        onClose();
+    }
+    private boolean sameLocationContext() {
+        var player = NavigationClient.playerPosition();
+        return location != null && player != null && player.dimension().equals(location.dimension()) && locationConnection == minecraft.getConnection();
+    }
+    private void relocate() {
+        var position = NavigationClient.playerPosition();
+        if (position == null) { locationNotice = tr("mtrnav.location_no_player"); return; }
+        location = position; locationConnection = minecraft.getConnection(); source = NavigationClient.catalog;
+        locationNotice = ""; selectedId = ""; filter();
     }
     @Override public void tick() {
-        if (source != NavigationClient.catalog) { source = NavigationClient.catalog; filter(); }
+        if (nearby && !sameLocationContext()) { locationNotice = tr("mtrnav.location_changed"); if (!matches.isEmpty()) { source = NavigationClient.catalog; filter(); } }
+        else if (source != NavigationClient.catalog) {
+            source = NavigationClient.catalog;
+            if (nearby && !selectedId.isEmpty() && (source == null || source.station(selectedId) == null)) locationNotice = tr("mtrnav.location_catalog_changed");
+            filter();
+        }
         updateButtons();
     }
     @Override public boolean isPauseScreen() { return false; }
@@ -93,7 +132,8 @@ final class StationDirectoryScreen extends Screen {
         frame(g, left, top, panelWidth, panelHeight); icon(g, left + 10, top + 7, 16);
         text(g, title.getString(), left + 31, top + 11, panelWidth - 68, TEXT);
         railDivider(g, left + 12, top + 28, panelWidth - 24);
-        text(g, tr("mtrnav.directory_count", matches.size(), source == null ? 0 : source.stations().size()), left + 12, top + 65, panelWidth - 24, MUTED);
+        text(g, nearby ? locationNotice.isEmpty() ? tr("mtrnav.nearby_count", matches.size()) : locationNotice
+                : tr("mtrnav.directory_count", matches.size(), source == null ? 0 : source.stations().size()), left + 12, top + 65, panelWidth - (nearby ? 124 : 24), MUTED);
         int x = left + 12, right = left + panelWidth - 12, viewport = Math.max(0, listBottom - listTop);
         g.fill(x, listTop, right, listBottom, 0xA0181D1C); clampScroll(); bar = null;
         Station hovered = null;
@@ -108,9 +148,10 @@ final class StationDirectoryScreen extends Screen {
                 text(g, primary(station.name()), x + 8, y + 5, right - x - 132, TEXT);
                 String english = Arrays.stream(station.name().split("\\|+")).skip(1).map(String::strip).filter(s -> !s.isEmpty()).reduce((a, b) -> a + " · " + b).orElse("");
                 text(g, english, x + 8, y + 19, right - x - 132, MUTED);
-                text(g, station.x() + ", " + station.y() + ", " + station.z(), right - 116, y + 12, 104, MUTED);
+                text(g, station.x() + ", " + station.y() + ", " + station.z(), right - 116, y + (nearby ? 18 : 12), 104, MUTED);
+                if (nearby) text(g, tr("mtrnav.location_distance", Math.round(distances.get(station.id()))), right - 116, y + 5, 104, ACCENT);
             }
-            if (matches.isEmpty()) text(g, tr(source == null ? "mtrnav.connecting" : "mtrnav.directory_empty"), x + 8, listTop + 12, right - x - 20, MUTED);
+            if (matches.isEmpty()) text(g, tr(source == null ? "mtrnav.connecting" : nearby && searchText.isBlank() ? "mtrnav.location_no_coordinates" : "mtrnav.directory_empty"), x + 8, listTop + 12, right - x - 20, MUTED);
             g.disableScissor();
             if (matches.size() * ROW_HEIGHT > viewport) {
                 bar = ScrollBarGeometry.of(listTop, viewport, matches.size() * ROW_HEIGHT, viewport, scroll, 8);
@@ -118,7 +159,7 @@ final class StationDirectoryScreen extends Screen {
             }
         }
         railDivider(g, x, listBottom + 4, right - x);
-        text(g, tr("mtrnav.directory_hint"), x, top + panelHeight - 10, panelWidth - 24, MUTED);
+        text(g, tr(nearby ? "mtrnav.nearby_hint" : "mtrnav.directory_hint"), x, top + panelHeight - 10, panelWidth - 24, MUTED);
         updateButtons(); searchBox.render(g, mouseX, mouseY, delta);
         for (var button : buttons) button.render(g, mouseX, mouseY, delta);
         if (hovered != null && font.width(displayName(hovered.name())) > panelWidth - 156)

@@ -101,16 +101,28 @@ final class NavigationTheme {
 
     /** Vanilla stone controls inside a brass railway instrument casing. */
     static final class Action extends Button {
-        boolean selected, primary, tab;
+        boolean selected, primary, tab, locateIcon;
         String detail, extra;
         int tint = ACCENT;
         Action(int x, int y, int w, int h, String label, Runnable action) {
             super(x, y, w, h, Component.literal(label), ignored -> action.run(), DEFAULT_NARRATION);
         }
+        @Override public void renderString(GuiGraphics g, net.minecraft.client.gui.Font font, int color) {
+            if (locateIcon) {
+                if (width > 24) g.drawCenteredString(font, getMessage(), getX() + (width + 14) / 2, getY() + (height - 8) / 2, color);
+            } else super.renderString(g, font, color);
+        }
         @Override protected void renderWidget(GuiGraphics g, int mouseX, int mouseY, float delta) {
             boolean highlighted = isHoveredOrFocused();
             if (detail == null) {
                 super.renderWidget(g, mouseX, mouseY, delta);
+                if (locateIcon) {
+                    int cx = getX() + (width <= 24 ? width / 2 : 10), cy = getY() + height / 2;
+                    int color = active ? ACCENT : MUTED;
+                    outline(g, cx - 3, cy - 3, 7, 7, color);
+                    g.fill(cx, cy - 5, cx + 1, cy + 6, color); g.fill(cx - 5, cy, cx + 6, cy + 1, color);
+                    g.fill(cx - 1, cy - 1, cx + 2, cy + 2, PANEL);
+                }
                 if (primary && active) {
                     outline(g, getX() + 1, getY() + 1, width - 2, height - 2, ACCENT);
                     for (int edge : new int[]{getX() + 3, getX() + width - 5}) g.fill(edge, getY() + 3, edge + 2, getY() + 5, BRASS_LIGHT);

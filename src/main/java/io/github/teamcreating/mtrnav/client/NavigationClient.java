@@ -26,6 +26,13 @@ public final class NavigationClient {
     public static String origin = "", destination = "", boardStation = "";
     public static Sort sort = Sort.FASTEST;
     public static final ServerClock CLOCK = new ServerClock();
+    static final StationLocator.Session originLocation = new StationLocator.Session();
+    static Set<String> locatedStations() { return usingNative ? NativeMtrClient.locatedStations(dimension) : null; }
+    static StationLocator.Position playerPosition() {
+        var mc = Minecraft.getInstance();
+        return mc.player == null || mc.level == null ? null : new StationLocator.Position(
+                mc.level.dimension().location().getNamespace() + "/" + mc.level.dimension().location().getPath(), mc.player.getX(), mc.player.getZ());
+    }
     private static final WireCodec.Assembly assembly = new WireCodec.Assembly();
     private static Consumer<NavRequest> sender = ignored -> {};
     private static BooleanSupplier available = () -> false;
@@ -78,6 +85,7 @@ public final class NavigationClient {
         }
     }
     public static void reset() {
+        originLocation.reset();
         catalog = null; journeys = List.of(); referencePlan = null; referenceReason = ""; arrivals = List.of(); tracking = null; reminder = null;
         boardLoading = false; boardUpdatedNanos = boardSampleMillis = 0; pollContexts.clear(); ReminderHud.reset();
         origin = destination = boardStation = ""; status = "mtrnav.connecting";
