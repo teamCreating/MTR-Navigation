@@ -1,0 +1,150 @@
+{
+  "screen": "WalkingManagementScreen",
+  "viewport": [
+    960,
+    540
+  ],
+  "scale": 2.0,
+  "enteredScale": 2.0,
+  "fixtures": false,
+  "skin": "ORE",
+  "stations": 3,
+  "journeys": 0,
+  "arrivals": 0,
+  "boardStation": "",
+  "origin": "38278aa3abbd6d2a",
+  "destination": "6490ebdd4cb2f28a",
+  "status": "mtrnav.reference_no_service",
+  "tracking": "",
+  "reminder": false,
+  "font": "minecraft-current-default",
+  "hudPercent": 150,
+  "reminderPercent": 150,
+  "autoFit": true,
+  "controls": [
+    {
+      "label": "服务器共享",
+      "rect": [
+        132,
+        94,
+        136,
+        20
+      ],
+      "active": true,
+      "focused": false,
+      "selected": true,
+      "pressDepth": 0.0,
+      "role": "tab"
+    },
+    {
+      "label": "仅自己",
+      "rect": [
+        272,
+        94,
+        136,
+        20
+      ],
+      "active": true,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "tab"
+    },
+    {
+      "label": "我的提交",
+      "rect": [
+        412,
+        94,
+        136,
+        20
+      ],
+      "active": true,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "tab"
+    },
+    {
+      "label": "审核管理",
+      "rect": [
+        552,
+        94,
+        136,
+        20
+      ],
+      "active": true,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "tab"
+    },
+    {
+      "label": "查询设置",
+      "rect": [
+        692,
+        94,
+        136,
+        20
+      ],
+      "active": true,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "tab"
+    },
+    {
+      "label": "刷新共享",
+      "rect": [
+        132,
+        133,
+        171,
+        20
+      ],
+      "active": true,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    },
+    {
+      "label": "打开所选项",
+      "rect": [
+        307,
+        133,
+        171,
+        20
+      ],
+      "active": false,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    },
+    {
+      "label": "搜索全部车站",
+      "rect": [
+        132,
+        159,
+        696,
+        20
+      ],
+      "active": true,
+      "focused": true,
+      "value": ""
+    },
+    {
+      "label": "返回",
+      "rect": [
+        752,
+        456,
+        76,
+        20
+      ],
+      "active": true,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    }
+  ]
+}

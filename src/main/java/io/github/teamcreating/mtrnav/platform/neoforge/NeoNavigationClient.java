@@ -23,6 +23,7 @@ public final class NeoNavigationClient {
         NavigationClient.openKey = () -> OPEN.getTranslatedKeyMessage().getString();
         bus.addListener((RegisterKeyMappingsEvent event) -> event.register(OPEN));
         NavigationClient.transport(() -> Minecraft.getInstance().getConnection() != null && Minecraft.getInstance().getConnection().hasChannel(NavRequest.TYPE), PacketDistributor::sendToServer);
+        NavigationClient.vehicleTransport(() -> Minecraft.getInstance().getConnection() != null && Minecraft.getInstance().getConnection().hasChannel(NavRequestV3.TYPE), PacketDistributor::sendToServer);
         WalkingClient.transport(() -> Minecraft.getInstance().getConnection() != null && Minecraft.getInstance().getConnection().hasChannel(WalkingRequest.TYPE), PacketDistributor::sendToServer,
                 () -> Minecraft.getInstance().getConnection() != null && Minecraft.getInstance().getConnection().hasChannel(NavRequestV2.TYPE), PacketDistributor::sendToServer);
         NeoForge.EVENT_BUS.addListener((ClientTickEvent.Post event) -> {

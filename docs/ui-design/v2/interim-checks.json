@@ -1,0 +1,89 @@
+{
+  "status": "palette-rejected-awaiting-user-selection",
+  "core_tests_before_latest_palette": {
+    "1.21.1": {
+      "test": {
+        "tests": 101,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 2
+      },
+      "testFabricCore": {
+        "tests": 101,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 2
+      }
+    },
+    "1.21.4": {
+      "test": {
+        "tests": 101,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 2
+      },
+      "testFabricCore": {
+        "tests": 101,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 2
+      }
+    }
+  },
+  "navigation_control_audits": [
+    {
+      "capture": "v2-olive-board.audit",
+      "viewport": [
+        960,
+        540
+      ],
+      "skin": "STEEL",
+      "view": "DEPARTURES",
+      "outside_frame": []
+    },
+    {
+      "capture": "v2-olive-first.audit",
+      "viewport": [
+        960,
+        540
+      ],
+      "skin": "STEEL",
+      "view": "JOURNEYS",
+      "outside_frame": []
+    },
+    {
+      "capture": "v2-olive-hud.audit",
+      "viewport": [
+        960,
+        540
+      ],
+      "skin": "STEEL",
+      "view": "DEPARTURES",
+      "outside_frame": []
+    },
+    {
+      "capture": "v2-olive-inline.audit",
+      "viewport": [
+        960,
+        540
+      ],
+      "skin": "STEEL",
+      "view": "DEPARTURES",
+      "outside_frame": []
+    },
+    {
+      "capture": "v2-reference-check.audit",
+      "viewport": [
+        960,
+        540
+      ],
+      "skin": "STEEL",
+      "view": "JOURNEYS",
+      "outside_frame": []
+    }
+  ],
+  "notes": [
+    "HUD captures may carry the last NavigationScreen audit; these audits do not establish HUD layout acceptance.",
+    "Final palette and final package build pending."
+  ]
+}

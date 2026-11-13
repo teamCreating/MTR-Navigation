@@ -1,0 +1,13 @@
+{
+  "target": "1.21.1-neoforge-ldlib2",
+  "source": "run\\ui-review\\1.21.1-neoforge-ldlib2\\screenshots\\2026-11-12_22.45.06.png",
+  "requested_client_size": [
+    854,
+    480
+  ],
+  "actual_image_size": [
+    854,
+    480
+  ],
+  "keys_before_capture": []
+}

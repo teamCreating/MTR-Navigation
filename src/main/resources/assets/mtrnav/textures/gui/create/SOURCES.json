@@ -1,0 +1,20 @@
+{
+  "source": "https://github.com/Creators-of-Create/Create",
+  "ref": "mc1.21.1/dev",
+  "copyright": "The Create Team / The Creators of Create",
+  "assets_license": "All Rights Reserved; excluded from this project MIT license",
+  "files": {
+    "stock_keeper.png": {
+      "git_blob_sha": "1485e07af1f269e54ff0cee7f442b83debec4687",
+      "url": "https://github.com/Creators-of-Create/Create/blob/mc1.21.1/dev/src/main/resources/assets/create/textures/gui/stock_keeper.png"
+    },
+    "widgets.png": {
+      "git_blob_sha": "1e1a64fd0b78872f9a566b1c512c8bf7bec56abc",
+      "url": "https://github.com/Creators-of-Create/Create/blob/mc1.21.1/dev/src/main/resources/assets/create/textures/gui/widgets.png"
+    },
+    "schedule.png": {
+      "git_blob_sha": "d553cd7ef470135af50a9e61f05e9a6b42e509b5",
+      "url": "https://github.com/Creators-of-Create/Create/blob/mc1.21.1/dev/src/main/resources/assets/create/textures/gui/schedule.png"
+    }
+  }
+}

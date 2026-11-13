@@ -1,0 +1,52 @@
+{
+  "screen": "HudSettingsScreen",
+  "viewport": [
+    427,
+    240
+  ],
+  "scale": 2.0,
+  "enteredScale": 2.0,
+  "fixtures": true,
+  "skin": "ORE",
+  "stations": 4,
+  "journeys": 5,
+  "arrivals": 0,
+  "boardStation": "",
+  "origin": "a",
+  "destination": "d",
+  "status": "mtrnav.ready",
+  "tracking": "",
+  "reminder": true,
+  "font": "minecraft-current-default",
+  "hudPercent": 150,
+  "reminderPercent": 150,
+  "autoFit": true,
+  "hudBounds": [
+    297.7,
+    4.8,
+    124.5,
+    43.00909090909091
+  ],
+  "reminderBounds": [
+    151.25,
+    4.8,
+    124.5,
+    29.346428571428568
+  ],
+  "controls": [
+    {
+      "label": "返回设置",
+      "rect": [
+        161,
+        212,
+        104,
+        20
+      ],
+      "active": true,
+      "focused": true,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    }
+  ]
+}

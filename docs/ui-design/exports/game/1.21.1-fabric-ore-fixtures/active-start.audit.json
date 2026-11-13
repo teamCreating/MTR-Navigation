@@ -1,0 +1,193 @@
+{
+  "screen": "NavigationScreen",
+  "viewport": [
+    960,
+    540
+  ],
+  "scale": 2.0,
+  "enteredScale": 3.0,
+  "fixtures": true,
+  "skin": "ORE",
+  "stations": 4,
+  "journeys": 5,
+  "arrivals": 0,
+  "boardStation": "",
+  "origin": "a",
+  "destination": "d",
+  "status": "mtrnav.ready",
+  "tracking": "WAITING",
+  "reminder": false,
+  "font": "minecraft-current-default",
+  "hudPercent": 150,
+  "reminderPercent": 150,
+  "autoFit": true,
+  "frame": [
+    170,
+    30,
+    620,
+    480
+  ],
+  "body": [
+    182,
+    124,
+    596,
+    349
+  ],
+  "expandedStops": 0,
+  "controls": [
+    {
+      "label": "换乘查询",
+      "rect": [
+        182,
+        64,
+        196,
+        22
+      ],
+      "active": true,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "tab"
+    },
+    {
+      "label": "车站到发",
+      "rect": [
+        382,
+        64,
+        196,
+        22
+      ],
+      "active": true,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "tab"
+    },
+    {
+      "label": "当前导航",
+      "rect": [
+        582,
+        64,
+        196,
+        22
+      ],
+      "active": true,
+      "focused": false,
+      "selected": true,
+      "pressDepth": 0.0,
+      "role": "tab"
+    },
+    {
+      "label": "×",
+      "rect": [
+        762,
+        34,
+        20,
+        20
+      ],
+      "active": true,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    },
+    {
+      "label": "…",
+      "rect": [
+        738,
+        34,
+        20,
+        20
+      ],
+      "active": true,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    },
+    {
+      "label": "返回",
+      "rect": [
+        178,
+        34,
+        20,
+        20
+      ],
+      "active": true,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    },
+    {
+      "label": "已上车",
+      "rect": [
+        638,
+        484,
+        140,
+        20
+      ],
+      "active": true,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    },
+    {
+      "label": "上一步",
+      "rect": [
+        182,
+        484,
+        147,
+        20
+      ],
+      "active": false,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    },
+    {
+      "label": "重新查询",
+      "rect": [
+        333,
+        484,
+        147,
+        20
+      ],
+      "active": true,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    },
+    {
+      "label": "结束导航",
+      "rect": [
+        484,
+        484,
+        147,
+        20
+      ],
+      "active": true,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    },
+    {
+      "label": "途经 1 站 · 点击展开",
+      "rect": [
+        200,
+        240,
+        566,
+        22
+      ],
+      "active": true,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "disclosure"
+    }
+  ]
+}

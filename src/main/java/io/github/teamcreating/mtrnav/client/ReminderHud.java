@@ -28,7 +28,7 @@ final class ReminderHud {
         double step = Math.min(1, (lastFrame == 0 ? 16_000_000L : now - lastFrame) / 220_000_000.0); lastFrame = now;
         expansion = NavigationPreferences.reminderExpanded() || now < expandedUntil ? Math.min(1, expansion + step) : Math.max(0, expansion - step);
         double ease = expansion * expansion * (3 - 2 * expansion);
-        int width = (int)(248 + 32 * ease), height = (int)(42 + 24 * ease);
+        int width = (int)(248 + 32 * ease), height = (int)(22 + 56 * ease);
         var placement = HudPositions.layout(false).reminder();
         double scale = placement.scale();
         double x = placement.x() + (placement.width() - width * scale) / 2, y = placement.y();
@@ -38,17 +38,16 @@ final class ReminderHud {
             background(g, width, height, routeColor(event.routeId()));
             String time = stale || stage.equals("passed") ? "—" : countdown(event.arrival());
             if (height >= 58) {
-                text(g, tr("mtrnav.reminder_stage." + stage), 9, 6, width - 65, stage.equals("pending") || stage.equals("passed") ? WARNING : ACCENT);
-                text(g, time, width - 51, 6, 43, TEXT);
-                text(g, routeCode(event.routeId()) + " · " + station(reminder.stationId()), 9, 22, width - 18, TEXT);
+                text(g, tr("mtrnav.reminder_stage." + stage), 9, 6, width - 65, stage.equals("pending") || stage.equals("passed") ? 0xFFFFB366 : 0xFF6CC349);
+                text(g, time, width - 51, 6, 43, 0xFFFFFFFF);
+                text(g, routeCode(event.routeId()) + " · " + station(reminder.stationId()), 9, 22, width - 18, 0xFFFFFFFF);
                 direction(g, width, 37);
-                if (height >= 64) text(g, tr(event.realtime() ? "mtrnav.realtime" : "mtrnav.scheduled") + " · " + tr("mtrnav.reminder_manage_key", openKey.get()), 9, 52, width - 18, MUTED);
+                if (height >= 70) text(g, VehicleNames.compact(event.consist(),width-18), 9, 52, width - 18, 0xFFD0D1D4);
+                if (height >= 76) text(g, tr(event.realtime() ? "mtrnav.realtime" : "mtrnav.scheduled") + " · " + tr("mtrnav.reminder_manage_key", openKey.get()), 9, 64, width - 18, 0xFFD0D1D4);
             } else {
-                text(g, routeCode(event.routeId()) + " · " + station(reminder.stationId()), 8, 4, width - 63, TEXT);
-                text(g, time, width - 49, 4, 41, ACCENT);
-                String hint = stage.equals("armed") ? tr("mtrnav.reminder_compact", reminder.minutes(), openKey.get()) : tr("mtrnav.reminder_stage." + stage) + " · " + openKey.get();
-                direction(g, width, 17);
-                text(g, tr(event.realtime() ? "mtrnav.realtime" : "mtrnav.scheduled") + " · " + hint, 8, 30, width - 16, stage.equals("pending") || stage.equals("passed") ? WARNING : MUTED);
+                text(g,routeCode(event.routeId())+" · "+station(reminder.stationId()),8,7,width-65,0xFFFFFFFF);
+                text(g,time,width-49,7,41,0xFF6CC349);
+
             }
         } finally { g.pose().popPose(); }
     }
@@ -57,23 +56,23 @@ final class ReminderHud {
         g.pose().pushPose();
         try {
             g.pose().translate(p.x(), p.y(), 0); g.pose().scale((float)p.scale(), (float)p.scale(), 1);
-            background(g, 280, 66, reminder == null ? ACCENT : routeColor(reminder.event().routeId()));
-            text(g, tr("mtrnav.hud_reminder_preview"), 9, 6, 215, ACCENT); text(g, "03:20", 229, 6, 43, TEXT);
-            text(g, reminder == null ? tr("mtrnav.hud_preview_line") : routeCode(reminder.event().routeId()) + " · " + station(reminder.stationId()), 9, 22, 262, TEXT);
+            background(g, 280, 78, reminder == null ? 0xFF6CC349 : routeColor(reminder.event().routeId()));
+            text(g, tr("mtrnav.hud_reminder_preview"), 9, 6, 215, 0xFF6CC349); text(g, "03:20", 229, 6, 43, 0xFFFFFFFF);
+            text(g, reminder == null ? tr("mtrnav.hud_preview_line") : routeCode(reminder.event().routeId()) + " · " + station(reminder.stationId()), 9, 22, 262, 0xFFFFFFFF);
             if (reminder != null) direction(g, 280, 37);
-            else text(g, tr("mtrnav.hud_reminder_direction"), 9, 37, 262, MUTED);
-            text(g, tr("mtrnav.hud_reminder_reserve"), 9, 52, 262, MUTED);
+            else text(g, tr("mtrnav.hud_reminder_direction"), 9, 37, 262, 0xFFD0D1D4);
+            text(g, reminder == null ? tr("mtrnav.vehicle_preview") : VehicleNames.compact(reminder.event().consist(),262), 9, 52, 262, 0xFFD0D1D4);
+            text(g, tr("mtrnav.hud_reminder_reserve"), 9, 64, 262, 0xFFD0D1D4);
         } finally { g.pose().popPose(); }
     }
     private static void background(GuiGraphics g, int width, int height, int tint) {
-        g.fill(4, 0, width - 4, height, 0xEE161C1B); g.fill(2, 2, width - 2, height - 2, 0xEE161C1B); g.fill(0, 5, width, height - 5, 0xEE161C1B);
-        g.fill(9, 0, width - 9, 1, ACCENT); g.fill(0, 7, 2, height - 7, tint);
+        hudFrame(g, width, height, tint);
     }
     private static void direction(GuiGraphics g, int width, int y) {
         var event = reminder.event();
         String platformText = tr("mtrnav.platform", platform(event.platformId()));
         int reserved = Math.min((width - 24) / 2, Minecraft.getInstance().font.width(platformText));
-        text(g, "→ " + primary(event.destination()), 9, y, width - reserved - 27, MUTED);
-        text(g, platformText, width - reserved - 9, y, reserved, TEXT);
+        text(g, "→ " + primary(event.destination()), 9, y, width - reserved - 27, 0xFFD0D1D4);
+        text(g, platformText, width - reserved - 9, y, reserved, 0xFFFFFFFF);
     }
 }

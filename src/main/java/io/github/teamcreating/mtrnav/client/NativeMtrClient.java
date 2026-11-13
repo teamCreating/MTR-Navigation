@@ -142,9 +142,11 @@ public final class NativeMtrClient {
                 if (expected.catalog().routes().stream().noneMatch(r -> r.id().equals(route))) continue;
                 var pos = expected.catalog().station(station);
                 platforms.putIfAbsent(platform, new Platform(platform, station, NativeTimetable.text(e, "platformName"), pos == null ? 0 : pos.x(), pos == null ? 0 : pos.y(), pos == null ? 0 : pos.z()));
+                var cars = new ArrayList<String>();
+                for (var car : NativeTimetable.array(e, "cars")) { String model = NativeTimetable.text(car.getAsJsonObject(), "vehicleId"); if (!model.isBlank()) cars.add(model); }
                 events.add(new StopEvent(new RunKey("native-board", 0, NativeTimetable.number(e, "departureIndex"), 0), "", route, platform, -1,
                         NativeTimetable.text(e, "destination"), NativeTimetable.number(e, "arrival"), NativeTimetable.number(e, "departure"),
-                        NativeTimetable.number(e, "deviation"), e.has("realtime") && e.get("realtime").getAsBoolean()));
+                        NativeTimetable.number(e, "deviation"), e.has("realtime") && e.get("realtime").getAsBoolean(), new Consist(cars, StockSource.UNKNOWN)));
             }
             var c = expected.catalog();
             return new BoardData(new Catalog(c.dimension(), c.revision(), c.stations(), List.copyOf(platforms.values()), c.routes()), List.copyOf(events), NativeTimetable.number(data, "currentTime"));
@@ -153,6 +155,7 @@ public final class NativeMtrClient {
             sample(parsed.sample()); NavigationClient.catalog = parsed.catalog();
             NavigationClient.observeReminder(station, parsed.events(), parsed.sample(), reminderId);
             if (station.equals(NavigationClient.boardStation)) {
+                NavigationClient.fleet = parsed.events().stream().flatMap(e -> e.consist().cars().stream()).distinct().sorted().toList();
                 NavigationClient.arrivals = parsed.events(); NavigationClient.boardLoading = false;
                 if (parsed.sample() > NavigationClient.boardSampleMillis) {
                     NavigationClient.boardUpdatedNanos = System.nanoTime(); NavigationClient.boardSampleMillis = parsed.sample();

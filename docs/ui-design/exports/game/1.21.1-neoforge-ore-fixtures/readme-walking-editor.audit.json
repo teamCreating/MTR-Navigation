@@ -1,0 +1,288 @@
+{
+  "screen": "WalkingEditorScreen",
+  "viewport": [
+    960,
+    540
+  ],
+  "scale": 2.0,
+  "enteredScale": 2.0,
+  "fixtures": true,
+  "skin": "ORE",
+  "stations": 4,
+  "journeys": 5,
+  "arrivals": 0,
+  "boardStation": "",
+  "origin": "a",
+  "destination": "d",
+  "status": "mtrnav.ready",
+  "tracking": "",
+  "reminder": false,
+  "vehicleSupported": true,
+  "fleet": [
+    "m_train_cab_1",
+    "m_train_trailer",
+    "sp1900_cab_1"
+  ],
+  "vehicleMode": "NONE",
+  "vehicleModels": [],
+  "journeyStocks": [
+    [
+      {
+        "cars": [
+          "m_train_cab_1",
+          "m_train_trailer",
+          "m_train_cab_1"
+        ],
+        "source": "ACTUAL"
+      },
+      {
+        "cars": [
+          "m_train_cab_1",
+          "m_train_trailer"
+        ],
+        "source": "PLANNED"
+      }
+    ],
+    [
+      {
+        "cars": [
+          "sp1900_cab_1",
+          "m_train_trailer",
+          "m_train_cab_1"
+        ],
+        "source": "ACTUAL"
+      },
+      {
+        "cars": [
+          "m_train_cab_1",
+          "m_train_trailer"
+        ],
+        "source": "PLANNED"
+      }
+    ],
+    [
+      {
+        "cars": [
+          "m_train_cab_1",
+          "m_train_trailer",
+          "m_train_cab_1"
+        ],
+        "source": "ACTUAL"
+      },
+      {
+        "cars": [
+          "m_train_cab_1",
+          "m_train_trailer"
+        ],
+        "source": "PLANNED"
+      }
+    ],
+    [
+      {
+        "cars": [
+          "m_train_cab_1",
+          "m_train_trailer",
+          "m_train_cab_1"
+        ],
+        "source": "ACTUAL"
+      },
+      {
+        "cars": [
+          "m_train_cab_1",
+          "m_train_trailer"
+        ],
+        "source": "PLANNED"
+      }
+    ],
+    [
+      {
+        "cars": [
+          "m_train_cab_1",
+          "m_train_trailer",
+          "m_train_cab_1"
+        ],
+        "source": "ACTUAL"
+      },
+      {
+        "cars": [
+          "m_train_cab_1",
+          "m_train_trailer"
+        ],
+        "source": "PLANNED"
+      }
+    ]
+  ],
+  "routeTypes": [
+    "HIGH_SPEED",
+    "NORMAL",
+    "LIGHT_RAIL"
+  ],
+  "font": "minecraft-current-default",
+  "hudPercent": 150,
+  "reminderPercent": 150,
+  "autoFit": true,
+  "controls": [
+    {
+      "label": "风铃渡  ·  更换",
+      "rect": [
+        210,
+        140,
+        528,
+        20
+      ],
+      "active": true,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    },
+    {
+      "label": "站台（可选）：不指定站台",
+      "rect": [
+        210,
+        164,
+        528,
+        20
+      ],
+      "active": true,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    },
+    {
+      "label": "星沼湾  ·  更换",
+      "rect": [
+        210,
+        210,
+        528,
+        20
+      ],
+      "active": true,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    },
+    {
+      "label": "站台（可选）：不指定站台",
+      "rect": [
+        210,
+        234,
+        528,
+        20
+      ],
+      "active": true,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    },
+    {
+      "label": "分钟",
+      "rect": [
+        210,
+        298,
+        55,
+        20
+      ],
+      "active": true,
+      "focused": true,
+      "value": "3"
+    },
+    {
+      "label": "秒",
+      "rect": [
+        289,
+        298,
+        55,
+        20
+      ],
+      "active": true,
+      "focused": false,
+      "value": ""
+    },
+    {
+      "label": "往返都能走：是（保存两个方向）",
+      "rect": [
+        480,
+        286,
+        258,
+        20
+      ],
+      "active": true,
+      "focused": false,
+      "selected": true,
+      "pressDepth": 0.0,
+      "role": "switch"
+    },
+    {
+      "label": "用于路线查询：开",
+      "rect": [
+        480,
+        310,
+        258,
+        20
+      ],
+      "active": true,
+      "focused": false,
+      "selected": true,
+      "pressDepth": 0.0,
+      "role": "switch"
+    },
+    {
+      "label": "名称（选填）",
+      "rect": [
+        210,
+        396,
+        528,
+        20
+      ],
+      "active": true,
+      "focused": false,
+      "value": ""
+    },
+    {
+      "label": "返回",
+      "rect": [
+        202,
+        457,
+        181,
+        20
+      ],
+      "active": true,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    },
+    {
+      "label": "提交共享建议",
+      "rect": [
+        387,
+        457,
+        181,
+        20
+      ],
+      "active": true,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    },
+    {
+      "label": "保存，仅自己使用",
+      "rect": [
+        572,
+        457,
+        181,
+        20
+      ],
+      "active": true,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    }
+  ]
+}

@@ -1,0 +1,110 @@
+{
+  "version": "0.1.1",
+  "date": "2026-11-14",
+  "artifacts": [
+    {
+      "minecraft": "1.21.1",
+      "loader": "neoforge",
+      "version": "0.1.1",
+      "file": "MTR-Navigation-neoforge-0.1.1+1.21.1.jar",
+      "sha256": "ceed73507ca20133a73fe1b1df6c2ab6dab0785e62fc181e38b13e1403a0c2d8"
+    },
+    {
+      "minecraft": "1.21.1",
+      "loader": "fabric",
+      "version": "0.1.1",
+      "file": "MTR-Navigation-fabric-0.1.1+1.21.1.jar",
+      "sha256": "7e11645e5d5e2494c51096c61adfc46e04d74ba4f5da60e8ca88af45be53a955"
+    },
+    {
+      "minecraft": "1.21.4",
+      "loader": "neoforge",
+      "version": "0.1.1",
+      "file": "MTR-Navigation-neoforge-0.1.1+1.21.4.jar",
+      "sha256": "38f520e02b66ba0177253a9b993f20c69c7cd86359490f6a7fc123e453af860a"
+    },
+    {
+      "minecraft": "1.21.4",
+      "loader": "fabric",
+      "version": "0.1.1",
+      "file": "MTR-Navigation-fabric-0.1.1+1.21.4.jar",
+      "sha256": "ba62867dd9d98f9b79bdfe36eb195646e3e90e8dde262e853bdd83c4ed2205ce"
+    }
+  ],
+  "regressions": {
+    "tests": 512,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 12
+  },
+  "readmeScenario": {
+    "version": "0.1.1",
+    "world": "苔灯群岛 / Mosslight Isles",
+    "fictional": true,
+    "captureMethod": "Actual Minecraft framebuffer; native game-thread input; no image retouching",
+    "target": "Minecraft 1.21.1 / NeoForge with Modern UI",
+    "stations": [
+      "苔灯港",
+      "风铃渡",
+      "雾松丘",
+      "星沼湾"
+    ],
+    "lines": [
+      "星汐快线",
+      "萤环线",
+      "岚湾轻轨"
+    ],
+    "captures": [
+      {
+        "file": "journey-query.png",
+        "screen": "NavigationScreen",
+        "viewport": [
+          960,
+          540
+        ]
+      },
+      {
+        "file": "vehicle-selection.png",
+        "screen": "VehicleSelectionScreen",
+        "viewport": [
+          960,
+          540
+        ]
+      },
+      {
+        "file": "station-directory.png",
+        "screen": "StationDirectoryScreen",
+        "viewport": [
+          960,
+          540
+        ]
+      },
+      {
+        "file": "departures.png",
+        "screen": "NavigationScreen",
+        "viewport": [
+          960,
+          540
+        ]
+      },
+      {
+        "file": "hud-settings.png",
+        "screen": "HudSettingsScreen",
+        "viewport": [
+          960,
+          540
+        ]
+      },
+      {
+        "file": "walking-editor.png",
+        "screen": "WalkingEditorScreen",
+        "viewport": [
+          960,
+          540
+        ]
+      }
+    ],
+    "exitCode": 0
+  },
+  "vehicleGameChecks": "1.21.1 NeoForge; see docs/validation/vehicles/README.md"
+}

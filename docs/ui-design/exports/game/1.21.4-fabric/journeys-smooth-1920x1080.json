@@ -1,0 +1,12 @@
+{
+  "target": "1.21.4-fabric",
+  "source": "run\\ui-review\\1.21.4-fabric\\screenshots\\2026-11-12_16.59.58.png",
+  "requested_client_size": null,
+  "actual_image_size": [
+    1920,
+    1080
+  ],
+  "keys_before_capture": [
+    "f6"
+  ]
+}

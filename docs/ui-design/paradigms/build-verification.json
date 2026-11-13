@@ -1,0 +1,62 @@
+{
+  "artifacts": [
+    {
+      "minecraft": "1.21.1",
+      "loader": "neoforge",
+      "version": "0.1.0-alpha.1",
+      "file": "MTR-Navigation-neoforge-0.1.0-alpha.1+1.21.1.jar",
+      "sha256": "f4fdd2a8ffadfb6a7fc03cfffbc2c79518d215e05692ea9731f45eef5e816cbe"
+    },
+    {
+      "minecraft": "1.21.1",
+      "loader": "fabric",
+      "version": "0.1.0-alpha.1",
+      "file": "MTR-Navigation-fabric-0.1.0-alpha.1+1.21.1.jar",
+      "sha256": "6384033da278fa84d3b06abe2f7f89b85d2a9c4532e7d845992a3e1a4d159c7d"
+    },
+    {
+      "minecraft": "1.21.4",
+      "loader": "neoforge",
+      "version": "0.1.0-alpha.1",
+      "file": "MTR-Navigation-neoforge-0.1.0-alpha.1+1.21.4.jar",
+      "sha256": "63fcc89b94e87c72c2f5a2cb5a34ccd216a23dcaf73759c98a48b6f44b16043b"
+    },
+    {
+      "minecraft": "1.21.4",
+      "loader": "fabric",
+      "version": "0.1.0-alpha.1",
+      "file": "MTR-Navigation-fabric-0.1.0-alpha.1+1.21.4.jar",
+      "sha256": "96fb3e90a572d84b55ed08495b61662fa1f959173da2bda79c8b9710ffd4d5e8"
+    }
+  ],
+  "regressions": [
+    {
+      "suite": "build/test-results/test",
+      "tests": 108,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 2
+    },
+    {
+      "suite": "build/test-results/testFabricCore",
+      "tests": 108,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 2
+    },
+    {
+      "suite": "build/targets/1.21.4-neoforge/test-results/test",
+      "tests": 108,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 2
+    },
+    {
+      "suite": "build/targets/1.21.4-neoforge/test-results/testFabricCore",
+      "tests": 108,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 2
+    }
+  ]
+}

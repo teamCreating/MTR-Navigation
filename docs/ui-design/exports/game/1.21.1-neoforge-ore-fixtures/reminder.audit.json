@@ -1,0 +1,124 @@
+{
+  "screen": "ReminderSettingsScreen",
+  "viewport": [
+    960,
+    540
+  ],
+  "scale": 2.0,
+  "enteredScale": 2.0,
+  "fixtures": true,
+  "skin": "ORE",
+  "stations": 4,
+  "journeys": 5,
+  "arrivals": 6,
+  "boardStation": "a",
+  "origin": "a",
+  "destination": "d",
+  "status": "mtrnav.ready",
+  "tracking": "",
+  "reminder": true,
+  "font": "minecraft-current-default",
+  "hudPercent": 150,
+  "reminderPercent": 150,
+  "autoFit": true,
+  "controls": [
+    {
+      "label": "×",
+      "rect": [
+        670,
+        135,
+        18,
+        20
+      ],
+      "active": true,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    },
+    {
+      "label": "−",
+      "rect": [
+        272,
+        325,
+        24,
+        20
+      ],
+      "active": true,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    },
+    {
+      "label": "到站前 9 分钟提醒",
+      "rect": [
+        300,
+        325,
+        360,
+        20
+      ],
+      "active": false,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    },
+    {
+      "label": "+",
+      "rect": [
+        664,
+        325,
+        24,
+        20
+      ],
+      "active": true,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    },
+    {
+      "label": "提醒条显示：自动收起（保留方向与站台）",
+      "rect": [
+        272,
+        349,
+        416,
+        20
+      ],
+      "active": true,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "switch"
+    },
+    {
+      "label": "取消提醒",
+      "rect": [
+        272,
+        377,
+        205,
+        20
+      ],
+      "active": true,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    },
+    {
+      "label": "更新提醒",
+      "rect": [
+        483,
+        377,
+        205,
+        20
+      ],
+      "active": true,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    }
+  ]
+}

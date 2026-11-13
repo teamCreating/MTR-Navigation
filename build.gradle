@@ -1,24 +1,68 @@
 plugins { id 'net.neoforged.moddev' version '2.0.146' }
+def minecraftTarget = project.property('minecraft_version').toString()
+def ldlib2Preview = project.hasProperty('ldlib2Preview')
+if (ldlib2Preview && minecraftTarget != '1.21.1') throw new GradleException('LDLib2 preview is currently scoped to Minecraft 1.21.1 NeoForge')
+def targets = new groovy.json.JsonSlurper().parse(file('gradle/minecraft-targets.json'))
+def target = targets[minecraftTarget]
+if (target == null) throw new GradleException("Unsupported Minecraft target: ${minecraftTarget}. Available: ${targets.keySet()}")
+if (minecraftTarget != '1.21.1') layout.buildDirectory = file("build/targets/${minecraftTarget}-neoforge")
+if (ldlib2Preview) layout.buildDirectory = file('build/targets/1.21.1-neoforge-ldlib2')
 version = project.mod_version
 group = project.maven_group
 base.archivesName = 'MTR-Navigation-neoforge'
+if (ldlib2Preview) base.archivesName = 'MTR-Navigation-neoforge-ldlib2-preview'
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 neoForge {
-    version = project.neoforge_version
+    version = target.neoforge
     runs {
         client {
             client()
-            gameDirectory = file('run')
+            gameDirectory = file(project.hasProperty('oreReview') ? "run/ui-review/${minecraftTarget}-neoforge-ore${project.hasProperty('oreFixtures') ? '-fixtures' : ''}" : project.hasProperty('paradigmPreview') ? "run/ui-review/${minecraftTarget}-neoforge-paradigms" : project.hasProperty('v2Review') ? "run/ui-review/${minecraftTarget}-neoforge-v2" : ldlib2Preview ? 'run/ui-review/1.21.1-neoforge-ldlib2' : project.hasProperty('uiPreview') ? "run/ui-review/${minecraftTarget}-neoforge" : minecraftTarget == '1.21.1' ? 'run' : "run/${minecraftTarget}-neoforge")
+            if(project.hasProperty('oreReview')) {
+                if(project.hasProperty('oreBackground'))systemProperty 'mtrnav.oreBackgroundQa','true'
+                systemProperty 'mtrnav.oreReview','true'
+                systemProperty 'mtrnav.uiPreviewLabel',"${minecraftTarget}-neoforge-ore${project.hasProperty('oreFixtures') ? '-fixtures' : ''}"
+                if(project.hasProperty('oreFixtures')) {systemProperty 'mtrnav.uiPreview','true';systemProperty 'mtrnav.v2Review','true'}
+            }
+            if (project.hasProperty('paradigmPreview')) {
+                systemProperty 'mtrnav.uiPreview', 'true'
+                systemProperty 'mtrnav.paradigmPreview', 'true'
+                systemProperty 'mtrnav.uiPreviewLabel', "${minecraftTarget}-neoforge-paradigms"
+            }
+            if (ldlib2Preview) {
+                systemProperty 'mtrnav.uiPreview', 'true'
+                systemProperty 'mtrnav.ldlib2Preview', 'true'
+                systemProperty 'mtrnav.uiPreviewLabel', '1.21.1-neoforge-ldlib2'
+                systemProperty 'mtrnav.ldlib2Xml', file('src/ldlib2/resources/assets/mtrnav/ui/ldlib2/navigation.xml').absolutePath
+            }
+            if(project.hasProperty('v2Review')) { systemProperty 'mtrnav.uiPreview','true'; systemProperty 'mtrnav.v2Review','true'; systemProperty 'mtrnav.uiPreviewLabel',"${minecraftTarget}-neoforge-v2" }
             if (project.hasProperty('quickplay')) programArguments.addAll('--quickPlaySingleplayer', project.property('quickplay').toString())
             if (project.hasProperty('nativeSmoke')) systemProperty 'mtrnav.forceNative', 'true'
+            if (project.hasProperty('uiPreview')) systemProperty 'mtrnav.uiPreview', 'true'
+            if (project.hasProperty('uiPreview')) systemProperty 'mtrnav.uiPreviewLabel', "${minecraftTarget}-neoforge"
+            if (project.hasProperty('uiPreviewFont')) systemProperty 'mtrnav.uiPreviewFont', project.property('uiPreviewFont').toString()
+            if (project.hasProperty('uiPreviewScene')) systemProperty 'mtrnav.uiPreviewScene', project.property('uiPreviewScene').toString()
+            if (project.hasProperty('uiPreviewVariant')) systemProperty 'mtrnav.uiPreviewVariant', project.property('uiPreviewVariant').toString()
         }
-        server { server(); gameDirectory = file('run-server'); programArguments.add('--nogui') }
+        server { server(); gameDirectory = file(minecraftTarget == '1.21.1' ? 'run-server' : "run-server/${minecraftTarget}-neoforge"); programArguments.add('--nogui') }
     }
     mods { mtrnav { sourceSet sourceSets.main } }
 }
 repositories { mavenCentral() }
-def mtrJar = file('.cache/downloads/MTR-neoforge-4.1.0-beta.2+1.21.1.jar')
+def mtrJar = file(".cache/downloads/MTR-neoforge-${target.mtr}+${minecraftTarget}.jar")
+if (!mtrJar.isFile()) throw new GradleException("Missing ${mtrJar.name}. Run: python tools/download_dependencies.py --minecraft ${minecraftTarget}")
+sourceSets.main.java.srcDir("src/minecraft/${minecraftTarget}/java")
+if (ldlib2Preview) {
+    sourceSets.main.java.srcDir('src/ldlib2/java')
+    sourceSets.main.resources.srcDir('src/ldlib2/resources')
+}
 dependencies {
+    if (ldlib2Preview) {
+        def ldlibJar = file('.cache/ldlib2/ldlib2-2.2.46.a-all.jar')
+        if (!ldlibJar.isFile()) throw new GradleException('Run python tools/ui/fetch_ldlib2.py before enabling ldlib2Preview')
+        implementation files(ldlibJar)
+        compileOnly fileTree('.cache/ldlib2/compile') { include '*.jar' }
+    }
     compileOnly files(mtrJar)
     testImplementation files(mtrJar)
     testImplementation platform('org.junit:junit-bom:5.10.2')
@@ -33,13 +77,14 @@ test {
     systemProperty 'java.io.tmpdir', rootProject.file('.tmp').absolutePath
     systemProperty 'mtrnav.root', rootProject.projectDir.absolutePath
     systemProperty 'mtrnav.generateFixture', project.hasProperty('generateFixture')
+    systemProperty 'mtrnav.generateVehicleFixture', project.hasProperty('generateVehicleFixture')
     systemProperty 'mtrnav.testOverlay', project.hasProperty('testOverlay')
     systemProperty 'mtrnav.fixtureRoot', rootProject.file(project.findProperty('fixtureRoot') ?: 'build/fixtures/mtr').absolutePath
 }
 tasks.register('testFabricCore', Test) {
     description = 'Runs the same pure navigation and real Core adapter tests against the Fabric MTR bundle.'
     testClassesDirs = sourceSets.test.output.classesDirs
-    classpath = sourceSets.test.runtimeClasspath.filter { !it.name.startsWith('MTR-neoforge-') } + files('.cache/downloads/MTR-fabric-4.1.0-beta.2+1.21.1.jar')
+    classpath = sourceSets.test.runtimeClasspath.filter { !it.name.startsWith('MTR-neoforge-') } + files(".cache/downloads/MTR-fabric-${target.mtr}+${minecraftTarget}.jar")
     useJUnitPlatform()
     systemProperty 'java.io.tmpdir', rootProject.file('.tmp').absolutePath
     systemProperty 'mtrnav.root', rootProject.projectDir.absolutePath
@@ -47,6 +92,14 @@ tasks.register('testFabricCore', Test) {
 }
 processResources {
     inputs.property 'version', project.version
-    filesMatching('META-INF/neoforge.mods.toml') { expand(version: project.version) }
+    inputs.property 'minecraft_range', target.minecraft_range
+    inputs.property 'neoforge_range', target.neoforge_range
+    filesMatching('META-INF/neoforge.mods.toml') {
+        expand(version: project.version, minecraft_range: target.minecraft_range, neoforge_range: target.neoforge_range)
+    }
 }
-jar { from('LICENSE', 'NOTICE'); manifest.attributes('MixinConfigs': 'mtrnav.mixins.json') }
+jar {
+    from('LICENSE', 'NOTICE')
+    if (!ldlib2Preview) exclude('assets/mtrnav/textures/gui/create/**')
+    manifest.attributes('MixinConfigs': 'mtrnav.mixins.json')
+}

@@ -1,0 +1,10 @@
+{
+  "target": "1.21.4-fabric-ore-fixtures",
+  "source": "run\\ui-review\\1.21.4-fabric-ore-fixtures\\screenshots\\2026-11-13_18.51.58.png",
+  "requested_client_size": null,
+  "actual_image_size": [
+    854,
+    480
+  ],
+  "keys_before_capture": []
+}

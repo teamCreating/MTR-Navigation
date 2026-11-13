@@ -1,0 +1,24 @@
+{
+  "target": "1.21.1-neoforge-ore",
+  "source": "gdigrab exact named project window",
+  "checks": [
+    "held button face sinks",
+    "pointer-down does not navigate",
+    "outside release cancels",
+    "inside release activates once"
+  ],
+  "held": {
+    "label": "最快到达 ▾",
+    "rect": [
+      686,
+      134,
+      92,
+      18
+    ],
+    "active": true,
+    "focused": true,
+    "selected": false,
+    "pressDepth": 1.0,
+    "role": "button"
+  }
+}

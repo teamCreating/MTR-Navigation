@@ -12,24 +12,54 @@ final class WalkingManagementScreen extends WalkingListScreen {
     WalkingManagementScreen(Screen previous) {
         super(previous, tr("mtrnav.walk_title"), List::of); items = this::rows;
         if (!WalkingClient.supportsShared()) tab = 1;
-        tools.add(new Tool(() -> tr("mtrnav.walk_tab." + tab), () -> { tab = (tab + 1) % (WalkingClient.admin ? 4 : 3); WalkingClient.reviewMode = tab == 3; WalkingClient.page = 0; WalkingClient.refresh(); }));
-        tools.add(new Tool(tr("mtrnav.walk_new"), () -> Minecraft.getInstance().setScreen(new WalkingEditorScreen(this, null, null))));
-        tools.add(new Tool(tr("mtrnav.walk_details"), () -> { var item = selected(); if (item != null) item.action().run(); }));
-        tools.add(new Tool(tr("mtrnav.walk_refresh"), WalkingClient::refresh));
-        tools.add(new Tool(tr("mtrnav.walk_import"), this::importLinks)); tools.add(new Tool(tr("mtrnav.walk_export"), WalkingClient::exportLocal));
-        tools.add(new Tool(() -> tr("mtrnav.walk_consent", WalkingClient.consent() ? tr("mtrnav.on") : tr("mtrnav.off")), () -> {
-            if (WalkingClient.consent()) WalkingClient.consent(false); else confirmConsent(this, () -> {});
-        }));
-        tools.add(new Tool(() -> tr("mtrnav.walk_window", WalkingClient.options().extraMinutes() < 0 ? tr("mtrnav.walk_unlimited") : WalkingClient.options().extraMinutes()), WalkingClient::nextWindow));
-        tools.add(new Tool(tr("mtrnav.walk_previous_page"), () -> WalkingClient.page = Math.max(0, WalkingClient.page - 1)));
-        tools.add(new Tool(() -> tr("mtrnav.walk_next_page", WalkingClient.page + 1, WalkingClient.proposalPages()), () -> WalkingClient.page = Math.min(WalkingClient.proposalPages() - 1, WalkingClient.page + 1)));
-        tools.add(new Tool(tr("mtrnav.walk_backups"), this::backups));
+        WalkingClient.reviewMode = false; WalkingClient.page = 0;
+        configure();
         if (WalkingClient.supportsShared()) WalkingClient.refresh();
+    }
+    private boolean knownAdmin;
+    private void configure() {
+        tabs.clear(); tools.clear(); footerTools.clear(); knownAdmin = WalkingClient.admin;
+        for (int value = 0; value < 3 + (knownAdmin ? 1 : 0); value++) {
+            final int target = value;
+            tabs.add(new Tool(() -> tr("mtrnav.walk_tab." + target), () -> switchTab(target)));
+        }
+        tabs.add(new Tool(tr("mtrnav.walk_layout.settings"), () -> Minecraft.getInstance().setScreen(new WalkingSettingsScreen(this))));
+        activeTab = tab;
+        context = tr("mtrnav.walk_layout.context." + tab);
+        emptyMessage = tr("mtrnav.walk_layout.empty." + tab);
+        if (tab == 1) {
+            tools.add(new Tool(tr("mtrnav.walk_new"), () -> Minecraft.getInstance().setScreen(new WalkingEditorScreen(this, null, null))));
+            tools.add(new Tool(tr("mtrnav.walk_details"), this::openSelected));
+            tools.add(new Tool(tr("mtrnav.walk_import"), this::importLinks));
+            tools.add(new Tool(tr("mtrnav.walk_export"), WalkingClient::exportLocal));
+        } else {
+            tools.add(new Tool(tr("mtrnav.walk_refresh"), WalkingClient::refresh));
+            tools.add(new Tool(tr("mtrnav.walk_details"), this::openSelected));
+            if (tab == 3) tools.add(new Tool(tr("mtrnav.walk_backups"), this::backups));
+        }
+        if (tab >= 2 && WalkingClient.supportsShared()) {
+            footerTools.add(new Tool(tr("mtrnav.walk_previous_page"), () -> WalkingClient.page = Math.max(0, WalkingClient.page - 1)));
+            footerTools.add(new Tool(() -> tr("mtrnav.walk_next_page", WalkingClient.page + 1, WalkingClient.proposalPages()), () -> WalkingClient.page = Math.min(WalkingClient.proposalPages() - 1, WalkingClient.page + 1)));
+        }
+    }
+    private void openSelected() { var item = selected(); if (item != null && item.action() != null) item.action().run(); }
+    private void switchTab(int target) {
+        tab = target; WalkingClient.reviewMode = tab == 3; WalkingClient.page = 0;
+        resetList();
+        if (WalkingClient.supportsShared()) WalkingClient.refresh();
+        configure(); rebuildWidgets();
+    }
+    @Override public void tick() {
+        super.tick();
+        if (knownAdmin != WalkingClient.admin) {
+            if (tab == 3 && !WalkingClient.admin) { tab = 2; WalkingClient.reviewMode = false; WalkingClient.refresh(); }
+            configure(); rebuildWidgets();
+        }
     }
     private List<Item> rows() {
         if (tab == 3 && !WalkingClient.admin) { tab = 2; WalkingClient.reviewMode = false; }
         if (tab == 1) return WalkingClient.local().stream().map(c -> new Item(c.id(), label(c), detail(c) + " · " + tr("mtrnav.walk_personal"), () -> connection(c, null))).toList();
-        if (!WalkingClient.supportsShared()) return List.of(new Item("unavailable", tr("mtrnav.walk_message.server_unavailable"), tr("mtrnav.walk_personal_available"), () -> tab = 1));
+        if (!WalkingClient.supportsShared()) return List.of(new Item("unavailable", tr("mtrnav.walk_message.server_unavailable"), tr("mtrnav.walk_personal_available"), () -> switchTab(1)));
         if (tab == 0) return WalkingClient.shared.stream().map(e -> new Item(e.connection().id(), label(e.connection()), detail(e.connection()) + " · r" + e.revision(), () -> connection(e.connection(), e))).toList();
         return WalkingClient.proposals().stream().filter(p -> tab == 3 || Minecraft.getInstance().player != null && p.author().equals(Minecraft.getInstance().player.getUUID()))
                 .map(p -> new Item(p.id(), tr("mtrnav.walk_status." + p.status().name().toLowerCase(Locale.ROOT)) + " · " + label(p.value()), detail(p.value()) + " · " + tr("mtrnav.walk_author", p.author()) + " · r" + p.revision() + " · " + p.reason(), () -> proposal(p))).toList();

@@ -1,0 +1,338 @@
+{
+  "variant": "HYBRID",
+  "page": "HUD",
+  "view": "ROUTES",
+  "lastInput": "key 297",
+  "scenario": "NORMAL",
+  "font": "PIXEL",
+  "pixelSize": [
+    1920,
+    1080
+  ],
+  "guiSize": [
+    960,
+    540
+  ],
+  "guiScale": 2.0,
+  "frame": [
+    150,
+    62,
+    660,
+    416
+  ],
+  "compact": false,
+  "origin": "南苑 Nanyuan",
+  "destination": "滨海北 Binhai North",
+  "selectedJourney": 0,
+  "selectedStation": "central",
+  "stationSearch": "",
+  "stationCount": 14,
+  "stationScroll": 0,
+  "index": "",
+  "nearby": false,
+  "indexOpen": false,
+  "listScroll": {
+    "ROUTES": 0,
+    "DEPARTURES": 0,
+    "ACTIVE": 0
+  },
+  "detailScroll": 0,
+  "queryCollapsed": false,
+  "details": false,
+  "activeTrip": false,
+  "canStart": true,
+  "notice": "",
+  "hud": {
+    "navigationPercent": 150,
+    "reminderPercent": 150,
+    "navigationX": 0.05,
+    "navigationY": 0.1,
+    "reminderX": 0.7,
+    "reminderY": 0.1,
+    "autoFit": true,
+    "expanded": true
+  },
+  "hudReminderSelected": false,
+  "settingsScroll": 0,
+  "hudSaved": false,
+  "dragging": false,
+  "settings": [
+    158,
+    122,
+    184,
+    320
+  ],
+  "preview": [
+    354,
+    122,
+    448,
+    320
+  ],
+  "navigationHud": [
+    377,
+    153,
+    154,
+    62
+  ],
+  "reminderHud": [
+    556,
+    154,
+    154,
+    50
+  ],
+  "controls": [
+    {
+      "rect": [
+        584,
+        70,
+        94,
+        20
+      ],
+      "active": true,
+      "label": "融合方案",
+      "focused": false,
+      "id": "variant"
+    },
+    {
+      "rect": [
+        682,
+        70,
+        96,
+        20
+      ],
+      "active": true,
+      "label": "A · 像素中文",
+      "focused": false,
+      "id": "font"
+    },
+    {
+      "rect": [
+        784,
+        71,
+        18,
+        18
+      ],
+      "active": true,
+      "label": "×",
+      "focused": false,
+      "id": "close"
+    },
+    {
+      "rect": [
+        158,
+        94,
+        48,
+        20
+      ],
+      "active": true,
+      "label": "路线",
+      "focused": false,
+      "id": "nav0"
+    },
+    {
+      "rect": [
+        210,
+        94,
+        48,
+        20
+      ],
+      "active": true,
+      "label": "到发",
+      "focused": false,
+      "id": "nav1"
+    },
+    {
+      "rect": [
+        262,
+        94,
+        48,
+        20
+      ],
+      "active": true,
+      "label": "行程",
+      "focused": false,
+      "id": "nav2"
+    },
+    {
+      "rect": [
+        314,
+        94,
+        48,
+        20
+      ],
+      "active": true,
+      "label": "选站",
+      "focused": false,
+      "id": "nav3"
+    },
+    {
+      "rect": [
+        366,
+        94,
+        48,
+        20
+      ],
+      "active": true,
+      "label": "HUD · 已选中",
+      "focused": false,
+      "id": "nav4"
+    },
+    {
+      "rect": [
+        418,
+        94,
+        48,
+        20
+      ],
+      "active": true,
+      "label": "组件",
+      "focused": false,
+      "id": "nav5"
+    },
+    {
+      "rect": [
+        162,
+        142,
+        172,
+        20
+      ],
+      "active": true,
+      "label": "编辑：导航框",
+      "focused": false,
+      "id": "hudSetting0"
+    },
+    {
+      "rect": [
+        162,
+        166,
+        172,
+        20
+      ],
+      "active": true,
+      "label": "大小：150%",
+      "focused": false,
+      "id": "hudSetting1"
+    },
+    {
+      "rect": [
+        162,
+        190,
+        172,
+        20
+      ],
+      "active": true,
+      "label": "自动适配：开 · 已选中",
+      "focused": false,
+      "id": "hudSetting2"
+    },
+    {
+      "rect": [
+        162,
+        234,
+        84,
+        20
+      ],
+      "active": true,
+      "label": "放到左上角",
+      "focused": false,
+      "id": "hudSetting3"
+    },
+    {
+      "rect": [
+        250,
+        234,
+        84,
+        20
+      ],
+      "active": true,
+      "label": "放到右上角",
+      "focused": false,
+      "id": "hudSetting4"
+    },
+    {
+      "rect": [
+        162,
+        258,
+        84,
+        20
+      ],
+      "active": true,
+      "label": "放到左下角",
+      "focused": false,
+      "id": "hudSetting5"
+    },
+    {
+      "rect": [
+        250,
+        258,
+        84,
+        20
+      ],
+      "active": true,
+      "label": "放到右下角",
+      "focused": false,
+      "id": "hudSetting6"
+    },
+    {
+      "rect": [
+        162,
+        298,
+        172,
+        20
+      ],
+      "active": true,
+      "label": "提醒展开：开 · 已选中",
+      "focused": false,
+      "id": "hudSetting7"
+    },
+    {
+      "rect": [
+        162,
+        322,
+        172,
+        20
+      ],
+      "active": true,
+      "label": "恢复所选默认值",
+      "focused": false,
+      "id": "hudSetting8"
+    },
+    {
+      "rect": [
+        162,
+        346,
+        172,
+        20
+      ],
+      "active": false,
+      "label": "恢复本次保存值",
+      "focused": false,
+      "id": "hudSetting9"
+    },
+    {
+      "rect": [
+        158,
+        450,
+        56,
+        20
+      ],
+      "active": true,
+      "label": "返回",
+      "focused": false,
+      "id": "back"
+    },
+    {
+      "rect": [
+        698,
+        450,
+        104,
+        20
+      ],
+      "active": true,
+      "label": "保存预览设置",
+      "focused": false,
+      "id": "saveHud"
+    }
+  ],
+  "inputs": {}
+}

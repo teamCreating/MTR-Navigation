@@ -1,0 +1,919 @@
+{
+  "status": "passed",
+  "clients": [
+    {
+      "target": "1.21.1-neoforge",
+      "fixtures": true,
+      "checks": [
+        "five actual fixture results",
+        "five whole cards at 1920x1080 / 2x",
+        "repeated direct expand/collapse",
+        "press hold / outside cancel / release activation recording",
+        "keyboard release activates the focused sort button",
+        "directory return preserves query",
+        "HUD native slider 100 / 150 / 200",
+        "HUD controls hide during drag",
+        "three whole double-line cards at 854x480",
+        "closing the workspace restores entry GUI scale"
+      ],
+      "captures": [
+        "query-wide",
+        "stops-expanded",
+        "active-start",
+        "stations",
+        "departures",
+        "reminder",
+        "hud",
+        "hud-reminder",
+        "walking",
+        "walking-editor",
+        "walking-settings",
+        "long-names",
+        "empty-selection",
+        "no-service",
+        "departures-scene",
+        "hud-scene",
+        "active",
+        "loading",
+        "error",
+        "no-result",
+        "query-narrow",
+        "details-narrow",
+        "hud-narrow",
+        "hud-preview-narrow"
+      ],
+      "exitCode": 0
+    },
+    {
+      "target": "1.21.1-neoforge",
+      "fixtures": false,
+      "checks": [
+        "real MTR catalog and query path",
+        "no timetable keeps start disabled",
+        "closing the workspace restores entry GUI scale"
+      ],
+      "captures": [
+        "query-real",
+        "stations-real",
+        "hud-real",
+        "walking-real"
+      ],
+      "exitCode": 0
+    },
+    {
+      "target": "1.21.1-fabric",
+      "fixtures": true,
+      "checks": [
+        "five actual fixture results",
+        "five whole cards at 1920x1080 / 2x",
+        "repeated direct expand/collapse",
+        "directory return preserves query",
+        "three whole double-line cards at 854x480",
+        "closing the workspace restores entry GUI scale"
+      ],
+      "captures": [
+        "query-wide",
+        "stops-expanded",
+        "active-start",
+        "stations",
+        "hud",
+        "query-narrow",
+        "details-narrow",
+        "hud-narrow"
+      ],
+      "exitCode": 0
+    },
+    {
+      "target": "1.21.1-fabric",
+      "fixtures": false,
+      "checks": [
+        "real MTR catalog and query path",
+        "no timetable keeps start disabled",
+        "closing the workspace restores entry GUI scale"
+      ],
+      "captures": [
+        "query-real",
+        "stations-real",
+        "hud-real",
+        "walking-real"
+      ],
+      "exitCode": 0
+    },
+    {
+      "target": "1.21.4-neoforge",
+      "fixtures": true,
+      "checks": [
+        "five actual fixture results",
+        "five whole cards at 1920x1080 / 2x",
+        "repeated direct expand/collapse",
+        "directory return preserves query",
+        "three whole double-line cards at 854x480",
+        "closing the workspace restores entry GUI scale"
+      ],
+      "captures": [
+        "query-wide",
+        "stops-expanded",
+        "active-start",
+        "stations",
+        "hud",
+        "query-narrow",
+        "details-narrow",
+        "hud-narrow"
+      ],
+      "exitCode": 0
+    },
+    {
+      "target": "1.21.4-neoforge",
+      "fixtures": false,
+      "checks": [
+        "real MTR catalog and query path",
+        "no timetable keeps start disabled",
+        "closing the workspace restores entry GUI scale"
+      ],
+      "captures": [
+        "query-real",
+        "stations-real",
+        "hud-real",
+        "walking-real"
+      ],
+      "exitCode": 0
+    },
+    {
+      "target": "1.21.4-fabric",
+      "fixtures": true,
+      "checks": [
+        "five actual fixture results",
+        "five whole cards at 1920x1080 / 2x",
+        "repeated direct expand/collapse",
+        "directory return preserves query",
+        "three whole double-line cards at 854x480",
+        "closing the workspace restores entry GUI scale"
+      ],
+      "captures": [
+        "query-wide",
+        "stops-expanded",
+        "active-start",
+        "stations",
+        "hud",
+        "query-narrow",
+        "details-narrow",
+        "hud-narrow"
+      ],
+      "exitCode": 0
+    },
+    {
+      "target": "1.21.4-fabric",
+      "fixtures": false,
+      "checks": [
+        "real MTR catalog and query path",
+        "no timetable keeps start disabled",
+        "closing the workspace restores entry GUI scale"
+      ],
+      "captures": [
+        "query-real",
+        "stations-real",
+        "hud-real",
+        "walking-real"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "captureCount": 64,
+  "captures": [
+    {
+      "target": "1.21.1-neoforge",
+      "fixtures": true,
+      "name": "query-wide",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "exports/game/1.21.1-neoforge-ore-fixtures/query-wide.png"
+    },
+    {
+      "target": "1.21.1-neoforge",
+      "fixtures": true,
+      "name": "stops-expanded",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "exports/game/1.21.1-neoforge-ore-fixtures/stops-expanded.png"
+    },
+    {
+      "target": "1.21.1-neoforge",
+      "fixtures": true,
+      "name": "active-start",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "exports/game/1.21.1-neoforge-ore-fixtures/active-start.png"
+    },
+    {
+      "target": "1.21.1-neoforge",
+      "fixtures": true,
+      "name": "stations",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "exports/game/1.21.1-neoforge-ore-fixtures/stations.png"
+    },
+    {
+      "target": "1.21.1-neoforge",
+      "fixtures": true,
+      "name": "departures",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "exports/game/1.21.1-neoforge-ore-fixtures/departures.png"
+    },
+    {
+      "target": "1.21.1-neoforge",
+      "fixtures": true,
+      "name": "reminder",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "exports/game/1.21.1-neoforge-ore-fixtures/reminder.png"
+    },
+    {
+      "target": "1.21.1-neoforge",
+      "fixtures": true,
+      "name": "hud",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "exports/game/1.21.1-neoforge-ore-fixtures/hud.png"
+    },
+    {
+      "target": "1.21.1-neoforge",
+      "fixtures": true,
+      "name": "hud-reminder",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "exports/game/1.21.1-neoforge-ore-fixtures/hud-reminder.png"
+    },
+    {
+      "target": "1.21.1-neoforge",
+      "fixtures": true,
+      "name": "walking",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "exports/game/1.21.1-neoforge-ore-fixtures/walking.png"
+    },
+    {
+      "target": "1.21.1-neoforge",
+      "fixtures": true,
+      "name": "walking-editor",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "exports/game/1.21.1-neoforge-ore-fixtures/walking-editor.png"
+    },
+    {
+      "target": "1.21.1-neoforge",
+      "fixtures": true,
+      "name": "walking-settings",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "exports/game/1.21.1-neoforge-ore-fixtures/walking-settings.png"
+    },
+    {
+      "target": "1.21.1-neoforge",
+      "fixtures": true,
+      "name": "long-names",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "exports/game/1.21.1-neoforge-ore-fixtures/long-names.png"
+    },
+    {
+      "target": "1.21.1-neoforge",
+      "fixtures": true,
+      "name": "empty-selection",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "exports/game/1.21.1-neoforge-ore-fixtures/empty-selection.png"
+    },
+    {
+      "target": "1.21.1-neoforge",
+      "fixtures": true,
+      "name": "no-service",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "exports/game/1.21.1-neoforge-ore-fixtures/no-service.png"
+    },
+    {
+      "target": "1.21.1-neoforge",
+      "fixtures": true,
+      "name": "departures-scene",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "exports/game/1.21.1-neoforge-ore-fixtures/departures-scene.png"
+    },
+    {
+      "target": "1.21.1-neoforge",
+      "fixtures": true,
+      "name": "hud-scene",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "exports/game/1.21.1-neoforge-ore-fixtures/hud-scene.png"
+    },
+    {
+      "target": "1.21.1-neoforge",
+      "fixtures": true,
+      "name": "active",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "exports/game/1.21.1-neoforge-ore-fixtures/active.png"
+    },
+    {
+      "target": "1.21.1-neoforge",
+      "fixtures": true,
+      "name": "loading",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "exports/game/1.21.1-neoforge-ore-fixtures/loading.png"
+    },
+    {
+      "target": "1.21.1-neoforge",
+      "fixtures": true,
+      "name": "error",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "exports/game/1.21.1-neoforge-ore-fixtures/error.png"
+    },
+    {
+      "target": "1.21.1-neoforge",
+      "fixtures": true,
+      "name": "no-result",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "exports/game/1.21.1-neoforge-ore-fixtures/no-result.png"
+    },
+    {
+      "target": "1.21.1-neoforge",
+      "fixtures": true,
+      "name": "query-narrow",
+      "size": [
+        854,
+        480
+      ],
+      "file": "exports/game/1.21.1-neoforge-ore-fixtures/query-narrow.png"
+    },
+    {
+      "target": "1.21.1-neoforge",
+      "fixtures": true,
+      "name": "details-narrow",
+      "size": [
+        854,
+        480
+      ],
+      "file": "exports/game/1.21.1-neoforge-ore-fixtures/details-narrow.png"
+    },
+    {
+      "target": "1.21.1-neoforge",
+      "fixtures": true,
+      "name": "hud-narrow",
+      "size": [
+        854,
+        480
+      ],
+      "file": "exports/game/1.21.1-neoforge-ore-fixtures/hud-narrow.png"
+    },
+    {
+      "target": "1.21.1-neoforge",
+      "fixtures": true,
+      "name": "hud-preview-narrow",
+      "size": [
+        854,
+        480
+      ],
+      "file": "exports/game/1.21.1-neoforge-ore-fixtures/hud-preview-narrow.png"
+    },
+    {
+      "target": "1.21.1-neoforge",
+      "fixtures": false,
+      "name": "query-real",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "exports/game/1.21.1-neoforge-ore/query-real.png"
+    },
+    {
+      "target": "1.21.1-neoforge",
+      "fixtures": false,
+      "name": "stations-real",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "exports/game/1.21.1-neoforge-ore/stations-real.png"
+    },
+    {
+      "target": "1.21.1-neoforge",
+      "fixtures": false,
+      "name": "hud-real",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "exports/game/1.21.1-neoforge-ore/hud-real.png"
+    },
+    {
+      "target": "1.21.1-neoforge",
+      "fixtures": false,
+      "name": "walking-real",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "exports/game/1.21.1-neoforge-ore/walking-real.png"
+    },
+    {
+      "target": "1.21.1-fabric",
+      "fixtures": true,
+      "name": "query-wide",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "exports/game/1.21.1-fabric-ore-fixtures/query-wide.png"
+    },
+    {
+      "target": "1.21.1-fabric",
+      "fixtures": true,
+      "name": "stops-expanded",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "exports/game/1.21.1-fabric-ore-fixtures/stops-expanded.png"
+    },
+    {
+      "target": "1.21.1-fabric",
+      "fixtures": true,
+      "name": "active-start",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "exports/game/1.21.1-fabric-ore-fixtures/active-start.png"
+    },
+    {
+      "target": "1.21.1-fabric",
+      "fixtures": true,
+      "name": "stations",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "exports/game/1.21.1-fabric-ore-fixtures/stations.png"
+    },
+    {
+      "target": "1.21.1-fabric",
+      "fixtures": true,
+      "name": "hud",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "exports/game/1.21.1-fabric-ore-fixtures/hud.png"
+    },
+    {
+      "target": "1.21.1-fabric",
+      "fixtures": true,
+      "name": "query-narrow",
+      "size": [
+        854,
+        480
+      ],
+      "file": "exports/game/1.21.1-fabric-ore-fixtures/query-narrow.png"
+    },
+    {
+      "target": "1.21.1-fabric",
+      "fixtures": true,
+      "name": "details-narrow",
+      "size": [
+        854,
+        480
+      ],
+      "file": "exports/game/1.21.1-fabric-ore-fixtures/details-narrow.png"
+    },
+    {
+      "target": "1.21.1-fabric",
+      "fixtures": true,
+      "name": "hud-narrow",
+      "size": [
+        854,
+        480
+      ],
+      "file": "exports/game/1.21.1-fabric-ore-fixtures/hud-narrow.png"
+    },
+    {
+      "target": "1.21.1-fabric",
+      "fixtures": false,
+      "name": "query-real",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "exports/game/1.21.1-fabric-ore/query-real.png"
+    },
+    {
+      "target": "1.21.1-fabric",
+      "fixtures": false,
+      "name": "stations-real",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "exports/game/1.21.1-fabric-ore/stations-real.png"
+    },
+    {
+      "target": "1.21.1-fabric",
+      "fixtures": false,
+      "name": "hud-real",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "exports/game/1.21.1-fabric-ore/hud-real.png"
+    },
+    {
+      "target": "1.21.1-fabric",
+      "fixtures": false,
+      "name": "walking-real",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "exports/game/1.21.1-fabric-ore/walking-real.png"
+    },
+    {
+      "target": "1.21.4-neoforge",
+      "fixtures": true,
+      "name": "query-wide",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "exports/game/1.21.4-neoforge-ore-fixtures/query-wide.png"
+    },
+    {
+      "target": "1.21.4-neoforge",
+      "fixtures": true,
+      "name": "stops-expanded",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "exports/game/1.21.4-neoforge-ore-fixtures/stops-expanded.png"
+    },
+    {
+      "target": "1.21.4-neoforge",
+      "fixtures": true,
+      "name": "active-start",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "exports/game/1.21.4-neoforge-ore-fixtures/active-start.png"
+    },
+    {
+      "target": "1.21.4-neoforge",
+      "fixtures": true,
+      "name": "stations",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "exports/game/1.21.4-neoforge-ore-fixtures/stations.png"
+    },
+    {
+      "target": "1.21.4-neoforge",
+      "fixtures": true,
+      "name": "hud",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "exports/game/1.21.4-neoforge-ore-fixtures/hud.png"
+    },
+    {
+      "target": "1.21.4-neoforge",
+      "fixtures": true,
+      "name": "query-narrow",
+      "size": [
+        854,
+        480
+      ],
+      "file": "exports/game/1.21.4-neoforge-ore-fixtures/query-narrow.png"
+    },
+    {
+      "target": "1.21.4-neoforge",
+      "fixtures": true,
+      "name": "details-narrow",
+      "size": [
+        854,
+        480
+      ],
+      "file": "exports/game/1.21.4-neoforge-ore-fixtures/details-narrow.png"
+    },
+    {
+      "target": "1.21.4-neoforge",
+      "fixtures": true,
+      "name": "hud-narrow",
+      "size": [
+        854,
+        480
+      ],
+      "file": "exports/game/1.21.4-neoforge-ore-fixtures/hud-narrow.png"
+    },
+    {
+      "target": "1.21.4-neoforge",
+      "fixtures": false,
+      "name": "query-real",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "exports/game/1.21.4-neoforge-ore/query-real.png"
+    },
+    {
+      "target": "1.21.4-neoforge",
+      "fixtures": false,
+      "name": "stations-real",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "exports/game/1.21.4-neoforge-ore/stations-real.png"
+    },
+    {
+      "target": "1.21.4-neoforge",
+      "fixtures": false,
+      "name": "hud-real",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "exports/game/1.21.4-neoforge-ore/hud-real.png"
+    },
+    {
+      "target": "1.21.4-neoforge",
+      "fixtures": false,
+      "name": "walking-real",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "exports/game/1.21.4-neoforge-ore/walking-real.png"
+    },
+    {
+      "target": "1.21.4-fabric",
+      "fixtures": true,
+      "name": "query-wide",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "exports/game/1.21.4-fabric-ore-fixtures/query-wide.png"
+    },
+    {
+      "target": "1.21.4-fabric",
+      "fixtures": true,
+      "name": "stops-expanded",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "exports/game/1.21.4-fabric-ore-fixtures/stops-expanded.png"
+    },
+    {
+      "target": "1.21.4-fabric",
+      "fixtures": true,
+      "name": "active-start",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "exports/game/1.21.4-fabric-ore-fixtures/active-start.png"
+    },
+    {
+      "target": "1.21.4-fabric",
+      "fixtures": true,
+      "name": "stations",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "exports/game/1.21.4-fabric-ore-fixtures/stations.png"
+    },
+    {
+      "target": "1.21.4-fabric",
+      "fixtures": true,
+      "name": "hud",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "exports/game/1.21.4-fabric-ore-fixtures/hud.png"
+    },
+    {
+      "target": "1.21.4-fabric",
+      "fixtures": true,
+      "name": "query-narrow",
+      "size": [
+        854,
+        480
+      ],
+      "file": "exports/game/1.21.4-fabric-ore-fixtures/query-narrow.png"
+    },
+    {
+      "target": "1.21.4-fabric",
+      "fixtures": true,
+      "name": "details-narrow",
+      "size": [
+        854,
+        480
+      ],
+      "file": "exports/game/1.21.4-fabric-ore-fixtures/details-narrow.png"
+    },
+    {
+      "target": "1.21.4-fabric",
+      "fixtures": true,
+      "name": "hud-narrow",
+      "size": [
+        854,
+        480
+      ],
+      "file": "exports/game/1.21.4-fabric-ore-fixtures/hud-narrow.png"
+    },
+    {
+      "target": "1.21.4-fabric",
+      "fixtures": false,
+      "name": "query-real",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "exports/game/1.21.4-fabric-ore/query-real.png"
+    },
+    {
+      "target": "1.21.4-fabric",
+      "fixtures": false,
+      "name": "stations-real",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "exports/game/1.21.4-fabric-ore/stations-real.png"
+    },
+    {
+      "target": "1.21.4-fabric",
+      "fixtures": false,
+      "name": "hud-real",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "exports/game/1.21.4-fabric-ore/hud-real.png"
+    },
+    {
+      "target": "1.21.4-fabric",
+      "fixtures": false,
+      "name": "walking-real",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "exports/game/1.21.4-fabric-ore/walking-real.png"
+    }
+  ],
+  "artifacts": [
+    {
+      "minecraft": "1.21.1",
+      "loader": "neoforge",
+      "version": "0.1.0-alpha.1",
+      "file": "MTR-Navigation-neoforge-0.1.0-alpha.1+1.21.1.jar",
+      "sha256": "997bc69b5b69823ceea5f220f3edd5be0800f3c16a68f004df59620fb71198c8"
+    },
+    {
+      "minecraft": "1.21.1",
+      "loader": "fabric",
+      "version": "0.1.0-alpha.1",
+      "file": "MTR-Navigation-fabric-0.1.0-alpha.1+1.21.1.jar",
+      "sha256": "9233c9bcece9c65e29c69d4b5282f947b60d28593e87355ff231cd29e7bec6ab"
+    },
+    {
+      "minecraft": "1.21.4",
+      "loader": "neoforge",
+      "version": "0.1.0-alpha.1",
+      "file": "MTR-Navigation-neoforge-0.1.0-alpha.1+1.21.4.jar",
+      "sha256": "d9826007e65a8fca41622c39cd61cb89aae126b2241f4b4c042059d1bff81e00"
+    },
+    {
+      "minecraft": "1.21.4",
+      "loader": "fabric",
+      "version": "0.1.0-alpha.1",
+      "file": "MTR-Navigation-fabric-0.1.0-alpha.1+1.21.4.jar",
+      "sha256": "773c79afd617cfeedeb763820d206aaade04b4e75b9c9beedde32adc5c4fa594"
+    }
+  ],
+  "regressions": [
+    {
+      "minecraft": "1.21.1",
+      "task": "test",
+      "tests": 113,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 2
+    },
+    {
+      "minecraft": "1.21.1",
+      "task": "testFabricCore",
+      "tests": 113,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 2
+    },
+    {
+      "minecraft": "1.21.4",
+      "task": "test",
+      "tests": 113,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 2
+    },
+    {
+      "minecraft": "1.21.4",
+      "task": "testFabricCore",
+      "tests": 113,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 2
+    }
+  ],
+  "motion": [
+    {
+      "target": "1.21.1-neoforge-ore-fixtures",
+      "source": "Minecraft Screenshot.grab framebuffer, native Screen events on the game thread",
+      "frames": 64,
+      "checks": [
+        "pointer-down holds state",
+        "held face reaches full travel",
+        "outside release cancels",
+        "inside release activates"
+      ],
+      "control": "最快到达 ▾"
+    },
+    {
+      "target": "1.21.1-neoforge-ore-fixtures",
+      "source": "Minecraft Screenshot.grab framebuffer, native Screen events on the game thread",
+      "frames": 63,
+      "checks": [
+        "switch toggles in both directions",
+        "preference returns to its initial value",
+        "native 250 ms stepped thumb motion"
+      ],
+      "control": "自动适配两个提示框"
+    }
+  ],
+  "limits": [
+    "Visual review remains subject to user feedback.",
+    "Real test worlds returned route references without usable timetables; positive navigation/reminder flows used explicitly labelled fixtures.",
+    "Background checks dispatch native Screen events on the game thread and capture Minecraft framebuffers; they do not establish Windows IME composition or controller/touch support.",
+    "Real dedicated multiplayer, dimension/disconnect recovery and a large live network were not repeated in this UI-only round."
+  ]
+}

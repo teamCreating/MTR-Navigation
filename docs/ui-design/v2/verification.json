@@ -1,0 +1,239 @@
+{
+  "date": "2026-11-13",
+  "status": "built-graphical-checks-in-progress",
+  "normal_packages": [
+    {
+      "file": "build/multiversion/MTR-Navigation-fabric-0.1.0-alpha.1+1.21.1.jar",
+      "sha256": "2a45c5143351fe3f7ad562e8f637604fc6bf4340dc9ab601504312c22d9fb564",
+      "original_lining_matches": true,
+      "design_rules_match": true,
+      "upstream_create_reference_assets": false,
+      "ldlib2_trial": false
+    },
+    {
+      "file": "build/multiversion/MTR-Navigation-fabric-0.1.0-alpha.1+1.21.4.jar",
+      "sha256": "632425914c0d20ced38ec46f33778dff044720612c658b9d2409577f0087d79f",
+      "original_lining_matches": true,
+      "design_rules_match": true,
+      "upstream_create_reference_assets": false,
+      "ldlib2_trial": false
+    },
+    {
+      "file": "build/multiversion/MTR-Navigation-neoforge-0.1.0-alpha.1+1.21.1.jar",
+      "sha256": "1a4c44a9a3c3f5c558814851688ad4cda1a83e5920ec9cd2c955874128abd217",
+      "original_lining_matches": true,
+      "design_rules_match": true,
+      "upstream_create_reference_assets": false,
+      "ldlib2_trial": false
+    },
+    {
+      "file": "build/multiversion/MTR-Navigation-neoforge-0.1.0-alpha.1+1.21.4.jar",
+      "sha256": "ef4c095011ce22911ba60777fed7ffb31c92909137225b87c8eb13310abbc1a8",
+      "original_lining_matches": true,
+      "design_rules_match": true,
+      "upstream_create_reference_assets": false,
+      "ldlib2_trial": false
+    }
+  ],
+  "font": "Minecraft current default; no custom face forced",
+  "material": "Original subtle graphite weave, Create schedule lining used only as visual reference",
+  "core_tests": {
+    "1.21.1": {
+      "test": {
+        "tests": 101,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 2
+      },
+      "testFabricCore": {
+        "tests": 101,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 2
+      }
+    },
+    "1.21.4": {
+      "test": {
+        "tests": 101,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 2
+      },
+      "testFabricCore": {
+        "tests": 101,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 2
+      }
+    }
+  },
+  "user_profile_modified": false,
+  "contrast_checks": {
+    "body_on_brightest_texture": 10.74,
+    "secondary_on_brightest_texture": 6.91,
+    "selected_card_secondary": 4.73,
+    "unselected_card_arrival": 4.82
+  },
+  "initial_review_captures": [
+    {
+      "file": "docs/ui-design/exports/game/1.21.1-neoforge-v2/graphite-board-2560x1440.png",
+      "size": [
+        2560,
+        1440
+      ],
+      "viewport": [
+        1280,
+        720
+      ],
+      "scale": 2.0,
+      "view": "DEPARTURES",
+      "visible_cards": 0
+    },
+    {
+      "file": "docs/ui-design/exports/game/1.21.1-neoforge-v2/graphite-board.png",
+      "size": [
+        1920,
+        1080
+      ],
+      "viewport": [
+        960,
+        540
+      ],
+      "scale": 2.0,
+      "view": "DEPARTURES",
+      "visible_cards": 0
+    },
+    {
+      "file": "docs/ui-design/exports/game/1.21.1-neoforge-v2/graphite-compact-854x480.png",
+      "size": [
+        854,
+        480
+      ],
+      "viewport": [
+        427,
+        240
+      ],
+      "scale": 2.0,
+      "view": "JOURNEYS",
+      "visible_cards": 2
+    },
+    {
+      "file": "docs/ui-design/exports/game/1.21.1-neoforge-v2/graphite-empty.png",
+      "size": [
+        1920,
+        1080
+      ],
+      "viewport": [
+        960,
+        540
+      ],
+      "scale": 2.0,
+      "view": "JOURNEYS",
+      "visible_cards": 0
+    },
+    {
+      "file": "docs/ui-design/exports/game/1.21.1-neoforge-v2/graphite-hud-editor.png",
+      "size": [
+        1920,
+        1080
+      ],
+      "viewport": [
+        960,
+        540
+      ],
+      "scale": 2.0,
+      "view": "JOURNEYS",
+      "visible_cards": 5
+    },
+    {
+      "file": "docs/ui-design/exports/game/1.21.1-neoforge-v2/graphite-inline-reminder.png",
+      "size": [
+        1920,
+        1080
+      ],
+      "viewport": [
+        960,
+        540
+      ],
+      "scale": 2.0,
+      "view": "JOURNEYS",
+      "visible_cards": 5
+    },
+    {
+      "file": "docs/ui-design/exports/game/1.21.1-neoforge-v2/graphite-long-stations.png",
+      "size": [
+        1920,
+        1080
+      ],
+      "viewport": [
+        960,
+        540
+      ],
+      "scale": 2.0,
+      "view": "JOURNEYS",
+      "visible_cards": 5
+    },
+    {
+      "file": "docs/ui-design/exports/game/1.21.1-neoforge-v2/graphite-main-1280x720.png",
+      "size": [
+        1280,
+        720
+      ],
+      "viewport": [
+        640,
+        360
+      ],
+      "scale": 2.0,
+      "view": "JOURNEYS",
+      "visible_cards": 4
+    },
+    {
+      "file": "docs/ui-design/exports/game/1.21.1-neoforge-v2/graphite-main-1920x1080.png",
+      "size": [
+        1920,
+        1080
+      ],
+      "viewport": [
+        960,
+        540
+      ],
+      "scale": 2.0,
+      "view": "JOURNEYS",
+      "visible_cards": 5
+    },
+    {
+      "file": "docs/ui-design/exports/game/1.21.1-neoforge-v2/graphite-main-2560x1440.png",
+      "size": [
+        2560,
+        1440
+      ],
+      "viewport": [
+        1280,
+        720
+      ],
+      "scale": 2.0,
+      "view": "JOURNEYS",
+      "visible_cards": 5
+    },
+    {
+      "file": "docs/ui-design/exports/game/1.21.1-neoforge-v2/graphite-reference.png",
+      "size": [
+        1920,
+        1080
+      ],
+      "viewport": [
+        960,
+        540
+      ],
+      "scale": 2.0,
+      "view": "JOURNEYS",
+      "visible_cards": 1
+    }
+  ],
+  "limits": [
+    "OS IME composition candidate window has not been manually checked.",
+    "HUD screenshots do not prove the navigation-screen control audit; the two are recorded separately.",
+    "Live multiplayer journey queries were not part of this visual review; existing core regressions cover route/timetable behavior.",
+    "Visual acceptance remains with the user."
+  ]
+}

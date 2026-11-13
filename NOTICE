@@ -25,3 +25,35 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
+
+
+Create GUI reference integration
+------------------------------
+The original stock_keeper.png, widgets.png and schedule.png GUI textures
+are copyright (c) The Create Team / The Creators of Create, All Rights Reserved.
+They retain the upstream assets license and are not licensed under this project's MIT license.
+Source URLs and exact blob identifiers are recorded in assets/mtrnav/textures/gui/create/SOURCES.json;
+the upstream license is preserved alongside those textures. Their use here is a local UI trial;
+no redistribution permission is asserted.
+
+UI preview fonts
+----------------
+Fusion Pixel Font (2026.11.10, Simplified Chinese 10px proportional) and
+Noto Sans SC (source commit f8d157532fbfaeda587e826d4cd5b21a49186f7c) are
+distributed under the SIL Open Font License 1.1. Their complete notices and
+licenses are preserved in assets/mtrnav/font/ui/fusion-ofl.txt and noto-ofl.txt.
+Noto's TrueType variable font is instantiated at weight 400 using FontTools 4.61.1;
+source URLs, verification hashes and the derivation are in ui/font-sources.json.
+These fonts apply only to the opt-in MTR Navigation UI preview.
+
+The PaperFont / FontAccessor technique follows Create's NoShadowFontWrapper implementation,
+whose Java source is covered by the upstream MIT code license:
+Copyright (c) The Create Team / The Creators of Create.
+The complete upstream MIT code license text is reproduced in licenses/create-code-MIT.txt.
+
+Transport pictograms referenced from the installed Minecraft Transit Railway mod
+-----------------------------------------------------------------------------
+The journey chain references mtr:textures/block/sign/train.png,
+light_rail_1.png and xrl_2.png from the installed MTR dependency. These textures
+are not copied into or redistributed inside this project's JAR. Vehicle names,
+descriptions and tags are read from the user's active MTR resources.

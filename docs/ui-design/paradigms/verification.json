@@ -1,0 +1,707 @@
+{
+  "date": "2026-11-13",
+  "status": "preview-ready-awaiting-design-and-font-selection",
+  "baseline_screens": 9,
+  "hybrid_screens": 3,
+  "canonical_images": [
+    "ae2-query",
+    "ae2-stations",
+    "ae2-hud",
+    "bedrock-query",
+    "bedrock-stations",
+    "bedrock-hud",
+    "java-query",
+    "java-stations",
+    "java-hud",
+    "hybrid-query",
+    "hybrid-stations",
+    "hybrid-hud"
+  ],
+  "in_game_screenshots": 61,
+  "client_checks": {
+    "1.21.1-neoforge": [
+      "AE2: five double-line journeys at full HD / 2x",
+      "AE2: separate HUD settings, contained nonoverlapping boxes",
+      "BEDROCK: five double-line journeys at full HD / 2x",
+      "BEDROCK: separate HUD settings, contained nonoverlapping boxes",
+      "JAVA: five double-line journeys at full HD / 2x",
+      "JAVA: separate HUD settings, contained nonoverlapping boxes",
+      "HYBRID: five double-line journeys at full HD / 2x",
+      "HYBRID: separate HUD settings, contained nonoverlapping boxes",
+      "variant state retained: AE2",
+      "variant state retained: BEDROCK",
+      "variant state retained: JAVA",
+      "variant state retained: HYBRID",
+      "font switch preserves selection and independent scroll offsets",
+      "station selection returns to the preserved query",
+      "Chinese character input and Enter selection",
+      "Nearby filtering rejects a previously selected distant station",
+      "Distance sort puts the closest station first",
+      "Alphabet index filters to Central",
+      "start activates only the simulated trip",
+      "departure reminder stays in preview",
+      "EMPTY: navigation disabled",
+      "LOADING: navigation disabled",
+      "ERROR: navigation disabled",
+      "REFERENCE: navigation disabled",
+      "HUD scale 200%",
+      "HUD scale 100%",
+      "HUD scale 150%",
+      "HUD save/restore is session local",
+      "HUD drag hides settings controls",
+      "HUD drag keeps both boxes on screen",
+      "Tab reaches native controls",
+      "AE2: narrow layout retains three rows and primary action",
+      "BEDROCK: narrow layout retains three rows and primary action",
+      "JAVA: narrow layout retains three rows and primary action",
+      "HYBRID: narrow layout retains three rows and primary action",
+      "Closing preview restores the original GUI scale",
+      "Formal client preferences unchanged"
+    ],
+    "1.21.1-fabric": [
+      "Chinese search survives the font switch",
+      "Station selection returns to the query",
+      "Simulated navigation starts",
+      "HUD snapshot saves in memory",
+      "Narrow query keeps three rows and the primary action",
+      "Closing preview restores the original GUI scale",
+      "Formal client preferences unchanged"
+    ],
+    "1.21.4-neoforge": [
+      "Chinese search survives the font switch",
+      "Station selection returns to the query",
+      "Simulated navigation starts",
+      "HUD snapshot saves in memory",
+      "Narrow query keeps three rows and the primary action",
+      "Closing preview restores the original GUI scale",
+      "Formal client preferences unchanged"
+    ],
+    "1.21.4-fabric": [
+      "Chinese search survives the font switch",
+      "Station selection returns to the query",
+      "Simulated navigation starts",
+      "HUD snapshot saves in memory",
+      "Narrow query keeps three rows and the primary action",
+      "Closing preview restores the original GUI scale",
+      "Formal client preferences unchanged"
+    ]
+  },
+  "screenshots": [
+    {
+      "target": "1.21.1-neoforge",
+      "name": "ae2-query",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "docs/ui-design/exports/game/1.21.1-neoforge-paradigms/ae2-query.png",
+      "sha256": "c2d189490fc1938c0ffc5060d435027670fc8788ffd57ea57a0c569b46ee94f8"
+    },
+    {
+      "target": "1.21.1-neoforge",
+      "name": "ae2-stations",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "docs/ui-design/exports/game/1.21.1-neoforge-paradigms/ae2-stations.png",
+      "sha256": "8f458a71671e5001f78ff7eb88768fda534ead3366cd5a302fd1c2f3fc72e6aa"
+    },
+    {
+      "target": "1.21.1-neoforge",
+      "name": "ae2-hud",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "docs/ui-design/exports/game/1.21.1-neoforge-paradigms/ae2-hud.png",
+      "sha256": "10865956f9e69de3da624eaaae084ed5f5c654d13d09f1b2a25a68e5df20e42a"
+    },
+    {
+      "target": "1.21.1-neoforge",
+      "name": "bedrock-query",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "docs/ui-design/exports/game/1.21.1-neoforge-paradigms/bedrock-query.png",
+      "sha256": "43f269d0dcab88867f79b9c0e689277b432bb626feb4e36a8be1cfec98c3ff5b"
+    },
+    {
+      "target": "1.21.1-neoforge",
+      "name": "bedrock-stations",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "docs/ui-design/exports/game/1.21.1-neoforge-paradigms/bedrock-stations.png",
+      "sha256": "172148a204c1befcc9a8f9e6fca51e5890e2434dcb341563145cb1dd0a8e033a"
+    },
+    {
+      "target": "1.21.1-neoforge",
+      "name": "bedrock-hud",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "docs/ui-design/exports/game/1.21.1-neoforge-paradigms/bedrock-hud.png",
+      "sha256": "c0f4c83104a55d0645481b51e064c47091541a34d0528fd0bd097c15640d0f02"
+    },
+    {
+      "target": "1.21.1-neoforge",
+      "name": "java-query",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "docs/ui-design/exports/game/1.21.1-neoforge-paradigms/java-query.png",
+      "sha256": "e57a36b3c2a2b5f20c0e0d123da2bf25660e0ed67777ebcc12572b5e374558a7"
+    },
+    {
+      "target": "1.21.1-neoforge",
+      "name": "java-stations",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "docs/ui-design/exports/game/1.21.1-neoforge-paradigms/java-stations.png",
+      "sha256": "ca64927c6c6dbdd8fe7bd90b92510dddf28390faac32841a8e974a07ef5da2d2"
+    },
+    {
+      "target": "1.21.1-neoforge",
+      "name": "java-hud",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "docs/ui-design/exports/game/1.21.1-neoforge-paradigms/java-hud.png",
+      "sha256": "3dc909a00c8496c7e09a6f9dbd05f3d1e41c935c001639c976b1ab468dedef83"
+    },
+    {
+      "target": "1.21.1-neoforge",
+      "name": "hybrid-query",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "docs/ui-design/exports/game/1.21.1-neoforge-paradigms/hybrid-query.png",
+      "sha256": "7202402ce9b70294a3f950e0b25203ae6677477f86d2ad2ae73597bfe1eb66a6"
+    },
+    {
+      "target": "1.21.1-neoforge",
+      "name": "hybrid-stations",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "docs/ui-design/exports/game/1.21.1-neoforge-paradigms/hybrid-stations.png",
+      "sha256": "4ee10dd35a19c62e8bf81981ae208176c1fdcaec8fb6507d69c260b34509ffbf"
+    },
+    {
+      "target": "1.21.1-neoforge",
+      "name": "hybrid-hud",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "docs/ui-design/exports/game/1.21.1-neoforge-paradigms/hybrid-hud.png",
+      "sha256": "71d780c59e2fb2ebc9a74d73126629a3f7a57f7917358a808a1f52c9da7cc65f"
+    },
+    {
+      "target": "1.21.1-neoforge",
+      "name": "hybrid-smooth-many",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "docs/ui-design/exports/game/1.21.1-neoforge-paradigms/hybrid-smooth-many.png",
+      "sha256": "157894d7c8511ce8fcd2aad74824cddbcf28af38684eb9578f5190216804e332"
+    },
+    {
+      "target": "1.21.1-neoforge",
+      "name": "hybrid-chinese-input",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "docs/ui-design/exports/game/1.21.1-neoforge-paradigms/hybrid-chinese-input.png",
+      "sha256": "a4ce349512808e21580f5cbc73b9f0e1b5762486ae9b5ba4929df163e407e0c6"
+    },
+    {
+      "target": "1.21.1-neoforge",
+      "name": "hybrid-active",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "docs/ui-design/exports/game/1.21.1-neoforge-paradigms/hybrid-active.png",
+      "sha256": "6133b098dc46a29343a7a97c7ff5389c3cfc97eab69bcf0fdb41b630a9a53e87"
+    },
+    {
+      "target": "1.21.1-neoforge",
+      "name": "hybrid-departures",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "docs/ui-design/exports/game/1.21.1-neoforge-paradigms/hybrid-departures.png",
+      "sha256": "bb3587677b2154d0f4ba63fa183209357774d644a3f384240ac3372d17275bc6"
+    },
+    {
+      "target": "1.21.1-neoforge",
+      "name": "hybrid-long_names",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "docs/ui-design/exports/game/1.21.1-neoforge-paradigms/hybrid-long_names.png",
+      "sha256": "c7b7dded9ca27ac1c8222284750935510743b1aa93d0809264c22eb6518e04f1"
+    },
+    {
+      "target": "1.21.1-neoforge",
+      "name": "hybrid-smooth-long-names",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "docs/ui-design/exports/game/1.21.1-neoforge-paradigms/hybrid-smooth-long-names.png",
+      "sha256": "267e3cb40e1d699ea5678558ce0f59789650070aa7ea52994bfe38cd416938f2"
+    },
+    {
+      "target": "1.21.1-neoforge",
+      "name": "hybrid-empty",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "docs/ui-design/exports/game/1.21.1-neoforge-paradigms/hybrid-empty.png",
+      "sha256": "5ad369d2c12741c26530699c6728430b9e21aa23efd4f3aaf11a4cac45f66d83"
+    },
+    {
+      "target": "1.21.1-neoforge",
+      "name": "hybrid-loading",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "docs/ui-design/exports/game/1.21.1-neoforge-paradigms/hybrid-loading.png",
+      "sha256": "bd86c2fe71e926a209462c8547a22b23445e4b76222aabe38611f92aa99fbdc4"
+    },
+    {
+      "target": "1.21.1-neoforge",
+      "name": "hybrid-error",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "docs/ui-design/exports/game/1.21.1-neoforge-paradigms/hybrid-error.png",
+      "sha256": "3758c717bdefe70aff65cce52ef1b852658ef03b844ac32830c34663849c2870"
+    },
+    {
+      "target": "1.21.1-neoforge",
+      "name": "hybrid-reference",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "docs/ui-design/exports/game/1.21.1-neoforge-paradigms/hybrid-reference.png",
+      "sha256": "6f75fb415454dc0d9a7138fcc3ed27d2b1820d11fea11c3ac5763e4de3aa00c1"
+    },
+    {
+      "target": "1.21.1-neoforge",
+      "name": "hybrid-hud-200",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "docs/ui-design/exports/game/1.21.1-neoforge-paradigms/hybrid-hud-200.png",
+      "sha256": "2bfa801b22bd7e59ae525f2e1827cea4eb0b03200823466a16efbeecefe8f295"
+    },
+    {
+      "target": "1.21.1-neoforge",
+      "name": "hybrid-hud-100",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "docs/ui-design/exports/game/1.21.1-neoforge-paradigms/hybrid-hud-100.png",
+      "sha256": "b5d18eef6ebbcac7f36633a530aafef4c0caf8be92a68ef339b194a9e18e6520"
+    },
+    {
+      "target": "1.21.1-neoforge",
+      "name": "hybrid-hud-150",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "docs/ui-design/exports/game/1.21.1-neoforge-paradigms/hybrid-hud-150.png",
+      "sha256": "d722d863704c2074b1e2fdfffc8918a3281c7ead77816d6a86606ec3287a328c"
+    },
+    {
+      "target": "1.21.1-neoforge",
+      "name": "hybrid-hud-dragging",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "docs/ui-design/exports/game/1.21.1-neoforge-paradigms/hybrid-hud-dragging.png",
+      "sha256": "917cae3021afb87d99a33bf725475b901e6216eba8be51f625dde0f9fa84e822"
+    },
+    {
+      "target": "1.21.1-neoforge",
+      "name": "hybrid-components",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "docs/ui-design/exports/game/1.21.1-neoforge-paradigms/hybrid-components.png",
+      "sha256": "8bc6ebf7fe722e38555364af8729ec6bd6230685e28dfd41400a09b397634261"
+    },
+    {
+      "target": "1.21.1-neoforge",
+      "name": "ae2-narrow-query",
+      "size": [
+        854,
+        480
+      ],
+      "file": "docs/ui-design/exports/game/1.21.1-neoforge-paradigms/ae2-narrow-query.png",
+      "sha256": "344ee396e636ae18d06a7f3229f4cb7a6f3f9ea825dc1e23c3bdfc168ab0861a"
+    },
+    {
+      "target": "1.21.1-neoforge",
+      "name": "ae2-narrow-details",
+      "size": [
+        854,
+        480
+      ],
+      "file": "docs/ui-design/exports/game/1.21.1-neoforge-paradigms/ae2-narrow-details.png",
+      "sha256": "6a37d76d38694b8ec57dd41567ac887d72c5aa78c20e850afb52aa145da03d8e"
+    },
+    {
+      "target": "1.21.1-neoforge",
+      "name": "ae2-narrow-stations",
+      "size": [
+        854,
+        480
+      ],
+      "file": "docs/ui-design/exports/game/1.21.1-neoforge-paradigms/ae2-narrow-stations.png",
+      "sha256": "6c3c36efd8e394d250bef869d8acdafef8b720ead8ab3d9590e568272f1a4b49"
+    },
+    {
+      "target": "1.21.1-neoforge",
+      "name": "ae2-narrow-hud",
+      "size": [
+        854,
+        480
+      ],
+      "file": "docs/ui-design/exports/game/1.21.1-neoforge-paradigms/ae2-narrow-hud.png",
+      "sha256": "026042a941ac75563fb6d21959651501dcc04bfd9d7dce7991b9d1f3630d7e20"
+    },
+    {
+      "target": "1.21.1-neoforge",
+      "name": "bedrock-narrow-query",
+      "size": [
+        854,
+        480
+      ],
+      "file": "docs/ui-design/exports/game/1.21.1-neoforge-paradigms/bedrock-narrow-query.png",
+      "sha256": "4b02da749790f60bdd5a5c7adae00161fb10b312096ae50a1b32c3651f12cc02"
+    },
+    {
+      "target": "1.21.1-neoforge",
+      "name": "bedrock-narrow-details",
+      "size": [
+        854,
+        480
+      ],
+      "file": "docs/ui-design/exports/game/1.21.1-neoforge-paradigms/bedrock-narrow-details.png",
+      "sha256": "99b0490bb905b7ea113bf98da01cc8af96c31d277b15574cd89b9052beb4f627"
+    },
+    {
+      "target": "1.21.1-neoforge",
+      "name": "bedrock-narrow-stations",
+      "size": [
+        854,
+        480
+      ],
+      "file": "docs/ui-design/exports/game/1.21.1-neoforge-paradigms/bedrock-narrow-stations.png",
+      "sha256": "9b1a4d8cdb71a1d9d3d83118080d72a475e3305cac1830592439ee68f6bccfaf"
+    },
+    {
+      "target": "1.21.1-neoforge",
+      "name": "bedrock-narrow-hud",
+      "size": [
+        854,
+        480
+      ],
+      "file": "docs/ui-design/exports/game/1.21.1-neoforge-paradigms/bedrock-narrow-hud.png",
+      "sha256": "0658e0e94d8a7f2d8ca7de92316e23e0c8eb1562b510b47c7516ba001e35d4a2"
+    },
+    {
+      "target": "1.21.1-neoforge",
+      "name": "java-narrow-query",
+      "size": [
+        854,
+        480
+      ],
+      "file": "docs/ui-design/exports/game/1.21.1-neoforge-paradigms/java-narrow-query.png",
+      "sha256": "ccfcd7cdf320bd174e5242551f34642dcb537fe8ceb6453600f5198174ded5a8"
+    },
+    {
+      "target": "1.21.1-neoforge",
+      "name": "java-narrow-details",
+      "size": [
+        854,
+        480
+      ],
+      "file": "docs/ui-design/exports/game/1.21.1-neoforge-paradigms/java-narrow-details.png",
+      "sha256": "f8e9159968d452590e0eb41bd7ca1444904b20b1de92349c2545fc01f5568bcf"
+    },
+    {
+      "target": "1.21.1-neoforge",
+      "name": "java-narrow-stations",
+      "size": [
+        854,
+        480
+      ],
+      "file": "docs/ui-design/exports/game/1.21.1-neoforge-paradigms/java-narrow-stations.png",
+      "sha256": "b3fd8111d3a23fd47237fae219db21427be49e5f0475d1d1f4aa09d6dd8d702f"
+    },
+    {
+      "target": "1.21.1-neoforge",
+      "name": "java-narrow-hud",
+      "size": [
+        854,
+        480
+      ],
+      "file": "docs/ui-design/exports/game/1.21.1-neoforge-paradigms/java-narrow-hud.png",
+      "sha256": "009fc1788746c0ee26b49b3aecf3ce6b4443c0c26dda4ab9cf3c200c85fddbfd"
+    },
+    {
+      "target": "1.21.1-neoforge",
+      "name": "hybrid-narrow-query",
+      "size": [
+        854,
+        480
+      ],
+      "file": "docs/ui-design/exports/game/1.21.1-neoforge-paradigms/hybrid-narrow-query.png",
+      "sha256": "35370f00dedeff5eb6e82838c21c10a9320c420333843c9b2d6c6732262d3321"
+    },
+    {
+      "target": "1.21.1-neoforge",
+      "name": "hybrid-narrow-details",
+      "size": [
+        854,
+        480
+      ],
+      "file": "docs/ui-design/exports/game/1.21.1-neoforge-paradigms/hybrid-narrow-details.png",
+      "sha256": "c4e6acc5cc554aa48d45762a6b9890515bc674a112358feb0f4c15a6c8333834"
+    },
+    {
+      "target": "1.21.1-neoforge",
+      "name": "hybrid-narrow-stations",
+      "size": [
+        854,
+        480
+      ],
+      "file": "docs/ui-design/exports/game/1.21.1-neoforge-paradigms/hybrid-narrow-stations.png",
+      "sha256": "e8c493813cb1e0ed39d8c7723ee51fbff8b373691fec39aadf8b1f8b3b044d0b"
+    },
+    {
+      "target": "1.21.1-neoforge",
+      "name": "hybrid-narrow-hud",
+      "size": [
+        854,
+        480
+      ],
+      "file": "docs/ui-design/exports/game/1.21.1-neoforge-paradigms/hybrid-narrow-hud.png",
+      "sha256": "343c5ec54486a56ba601e7924830487624f0109bf84ae6f61b4fbb95d0652e4c"
+    },
+    {
+      "target": "1.21.1-fabric",
+      "name": "client-smoke-query",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "docs/ui-design/exports/game/1.21.1-fabric-paradigms/client-smoke-query.png",
+      "sha256": "b3271ff7d2c4ef7eb7a13fd5a91049a3151656e2e014ae40034e90bd5e32d699"
+    },
+    {
+      "target": "1.21.1-fabric",
+      "name": "client-smoke-stations",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "docs/ui-design/exports/game/1.21.1-fabric-paradigms/client-smoke-stations.png",
+      "sha256": "bf1b107c740b8b992acf90183571ebd24866f1aaee110f66bf8903fbf7f83da2"
+    },
+    {
+      "target": "1.21.1-fabric",
+      "name": "client-smoke-hud",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "docs/ui-design/exports/game/1.21.1-fabric-paradigms/client-smoke-hud.png",
+      "sha256": "701a0417d4aedee5f6438b3553c36799f8a53f6318148659c399f52e67214fb8"
+    },
+    {
+      "target": "1.21.1-fabric",
+      "name": "client-smoke-smooth-input",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "docs/ui-design/exports/game/1.21.1-fabric-paradigms/client-smoke-smooth-input.png",
+      "sha256": "a114b67082ff836144717adc0a217ca245575b4f305a91c6e030b5f8feef4fe4"
+    },
+    {
+      "target": "1.21.1-fabric",
+      "name": "client-smoke-active",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "docs/ui-design/exports/game/1.21.1-fabric-paradigms/client-smoke-active.png",
+      "sha256": "56e091627fe7c704786688f38fbede506cdd0ac7f9a33135cc0a9bb70ab8dba9"
+    },
+    {
+      "target": "1.21.1-fabric",
+      "name": "client-smoke-narrow",
+      "size": [
+        854,
+        480
+      ],
+      "file": "docs/ui-design/exports/game/1.21.1-fabric-paradigms/client-smoke-narrow.png",
+      "sha256": "78ade5b99b7aa160946e44215a1609b2b2cea6a3c8227e246ba22d062949c968"
+    },
+    {
+      "target": "1.21.4-neoforge",
+      "name": "client-smoke-query",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "docs/ui-design/exports/game/1.21.4-neoforge-paradigms/client-smoke-query.png",
+      "sha256": "f2b359c45e41b8636d715c413d9fa300baee4cd774f7997d281e1f15b77a2d6b"
+    },
+    {
+      "target": "1.21.4-neoforge",
+      "name": "client-smoke-stations",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "docs/ui-design/exports/game/1.21.4-neoforge-paradigms/client-smoke-stations.png",
+      "sha256": "e794156c70cbbe6a29eab4661906850e40c551e9a63251561063ec520ff889e5"
+    },
+    {
+      "target": "1.21.4-neoforge",
+      "name": "client-smoke-hud",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "docs/ui-design/exports/game/1.21.4-neoforge-paradigms/client-smoke-hud.png",
+      "sha256": "5dbc2e4a6bb04c3f9195151b033c786a3571dbb031fbbfb59a9176acd5a4a3ee"
+    },
+    {
+      "target": "1.21.4-neoforge",
+      "name": "client-smoke-smooth-input",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "docs/ui-design/exports/game/1.21.4-neoforge-paradigms/client-smoke-smooth-input.png",
+      "sha256": "54c3b304600c223c720619f7e8c0c7fe830472ebc8557b27e73f15657ddc219b"
+    },
+    {
+      "target": "1.21.4-neoforge",
+      "name": "client-smoke-active",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "docs/ui-design/exports/game/1.21.4-neoforge-paradigms/client-smoke-active.png",
+      "sha256": "23e9f4091a304f0c0b959ee609be8721c1075368b27f554635d06f2dc7a6a4af"
+    },
+    {
+      "target": "1.21.4-neoforge",
+      "name": "client-smoke-narrow",
+      "size": [
+        854,
+        480
+      ],
+      "file": "docs/ui-design/exports/game/1.21.4-neoforge-paradigms/client-smoke-narrow.png",
+      "sha256": "86b26a663656faf85dd80b264e03a11bd666c71dc6ac9cb023e282f3d64e13d1"
+    },
+    {
+      "target": "1.21.4-fabric",
+      "name": "client-smoke-query",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "docs/ui-design/exports/game/1.21.4-fabric-paradigms/client-smoke-query.png",
+      "sha256": "0760dd3a2274364f7c1226776adbaf28afecb558630592a35b1126bf3ac3cacb"
+    },
+    {
+      "target": "1.21.4-fabric",
+      "name": "client-smoke-stations",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "docs/ui-design/exports/game/1.21.4-fabric-paradigms/client-smoke-stations.png",
+      "sha256": "575daa44a58955a5e8b1cd67dfa25314f87caee4b1aaba60be141e83d221690d"
+    },
+    {
+      "target": "1.21.4-fabric",
+      "name": "client-smoke-hud",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "docs/ui-design/exports/game/1.21.4-fabric-paradigms/client-smoke-hud.png",
+      "sha256": "b82d489506312ab8718e8a43f8dc5dea534b6d655173215e4c43e0befed1e22f"
+    },
+    {
+      "target": "1.21.4-fabric",
+      "name": "client-smoke-smooth-input",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "docs/ui-design/exports/game/1.21.4-fabric-paradigms/client-smoke-smooth-input.png",
+      "sha256": "0a5ab6676e8433b14b92c1bbce28a965f46943d4bf63b422928e12e590f7d04f"
+    },
+    {
+      "target": "1.21.4-fabric",
+      "name": "client-smoke-active",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "docs/ui-design/exports/game/1.21.4-fabric-paradigms/client-smoke-active.png",
+      "sha256": "9ecc6813efcb362bb2846c0c7ef202b686bb09e542df0114e80163bc8c8a1aa3"
+    },
+    {
+      "target": "1.21.4-fabric",
+      "name": "client-smoke-narrow",
+      "size": [
+        854,
+        480
+      ],
+      "file": "docs/ui-design/exports/game/1.21.4-fabric-paradigms/client-smoke-narrow.png",
+      "sha256": "24fb7fcdf482273d07167fe98e8d5d61b35c21d3dc4703d6eefd3fbed37af18a"
+    }
+  ],
+  "visual_review": "Canonical nine screens, hybrid, long names, reference and narrow layouts inspected against source-review.md; user acceptance pending.",
+  "limitations": [
+    "System IME composition/candidate window still requires manual acceptance.",
+    "Modern UI check covers the isolated MTR + Modern UI configuration, not every mod in the user pack.",
+    "Formal v2 screens stay unchanged until the user selects the design and font."
+  ]
+}

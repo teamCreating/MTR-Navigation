@@ -1,0 +1,514 @@
+{
+  "screen": "StationDirectoryScreen",
+  "viewport": [
+    960,
+    540
+  ],
+  "scale": 2.0,
+  "enteredScale": 3.0,
+  "fixtures": false,
+  "skin": "ORE",
+  "stations": 3,
+  "journeys": 0,
+  "arrivals": 0,
+  "boardStation": "",
+  "origin": "38278aa3abbd6d2a",
+  "destination": "6490ebdd4cb2f28a",
+  "status": "mtrnav.reference_no_service",
+  "tracking": "",
+  "reminder": false,
+  "font": "minecraft-current-default",
+  "hudPercent": 150,
+  "reminderPercent": 150,
+  "autoFit": true,
+  "controls": [
+    {
+      "label": "×",
+      "rect": [
+        710,
+        44,
+        18,
+        18
+      ],
+      "active": true,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    },
+    {
+      "label": "搜索全部车站",
+      "rect": [
+        232,
+        86,
+        470,
+        20
+      ],
+      "active": true,
+      "focused": true,
+      "value": ""
+    },
+    {
+      "label": "×",
+      "rect": [
+        708,
+        86,
+        20,
+        20
+      ],
+      "active": false,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    },
+    {
+      "label": "排序：A–Z",
+      "rect": [
+        638,
+        109,
+        90,
+        18
+      ],
+      "active": true,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    },
+    {
+      "label": "#",
+      "rect": [
+        232,
+        129,
+        16,
+        18
+      ],
+      "active": false,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    },
+    {
+      "label": "A",
+      "rect": [
+        249,
+        129,
+        17,
+        18
+      ],
+      "active": false,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    },
+    {
+      "label": "B",
+      "rect": [
+        267,
+        129,
+        17,
+        18
+      ],
+      "active": true,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    },
+    {
+      "label": "C",
+      "rect": [
+        285,
+        129,
+        16,
+        18
+      ],
+      "active": false,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    },
+    {
+      "label": "D",
+      "rect": [
+        302,
+        129,
+        17,
+        18
+      ],
+      "active": false,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    },
+    {
+      "label": "E",
+      "rect": [
+        320,
+        129,
+        17,
+        18
+      ],
+      "active": false,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    },
+    {
+      "label": "F",
+      "rect": [
+        338,
+        129,
+        17,
+        18
+      ],
+      "active": false,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    },
+    {
+      "label": "G",
+      "rect": [
+        356,
+        129,
+        16,
+        18
+      ],
+      "active": true,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    },
+    {
+      "label": "H",
+      "rect": [
+        373,
+        129,
+        17,
+        18
+      ],
+      "active": false,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    },
+    {
+      "label": "I",
+      "rect": [
+        391,
+        129,
+        17,
+        18
+      ],
+      "active": false,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    },
+    {
+      "label": "J",
+      "rect": [
+        409,
+        129,
+        16,
+        18
+      ],
+      "active": false,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    },
+    {
+      "label": "K",
+      "rect": [
+        426,
+        129,
+        17,
+        18
+      ],
+      "active": false,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    },
+    {
+      "label": "L",
+      "rect": [
+        444,
+        129,
+        17,
+        18
+      ],
+      "active": false,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    },
+    {
+      "label": "M",
+      "rect": [
+        462,
+        129,
+        17,
+        18
+      ],
+      "active": false,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    },
+    {
+      "label": "N",
+      "rect": [
+        480,
+        129,
+        16,
+        18
+      ],
+      "active": true,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    },
+    {
+      "label": "O",
+      "rect": [
+        497,
+        129,
+        17,
+        18
+      ],
+      "active": false,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    },
+    {
+      "label": "P",
+      "rect": [
+        515,
+        129,
+        17,
+        18
+      ],
+      "active": false,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    },
+    {
+      "label": "Q",
+      "rect": [
+        533,
+        129,
+        16,
+        18
+      ],
+      "active": false,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    },
+    {
+      "label": "R",
+      "rect": [
+        550,
+        129,
+        17,
+        18
+      ],
+      "active": false,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    },
+    {
+      "label": "S",
+      "rect": [
+        568,
+        129,
+        17,
+        18
+      ],
+      "active": false,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    },
+    {
+      "label": "T",
+      "rect": [
+        586,
+        129,
+        17,
+        18
+      ],
+      "active": false,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    },
+    {
+      "label": "U",
+      "rect": [
+        604,
+        129,
+        16,
+        18
+      ],
+      "active": false,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    },
+    {
+      "label": "V",
+      "rect": [
+        621,
+        129,
+        17,
+        18
+      ],
+      "active": false,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    },
+    {
+      "label": "W",
+      "rect": [
+        639,
+        129,
+        17,
+        18
+      ],
+      "active": false,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    },
+    {
+      "label": "X",
+      "rect": [
+        657,
+        129,
+        16,
+        18
+      ],
+      "active": false,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    },
+    {
+      "label": "Y",
+      "rect": [
+        674,
+        129,
+        17,
+        18
+      ],
+      "active": false,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    },
+    {
+      "label": "Z",
+      "rect": [
+        692,
+        129,
+        17,
+        18
+      ],
+      "active": false,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    },
+    {
+      "label": "…",
+      "rect": [
+        710,
+        129,
+        17,
+        18
+      ],
+      "active": false,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    },
+    {
+      "label": "设为起点",
+      "rect": [
+        384,
+        468,
+        112,
+        18
+      ],
+      "active": false,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    },
+    {
+      "label": "设为终点",
+      "rect": [
+        500,
+        468,
+        112,
+        18
+      ],
+      "active": false,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    },
+    {
+      "label": "查看到发",
+      "rect": [
+        616,
+        468,
+        112,
+        18
+      ],
+      "active": false,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "target": "1.21.1-neoforge-ore-fixtures",
+  "source": "Minecraft Screenshot.grab framebuffer, native Screen events on the game thread",
+  "frames": 63,
+  "checks": [
+    "switch toggles in both directions",
+    "preference returns to its initial value",
+    "native 250 ms stepped thumb motion"
+  ],
+  "control": "自动适配两个提示框"
+}

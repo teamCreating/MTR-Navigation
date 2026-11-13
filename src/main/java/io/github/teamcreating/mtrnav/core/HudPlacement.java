@@ -18,8 +18,8 @@ public record HudPlacement(double x, double y, double width, double height, doub
         double base = Math.max(1, guiScale);
         double pixelsPerUnit = Math.min(1.75 * HudScale.clamp(percent) / 150.0,
                 Math.min(Math.max(1, pixelWidth - 24) * (autoFit ? .30 : 1) / 280,
-                        Math.max(1, pixelHeight - 24) * (autoFit ? .20 : 1) / 66));
-        double scale = pixelsPerUnit / base, width = 280 * scale, height = 66 * scale;
+                        Math.max(1, pixelHeight - 24) * (autoFit ? .20 : 1) / 78));
+        double scale = pixelsPerUnit / base, width = 280 * scale, height = 78 * scale;
         double margin = Math.min(12, Math.min(pixelWidth, pixelHeight) * .02) / base;
         double availableX = Math.max(0, pixelWidth / base - width - margin * 2);
         double availableY = Math.max(0, pixelHeight / base - height - margin * 2);

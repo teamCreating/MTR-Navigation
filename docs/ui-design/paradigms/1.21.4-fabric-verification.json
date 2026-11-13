@@ -1,0 +1,97 @@
+{
+  "target": "1.21.4-fabric",
+  "checks": [
+    "Chinese search survives the font switch",
+    "Station selection returns to the query",
+    "Simulated navigation starts",
+    "HUD snapshot saves in memory",
+    "Narrow query keeps three rows and the primary action",
+    "Closing preview restores the original GUI scale",
+    "Formal client preferences unchanged"
+  ],
+  "captures": [
+    {
+      "name": "client-smoke-query",
+      "variant": "AE2",
+      "page": "QUERY",
+      "scenario": "NORMAL",
+      "font": "PIXEL",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "../exports/game/1.21.4-fabric-paradigms/client-smoke-query.png"
+    },
+    {
+      "name": "client-smoke-stations",
+      "variant": "AE2",
+      "page": "STATIONS",
+      "scenario": "NORMAL",
+      "font": "PIXEL",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "../exports/game/1.21.4-fabric-paradigms/client-smoke-stations.png"
+    },
+    {
+      "name": "client-smoke-hud",
+      "variant": "AE2",
+      "page": "HUD",
+      "scenario": "NORMAL",
+      "font": "PIXEL",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "../exports/game/1.21.4-fabric-paradigms/client-smoke-hud.png"
+    },
+    {
+      "name": "client-smoke-smooth-input",
+      "variant": "AE2",
+      "page": "STATIONS",
+      "scenario": "NORMAL",
+      "font": "SMOOTH",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "../exports/game/1.21.4-fabric-paradigms/client-smoke-smooth-input.png"
+    },
+    {
+      "name": "client-smoke-active",
+      "variant": "AE2",
+      "page": "QUERY",
+      "scenario": "NORMAL",
+      "font": "SMOOTH",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "../exports/game/1.21.4-fabric-paradigms/client-smoke-active.png"
+    },
+    {
+      "name": "client-smoke-narrow",
+      "variant": "AE2",
+      "page": "QUERY",
+      "scenario": "NORMAL",
+      "font": "SMOOTH",
+      "size": [
+        854,
+        480
+      ],
+      "file": "../exports/game/1.21.4-fabric-paradigms/client-smoke-narrow.png"
+    }
+  ],
+  "log": "build\\paradigm-review-1.21.4-fabric.log",
+  "mods": [
+    {
+      "name": "MTR-fabric-4.1.0-beta.2+1.21.4.jar",
+      "sha256": "1a14f4a00b5e7e2c82616b253e99a6fd8abd2f26df6461b7f1ed60028d3e8f05"
+    }
+  ],
+  "limitations": [
+    "Injected Chinese characters do not establish system IME composition/candidate-window acceptance.",
+    "Formal-screen migration awaits design and font selection."
+  ]
+}

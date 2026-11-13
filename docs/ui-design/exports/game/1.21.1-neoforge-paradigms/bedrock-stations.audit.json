@@ -1,0 +1,350 @@
+{
+  "variant": "BEDROCK",
+  "page": "STATIONS",
+  "view": "ROUTES",
+  "lastInput": "mouse 524.0,284.0 button=0",
+  "scenario": "NORMAL",
+  "font": "PIXEL",
+  "pixelSize": [
+    1920,
+    1080
+  ],
+  "guiSize": [
+    960,
+    540
+  ],
+  "guiScale": 2.0,
+  "frame": [
+    150,
+    62,
+    660,
+    416
+  ],
+  "compact": false,
+  "origin": "南苑 Nanyuan",
+  "destination": "滨海北 Binhai North",
+  "selectedJourney": 0,
+  "selectedStation": "central",
+  "stationSearch": "",
+  "stationCount": 14,
+  "stationScroll": 0,
+  "index": "",
+  "nearby": false,
+  "indexOpen": false,
+  "listScroll": {
+    "ROUTES": 0,
+    "DEPARTURES": 0,
+    "ACTIVE": 0
+  },
+  "detailScroll": 0,
+  "queryCollapsed": false,
+  "details": false,
+  "activeTrip": false,
+  "canStart": true,
+  "notice": "",
+  "hud": {
+    "navigationPercent": 150,
+    "reminderPercent": 150,
+    "navigationX": 0.05,
+    "navigationY": 0.1,
+    "reminderX": 0.7,
+    "reminderY": 0.1,
+    "autoFit": true,
+    "expanded": true
+  },
+  "hudReminderSelected": false,
+  "settingsScroll": 0,
+  "hudSaved": false,
+  "dragging": false,
+  "stationList": [
+    254,
+    186,
+    548,
+    256
+  ],
+  "controls": [
+    {
+      "rect": [
+        584,
+        70,
+        94,
+        20
+      ],
+      "active": true,
+      "label": "BE / Ore UI",
+      "focused": false,
+      "id": "variant"
+    },
+    {
+      "rect": [
+        682,
+        70,
+        96,
+        20
+      ],
+      "active": true,
+      "label": "A · 像素中文",
+      "focused": false,
+      "id": "font"
+    },
+    {
+      "rect": [
+        784,
+        71,
+        18,
+        18
+      ],
+      "active": true,
+      "label": "×",
+      "focused": false,
+      "id": "close"
+    },
+    {
+      "rect": [
+        254,
+        94,
+        48,
+        20
+      ],
+      "active": true,
+      "label": "路线",
+      "focused": false,
+      "id": "nav0"
+    },
+    {
+      "rect": [
+        306,
+        94,
+        48,
+        20
+      ],
+      "active": true,
+      "label": "到发",
+      "focused": false,
+      "id": "nav1"
+    },
+    {
+      "rect": [
+        358,
+        94,
+        48,
+        20
+      ],
+      "active": true,
+      "label": "行程",
+      "focused": false,
+      "id": "nav2"
+    },
+    {
+      "rect": [
+        162,
+        144,
+        80,
+        20
+      ],
+      "active": true,
+      "label": "行程规划",
+      "focused": false,
+      "id": "rail0"
+    },
+    {
+      "rect": [
+        162,
+        172,
+        80,
+        20
+      ],
+      "active": true,
+      "label": "车站目录 · 已选中",
+      "focused": false,
+      "id": "rail1"
+    },
+    {
+      "rect": [
+        162,
+        200,
+        80,
+        20
+      ],
+      "active": true,
+      "label": "显示与位置",
+      "focused": false,
+      "id": "rail2"
+    },
+    {
+      "rect": [
+        162,
+        228,
+        80,
+        20
+      ],
+      "active": true,
+      "label": "控件状态",
+      "focused": false,
+      "id": "rail3"
+    },
+    {
+      "rect": [
+        254,
+        134,
+        500,
+        20
+      ],
+      "active": true,
+      "label": "搜索中文或英文站名",
+      "focused": false,
+      "id": "stationSearch"
+    },
+    {
+      "rect": [
+        758,
+        134,
+        44,
+        20
+      ],
+      "active": true,
+      "label": "清空",
+      "focused": false,
+      "id": "clearSearch"
+    },
+    {
+      "rect": [
+        254,
+        158,
+        80,
+        20
+      ],
+      "active": true,
+      "label": "字母排序",
+      "focused": false,
+      "id": "stationSort"
+    },
+    {
+      "rect": [
+        338,
+        158,
+        80,
+        20
+      ],
+      "active": true,
+      "label": "附近：关",
+      "focused": false,
+      "id": "nearbyStations"
+    },
+    {
+      "rect": [
+        422,
+        158,
+        88,
+        20
+      ],
+      "active": true,
+      "label": "索引：全部",
+      "focused": false,
+      "id": "index"
+    },
+    {
+      "rect": [
+        254,
+        186,
+        540,
+        36
+      ],
+      "active": true,
+      "label": "滨海国际机场交通中心, Airport Transport Centre · 4200 m",
+      "focused": false,
+      "id": "station-airport"
+    },
+    {
+      "rect": [
+        254,
+        226,
+        540,
+        36
+      ],
+      "active": true,
+      "label": "滨海北, Binhai North · 1360 m",
+      "focused": false,
+      "id": "station-binhai"
+    },
+    {
+      "rect": [
+        254,
+        266,
+        540,
+        36
+      ],
+      "active": true,
+      "label": "中央车站, Central · 620 m, 已选中",
+      "focused": false,
+      "id": "station-central"
+    },
+    {
+      "rect": [
+        254,
+        306,
+        540,
+        36
+      ],
+      "active": true,
+      "label": "东港, East Harbour · 980 m",
+      "focused": false,
+      "id": "station-east"
+    },
+    {
+      "rect": [
+        254,
+        346,
+        540,
+        36
+      ],
+      "active": true,
+      "label": "花园路, Garden Road · 2100 m",
+      "focused": false,
+      "id": "station-garden"
+    },
+    {
+      "rect": [
+        254,
+        386,
+        540,
+        36
+      ],
+      "active": true,
+      "label": "山城, Hill City · 3100 m",
+      "focused": false,
+      "id": "station-hill"
+    },
+    {
+      "rect": [
+        158,
+        450,
+        56,
+        20
+      ],
+      "active": true,
+      "label": "返回",
+      "focused": false,
+      "id": "back"
+    },
+    {
+      "rect": [
+        690,
+        450,
+        112,
+        20
+      ],
+      "active": true,
+      "label": "设为终点",
+      "focused": false,
+      "id": "applyStation"
+    }
+  ],
+  "inputs": {
+    "stationSearch": {
+      "selected": "",
+      "cursor": 0,
+      "value": ""
+    }
+  }
+}

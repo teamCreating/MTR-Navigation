@@ -1,0 +1,299 @@
+{
+  "screen": "VehicleSelectionScreen",
+  "viewport": [
+    960,
+    540
+  ],
+  "scale": 2.0,
+  "enteredScale": 3.0,
+  "fixtures": false,
+  "skin": "ORE",
+  "stations": 3,
+  "journeys": 5,
+  "arrivals": 0,
+  "boardStation": "",
+  "origin": "ec6ad4bce9ef4103",
+  "destination": "a5a3d758d0872b45",
+  "status": "mtrnav.ready",
+  "tracking": "",
+  "reminder": false,
+  "vehicleSupported": true,
+  "fleet": [
+    "m_train_cab_1",
+    "m_train_cab_2",
+    "m_train_trailer",
+    "sp1900_cab_1",
+    "sp1900_cab_2",
+    "sp1900_trailer"
+  ],
+  "vehicleMode": "NONE",
+  "vehicleModels": [],
+  "journeyStocks": [
+    [
+      {
+        "cars": [
+          "sp1900_cab_1",
+          "sp1900_trailer",
+          "sp1900_cab_2"
+        ],
+        "source": "ACTUAL"
+      }
+    ],
+    [
+      {
+        "cars": [
+          "m_train_cab_1",
+          "m_train_trailer",
+          "m_train_cab_2"
+        ],
+        "source": "ACTUAL"
+      }
+    ],
+    [
+      {
+        "cars": [
+          "m_train_cab_1",
+          "sp1900_trailer",
+          "m_train_cab_2"
+        ],
+        "source": "ACTUAL"
+      }
+    ],
+    [
+      {
+        "cars": [
+          "sp1900_cab_1",
+          "sp1900_trailer",
+          "sp1900_cab_2"
+        ],
+        "source": "ACTUAL"
+      },
+      {
+        "cars": [
+          "m_train_cab_1",
+          "sp1900_trailer",
+          "m_train_cab_2"
+        ],
+        "source": "PLANNED"
+      }
+    ],
+    [
+      {
+        "cars": [
+          "m_train_cab_1",
+          "m_train_trailer",
+          "m_train_cab_2"
+        ],
+        "source": "ACTUAL"
+      },
+      {
+        "cars": [
+          "m_train_cab_1",
+          "sp1900_trailer",
+          "m_train_cab_2"
+        ],
+        "source": "PLANNED"
+      }
+    ]
+  ],
+  "routeTypes": [
+    "NORMAL",
+    "LIGHT_RAIL",
+    "HIGH_SPEED",
+    "HIGH_SPEED",
+    "NORMAL",
+    "LIGHT_RAIL"
+  ],
+  "font": "minecraft-current-default",
+  "hudPercent": 150,
+  "reminderPercent": 150,
+  "autoFit": true,
+  "controls": [
+    {
+      "label": "不限制",
+      "rect": [
+        192,
+        100,
+        189,
+        20
+      ],
+      "active": true,
+      "focused": false,
+      "selected": true,
+      "pressDepth": 0.0,
+      "role": "segment"
+    },
+    {
+      "label": "优先乘坐",
+      "rect": [
+        385,
+        100,
+        189,
+        20
+      ],
+      "active": true,
+      "focused": true,
+      "selected": false,
+      "pressDepth": 0.99,
+      "role": "segment"
+    },
+    {
+      "label": "必须乘坐",
+      "rect": [
+        578,
+        100,
+        189,
+        20
+      ],
+      "active": true,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "segment"
+    },
+    {
+      "label": "查询",
+      "rect": [
+        192,
+        130,
+        576,
+        20
+      ],
+      "active": true,
+      "focused": false,
+      "value": ""
+    },
+    {
+      "label": "M-Train Cab (Forwards, Normal)",
+      "rect": [
+        192,
+        166,
+        568,
+        30
+      ],
+      "active": true,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "checkbox",
+      "resourceId": "m_train_cab_1"
+    },
+    {
+      "label": "M-Train Cab (Backwards, Normal)",
+      "rect": [
+        192,
+        200,
+        568,
+        30
+      ],
+      "active": true,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "checkbox",
+      "resourceId": "m_train_cab_2"
+    },
+    {
+      "label": "M-Train Trailer (Normal)",
+      "rect": [
+        192,
+        234,
+        568,
+        30
+      ],
+      "active": true,
+      "focused": false,
+      "selected": true,
+      "pressDepth": 0.0,
+      "role": "checkbox",
+      "resourceId": "m_train_trailer"
+    },
+    {
+      "label": "SP1900 Cab (Forwards, Normal)",
+      "rect": [
+        192,
+        268,
+        568,
+        30
+      ],
+      "active": true,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "checkbox",
+      "resourceId": "sp1900_cab_1"
+    },
+    {
+      "label": "SP1900 Cab (Backwards, Normal)",
+      "rect": [
+        192,
+        302,
+        568,
+        30
+      ],
+      "active": true,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "checkbox",
+      "resourceId": "sp1900_cab_2"
+    },
+    {
+      "label": "SP1900 Trailer (Normal)",
+      "rect": [
+        192,
+        336,
+        568,
+        30
+      ],
+      "active": true,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "checkbox",
+      "resourceId": "sp1900_trailer"
+    },
+    {
+      "label": "清空条件",
+      "rect": [
+        192,
+        450,
+        189,
+        20
+      ],
+      "active": true,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    },
+    {
+      "label": "返回",
+      "rect": [
+        385,
+        450,
+        189,
+        20
+      ],
+      "active": true,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    },
+    {
+      "label": "应用",
+      "rect": [
+        578,
+        450,
+        189,
+        20
+      ],
+      "active": true,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    }
+  ]
+}

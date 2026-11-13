@@ -1,0 +1,235 @@
+{
+  "date": "2026-11-12",
+  "status": "design-review-awaiting-user",
+  "packages": [
+    {
+      "minecraft": "1.21.1",
+      "loader": "neoforge",
+      "version": "0.1.0-alpha.1",
+      "file": "MTR-Navigation-neoforge-0.1.0-alpha.1+1.21.1.jar",
+      "sha256": "d48080d8d758c3fd4f6c24fde5883ffb69c1e66d8d36ccd7a5d45e45365e5a9e"
+    },
+    {
+      "minecraft": "1.21.1",
+      "loader": "fabric",
+      "version": "0.1.0-alpha.1",
+      "file": "MTR-Navigation-fabric-0.1.0-alpha.1+1.21.1.jar",
+      "sha256": "ede561f5643931a3ef739a1acec02d41070d4ff89f18353105841d01760a70f1"
+    },
+    {
+      "minecraft": "1.21.4",
+      "loader": "neoforge",
+      "version": "0.1.0-alpha.1",
+      "file": "MTR-Navigation-neoforge-0.1.0-alpha.1+1.21.4.jar",
+      "sha256": "4435e5c1a5d2c20bb51c847feac8d520ba4c1a2790c323e66e9367505b1950a9"
+    },
+    {
+      "minecraft": "1.21.4",
+      "loader": "fabric",
+      "version": "0.1.0-alpha.1",
+      "file": "MTR-Navigation-fabric-0.1.0-alpha.1+1.21.4.jar",
+      "sha256": "5b42f2b2a8623a74245d36f9de641aaa402850d71a0a761f6dd859b64aeede01"
+    }
+  ],
+  "screenshots": [
+    {
+      "file": "docs/ui-design/exports/game/1.21.1-fabric/journeys-pixel-1920x1080.png",
+      "size": [
+        1920,
+        1080
+      ]
+    },
+    {
+      "file": "docs/ui-design/exports/game/1.21.1-fabric/journeys-smooth-1920x1080.png",
+      "size": [
+        1920,
+        1080
+      ]
+    },
+    {
+      "file": "docs/ui-design/exports/game/1.21.1-neoforge/input-pixel-modernui.png",
+      "size": [
+        1920,
+        1080
+      ]
+    },
+    {
+      "file": "docs/ui-design/exports/game/1.21.1-neoforge/journeys-pixel-modernui-1920x1080.png",
+      "size": [
+        1920,
+        1080
+      ]
+    },
+    {
+      "file": "docs/ui-design/exports/game/1.21.1-neoforge/journeys-smooth-modernui-1920x1080.png",
+      "size": [
+        1920,
+        1080
+      ]
+    },
+    {
+      "file": "docs/ui-design/exports/game/1.21.4-fabric/details-small-scrolled.png",
+      "size": [
+        854,
+        480
+      ]
+    },
+    {
+      "file": "docs/ui-design/exports/game/1.21.4-fabric/empty-smooth-1920x1080.png",
+      "size": [
+        1920,
+        1080
+      ]
+    },
+    {
+      "file": "docs/ui-design/exports/game/1.21.4-fabric/hud-drag-settings-hidden.png",
+      "size": [
+        1920,
+        1080
+      ]
+    },
+    {
+      "file": "docs/ui-design/exports/game/1.21.4-fabric/hud-settings-scrolled.png",
+      "size": [
+        854,
+        480
+      ]
+    },
+    {
+      "file": "docs/ui-design/exports/game/1.21.4-fabric/hud-smooth-100.png",
+      "size": [
+        1920,
+        1080
+      ]
+    },
+    {
+      "file": "docs/ui-design/exports/game/1.21.4-fabric/hud-smooth-150.png",
+      "size": [
+        1920,
+        1080
+      ]
+    },
+    {
+      "file": "docs/ui-design/exports/game/1.21.4-fabric/hud-smooth-200.png",
+      "size": [
+        1920,
+        1080
+      ]
+    },
+    {
+      "file": "docs/ui-design/exports/game/1.21.4-fabric/journeys-pixel-1920x1080.png",
+      "size": [
+        1920,
+        1080
+      ]
+    },
+    {
+      "file": "docs/ui-design/exports/game/1.21.4-fabric/journeys-smooth-1920x1080.png",
+      "size": [
+        1920,
+        1080
+      ]
+    },
+    {
+      "file": "docs/ui-design/exports/game/1.21.4-fabric/journeys-smooth-854x480.png",
+      "size": [
+        854,
+        480
+      ]
+    },
+    {
+      "file": "docs/ui-design/exports/game/1.21.4-fabric/long-smooth-1920x1080.png",
+      "size": [
+        1920,
+        1080
+      ]
+    },
+    {
+      "file": "docs/ui-design/exports/game/1.21.4-fabric/reference-smooth-1920x1080.png",
+      "size": [
+        1920,
+        1080
+      ]
+    },
+    {
+      "file": "docs/ui-design/exports/game/1.21.4-neoforge/empty-smooth-1920x1080.png",
+      "size": [
+        1920,
+        1080
+      ]
+    },
+    {
+      "file": "docs/ui-design/exports/game/1.21.4-neoforge/hud-smooth-1920x1080.png",
+      "size": [
+        1920,
+        1080
+      ]
+    },
+    {
+      "file": "docs/ui-design/exports/game/1.21.4-neoforge/hud-smooth-854x480.png",
+      "size": [
+        854,
+        480
+      ]
+    },
+    {
+      "file": "docs/ui-design/exports/game/1.21.4-neoforge/journeys-pixel-1920x1080.png",
+      "size": [
+        1920,
+        1080
+      ]
+    },
+    {
+      "file": "docs/ui-design/exports/game/1.21.4-neoforge/journeys-smooth-1280x720.png",
+      "size": [
+        1280,
+        720
+      ]
+    },
+    {
+      "file": "docs/ui-design/exports/game/1.21.4-neoforge/journeys-smooth-1920x1080.png",
+      "size": [
+        1920,
+        1080
+      ]
+    },
+    {
+      "file": "docs/ui-design/exports/game/1.21.4-neoforge/journeys-smooth-2560x1440.png",
+      "size": [
+        2560,
+        1440
+      ]
+    },
+    {
+      "file": "docs/ui-design/exports/game/1.21.4-neoforge/journeys-smooth-854x480.png",
+      "size": [
+        854,
+        480
+      ]
+    },
+    {
+      "file": "docs/ui-design/exports/game/1.21.4-neoforge/long-pixel-1920x1080.png",
+      "size": [
+        1920,
+        1080
+      ]
+    },
+    {
+      "file": "docs/ui-design/exports/game/1.21.4-neoforge/long-smooth-1920x1080.png",
+      "size": [
+        1920,
+        1080
+      ]
+    },
+    {
+      "file": "docs/ui-design/exports/game/1.21.4-neoforge/reference-smooth-1920x1080.png",
+      "size": [
+        1920,
+        1080
+      ]
+    }
+  ],
+  "visual_acceptance": false,
+  "formal_screen_migration": false,
+  "axolotl_modified": false
+}

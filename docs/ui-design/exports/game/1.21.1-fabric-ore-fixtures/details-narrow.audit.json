@@ -1,0 +1,193 @@
+{
+  "screen": "NavigationScreen",
+  "viewport": [
+    427,
+    240
+  ],
+  "scale": 2.0,
+  "enteredScale": 3.0,
+  "fixtures": true,
+  "skin": "ORE",
+  "stations": 4,
+  "journeys": 5,
+  "arrivals": 0,
+  "boardStation": "",
+  "origin": "a",
+  "destination": "d",
+  "status": "mtrnav.ready",
+  "tracking": "",
+  "reminder": false,
+  "font": "minecraft-current-default",
+  "hudPercent": 150,
+  "reminderPercent": 150,
+  "autoFit": true,
+  "frame": [
+    10,
+    8,
+    407,
+    224
+  ],
+  "body": [
+    22,
+    84,
+    383,
+    111
+  ],
+  "expandedStops": 0,
+  "controls": [
+    {
+      "label": "换乘查询",
+      "rect": [
+        22,
+        36,
+        125,
+        18
+      ],
+      "active": true,
+      "focused": false,
+      "selected": true,
+      "pressDepth": 0.0,
+      "role": "tab"
+    },
+    {
+      "label": "车站到发",
+      "rect": [
+        151,
+        36,
+        125,
+        18
+      ],
+      "active": true,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "tab"
+    },
+    {
+      "label": "当前导航",
+      "rect": [
+        280,
+        36,
+        125,
+        18
+      ],
+      "active": false,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "tab"
+    },
+    {
+      "label": "×",
+      "rect": [
+        389,
+        10,
+        20,
+        18
+      ],
+      "active": true,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    },
+    {
+      "label": "…",
+      "rect": [
+        365,
+        10,
+        20,
+        18
+      ],
+      "active": true,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    },
+    {
+      "label": "返回",
+      "rect": [
+        18,
+        10,
+        20,
+        18
+      ],
+      "active": true,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    },
+    {
+      "label": "修改站点",
+      "rect": [
+        22,
+        60,
+        60,
+        20
+      ],
+      "active": true,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    },
+    {
+      "label": "最快到达 ▾",
+      "rect": [
+        313,
+        60,
+        92,
+        20
+      ],
+      "active": true,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    },
+    {
+      "label": "行程方案",
+      "rect": [
+        86,
+        60,
+        72,
+        18
+      ],
+      "active": true,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "tab"
+    },
+    {
+      "label": "行程详情",
+      "rect": [
+        162,
+        60,
+        72,
+        18
+      ],
+      "active": true,
+      "focused": true,
+      "selected": true,
+      "pressDepth": 0.0,
+      "role": "tab"
+    },
+    {
+      "label": "开始导航",
+      "rect": [
+        266,
+        206,
+        139,
+        20
+      ],
+      "active": true,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    }
+  ]
+}

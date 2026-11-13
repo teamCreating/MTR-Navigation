@@ -61,7 +61,7 @@ public final class NativeTimetable {
             if (stops.size() < 2) continue;
             var durations = new ArrayList<Long>(); for (var duration : array(route, "durations")) durations.add(duration.getAsLong());
             lines.put(routeId, new Line(routeId, stops, durations));
-            routes.add(new Route(routeId, text(route, "name"), (int) number(route, "color"), platformIds, !text(route, "circularState").equals("NONE")));
+            routes.add(new Route(routeId, text(route, "name"), (int) number(route, "color"), platformIds, !text(route, "circularState").equals("NONE"), type.contains("high_speed") ? RouteType.HIGH_SPEED : type.contains("light_rail") ? RouteType.LIGHT_RAIL : RouteType.NORMAL));
         }
         var stations = new ArrayList<Station>();
         for (var entry : stationRows.entrySet()) {

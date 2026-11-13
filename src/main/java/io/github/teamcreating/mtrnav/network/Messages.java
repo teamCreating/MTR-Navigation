@@ -16,8 +16,11 @@ public final class Messages {
         }
     }
     public record Response(String kind, String dimension, long id, long revision, long sampleMillis, Catalog catalog,
-                           List<Journey> journeys, List<StopEvent> arrivals, JourneyTracker.State tracking, String message, QueryV2.Report report) {
-        public Response { journeys = List.copyOf(journeys); arrivals = List.copyOf(arrivals); }
+                           List<Journey> journeys, List<StopEvent> arrivals, JourneyTracker.State tracking, String message, QueryV2.Report report, List<String> fleet) {
+        public Response { journeys = List.copyOf(journeys); arrivals = List.copyOf(arrivals); fleet = fleet == null ? List.of() : List.copyOf(fleet); }
+        public Response(String kind, String dimension, long id, long revision, long sampleMillis, Catalog catalog, List<Journey> journeys, List<StopEvent> arrivals, JourneyTracker.State tracking, String message, QueryV2.Report report) {
+            this(kind, dimension, id, revision, sampleMillis, catalog, journeys, arrivals, tracking, message, report, List.of());
+        }
         public Response(String kind, String dimension, long id, long revision, long sampleMillis, Catalog catalog,
                         List<Journey> journeys, List<StopEvent> arrivals, JourneyTracker.State tracking, String message) {
             this(kind, dimension, id, revision, sampleMillis, catalog, journeys, arrivals, tracking, message, null);

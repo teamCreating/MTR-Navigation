@@ -1,0 +1,3422 @@
+{
+  "version": "2.22",
+  "children": [
+    {
+      "type": "frame",
+      "id": "yeUo2",
+      "x": 0,
+      "y": 0,
+      "name": "00／组件规范 · 2 px = 1 GUI",
+      "clip": true,
+      "width": 1280,
+      "height": 280,
+      "fill": "#252B29",
+      "layout": "vertical",
+      "gap": 20,
+      "padding": 32,
+      "children": [
+        {
+          "type": "text",
+          "id": "qy4Wr",
+          "name": "组件库标题",
+          "fill": "$ui.text",
+          "content": "站间物语  /  控件与材质",
+          "lineHeight": 1,
+          "fontFamily": "Noto Sans SC",
+          "fontSize": 24,
+          "fontWeight": "600"
+        },
+        {
+          "type": "text",
+          "id": "t5ghlH",
+          "name": "组件库说明",
+          "fill": "$ui.muted",
+          "content": "18 GUI 图标 · 20 GUI 常规控件 · 4 / 8 GUI 间距 · 原创像素边框",
+          "lineHeight": 1.25,
+          "fontFamily": "Noto Sans SC",
+          "fontSize": 16,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "frame",
+          "id": "L82I8J",
+          "name": "按钮与输入框",
+          "width": "fill_container",
+          "height": 48,
+          "gap": 16,
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "DqMUI",
+              "name": "组件／主要按钮 · 20 GUI",
+              "reusable": true,
+              "clip": true,
+              "width": 192,
+              "height": 40,
+              "fill": "$ui.paper",
+              "stroke": "#111814",
+              "strokeWidth": 2,
+              "strokeAlignment": "inner",
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "XqHgn",
+                  "name": "按钮文字",
+                  "fill": "$ui.ink",
+                  "content": "查找路线",
+                  "lineHeight": 1,
+                  "fontFamily": "$ui.font",
+                  "fontSize": 20,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "p9CcTN",
+              "name": "组件／常规按钮",
+              "reusable": true,
+              "clip": true,
+              "width": 192,
+              "height": 40,
+              "fill": "#3D4942",
+              "stroke": "#111814",
+              "strokeWidth": 2,
+              "strokeAlignment": "inner",
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "O5WOIm",
+                  "name": "常规按钮文字",
+                  "fill": "$ui.text",
+                  "content": "全部车站",
+                  "lineHeight": 1,
+                  "fontFamily": "$ui.font",
+                  "fontSize": 20,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "u4gZNK",
+              "name": "组件／纸质输入框",
+              "reusable": true,
+              "clip": true,
+              "width": 304,
+              "height": 40,
+              "fill": "#F7EED9",
+              "stroke": "#39362B",
+              "strokeWidth": 2,
+              "strokeAlignment": "inner",
+              "padding": [
+                0,
+                8
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "CpAYQ",
+                  "name": "输入框内容",
+                  "fill": "$ui.ink",
+                  "content": "南苑 Nanyuan",
+                  "lineHeight": 1,
+                  "fontFamily": "$ui.font",
+                  "fontSize": 20,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "HexOR",
+              "name": "组件／图标按钮",
+              "reusable": true,
+              "clip": true,
+              "width": 36,
+              "height": 36,
+              "fill": "#3D4942",
+              "stroke": "#111814",
+              "strokeWidth": 2,
+              "strokeAlignment": "inner",
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "F0tdIy",
+                  "name": "图标",
+                  "width": 20,
+                  "height": 20,
+                  "icon": "close",
+                  "library": "Material Symbols Sharp",
+                  "fill": "$ui.text"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "HasUr",
+          "name": "列表与页签",
+          "width": "fill_container",
+          "height": 64,
+          "gap": 16,
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "uvPK2",
+              "name": "组件／双行方案",
+              "reusable": true,
+              "clip": true,
+              "width": 288,
+              "height": 64,
+              "fill": "#445946",
+              "stroke": "#C8AA72",
+              "strokeWidth": 2,
+              "strokeAlignment": "inner",
+              "layout": "vertical",
+              "gap": 4,
+              "padding": [
+                8,
+                12
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "i364z",
+                  "name": "方案标题",
+                  "fill": "$ui.text",
+                  "content": "直达 · 28 分钟",
+                  "lineHeight": 1,
+                  "fontFamily": "$ui.font",
+                  "fontSize": 20,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "text",
+                  "id": "mDexo",
+                  "name": "方案线路",
+                  "fill": "$ui.muted",
+                  "content": "1 号线 Local  /  无需换乘",
+                  "lineHeight": 1,
+                  "fontFamily": "$ui.font",
+                  "fontSize": 16,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "tPFSF",
+              "name": "组件／选中页签",
+              "reusable": true,
+              "clip": true,
+              "width": 160,
+              "height": 36,
+              "fill": "$ui.paper",
+              "stroke": "#39362B",
+              "strokeWidth": 2,
+              "strokeAlignment": "inner",
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "JAn03",
+                  "name": "页签文字",
+                  "fill": "$ui.ink",
+                  "content": "换乘查询",
+                  "lineHeight": 1,
+                  "fontFamily": "$ui.font",
+                  "fontSize": 20,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "zBmiL",
+              "name": "字体对照说明",
+              "fill": "$ui.muted",
+              "content": "画布展示布局规范；中文字体以游戏内 A / B 对照为准",
+              "lineHeight": 1.25,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 16,
+              "fontWeight": "normal"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "Rb54L",
+      "x": 0,
+      "y": 360,
+      "name": "01／主导航 · 五方案 · 2× GUI",
+      "clip": true,
+      "width": 1280,
+      "height": 860,
+      "fill": "#181F1C",
+      "layout": "none",
+      "children": [
+        {
+          "type": "text",
+          "id": "k07Nk",
+          "x": 40,
+          "y": 26,
+          "name": "设计稿标题",
+          "fill": "$ui.text",
+          "textGrowth": "fixed-width",
+          "width": 800,
+          "content": "站间物语  /  旅程查询",
+          "lineHeight": 1.2,
+          "fontFamily": "Noto Sans SC",
+          "fontSize": 24,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "text",
+          "id": "MR1Es",
+          "x": 40,
+          "y": 62,
+          "name": "设计稿状态",
+          "fill": "$ui.muted",
+          "textGrowth": "fixed-width",
+          "width": 1100,
+          "content": "设计预览 · 测试数据 · 中文字体以游戏内对照为准",
+          "lineHeight": 1.2,
+          "fontFamily": "Noto Sans SC",
+          "fontSize": 16,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "frame",
+          "id": "gtcwe",
+          "x": 120,
+          "y": 112,
+          "name": "主界面框体 · 520×360 GUI",
+          "clip": true,
+          "width": 1040,
+          "height": 720,
+          "fill": "#939887",
+          "stroke": "#111814",
+          "strokeWidth": 4,
+          "strokeAlignment": "inner",
+          "layout": "none",
+          "children": [
+            {
+              "type": "rectangle",
+              "id": "QxB4H",
+              "x": 8,
+              "y": 8,
+              "name": "内嵌面板",
+              "fill": "$ui.panel",
+              "width": 1024,
+              "height": 704
+            },
+            {
+              "type": "rectangle",
+              "id": "PxyLN",
+              "x": 12,
+              "y": 12,
+              "name": "木质标题底",
+              "fill": "#70523D",
+              "width": 1016,
+              "height": 48
+            },
+            {
+              "type": "rectangle",
+              "id": "OFObe",
+              "x": 16,
+              "y": 62,
+              "name": "黄铜分界",
+              "fill": "$ui.brass",
+              "width": 1008,
+              "height": 2
+            },
+            {
+              "type": "text",
+              "id": "R0x8s",
+              "x": 58,
+              "y": 22,
+              "name": "窗口标题",
+              "fill": "$ui.text",
+              "textGrowth": "fixed-width",
+              "width": 400,
+              "content": "MTR：站间物语",
+              "lineHeight": 1.2,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 20,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "icon",
+              "id": "uEwSm",
+              "x": 22,
+              "y": 22,
+              "name": "导航图标",
+              "width": 24,
+              "height": 24,
+              "icon": "explore",
+              "library": "Material Symbols Sharp",
+              "fill": "$ui.paper"
+            },
+            {
+              "id": "kGLnU",
+              "type": "ref",
+              "ref": "tPFSF",
+              "name": "查询页签",
+              "x": 624,
+              "y": 18,
+              "width": 144,
+              "descendants": {
+                "JAn03": {
+                  "content": "换乘查询"
+                }
+              }
+            },
+            {
+              "type": "text",
+              "id": "awh45",
+              "x": 790,
+              "y": 26,
+              "name": "到发页签",
+              "fill": "$ui.muted",
+              "textGrowth": "fixed-width",
+              "width": 120,
+              "content": "车站到发",
+              "lineHeight": 1.2,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 20,
+              "fontWeight": "normal"
+            },
+            {
+              "id": "RjwHB",
+              "type": "ref",
+              "ref": "HexOR",
+              "name": "更多工具",
+              "x": 936,
+              "y": 18,
+              "descendants": {
+                "F0tdIy": {
+                  "icon": "settings"
+                }
+              }
+            },
+            {
+              "id": "tJ1rv",
+              "type": "ref",
+              "ref": "HexOR",
+              "name": "关闭窗口",
+              "x": 984,
+              "y": 18
+            },
+            {
+              "type": "text",
+              "id": "lHllg",
+              "x": 24,
+              "y": 78,
+              "name": "起点标签",
+              "fill": "$ui.muted",
+              "textGrowth": "fixed-width",
+              "width": 400,
+              "content": "起点",
+              "lineHeight": 1.2,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 16,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "H42z0R",
+              "x": 552,
+              "y": 78,
+              "name": "终点标签",
+              "fill": "$ui.muted",
+              "textGrowth": "fixed-width",
+              "width": 400,
+              "content": "终点",
+              "lineHeight": 1.2,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 16,
+              "fontWeight": "normal"
+            },
+            {
+              "id": "ibUP0",
+              "type": "ref",
+              "ref": "u4gZNK",
+              "name": "起点输入",
+              "x": 24,
+              "y": 104,
+              "width": 424,
+              "descendants": {
+                "CpAYQ": {
+                  "content": "南苑 Nanyuan"
+                }
+              }
+            },
+            {
+              "id": "ZArGM",
+              "type": "ref",
+              "ref": "HexOR",
+              "name": "交换起终点",
+              "x": 490,
+              "y": 106,
+              "descendants": {
+                "F0tdIy": {
+                  "icon": "swap_horiz"
+                }
+              }
+            },
+            {
+              "id": "b1Odc",
+              "type": "ref",
+              "ref": "u4gZNK",
+              "name": "终点输入",
+              "x": 552,
+              "y": 104,
+              "width": 464,
+              "descendants": {
+                "CpAYQ": {
+                  "content": "滨海北 Binhai North"
+                }
+              }
+            },
+            {
+              "id": "nZf9X",
+              "type": "ref",
+              "ref": "p9CcTN",
+              "name": "打开车站目录",
+              "x": 24,
+              "y": 160,
+              "width": 160
+            },
+            {
+              "id": "ilbBS",
+              "type": "ref",
+              "ref": "p9CcTN",
+              "name": "步行换乘设置",
+              "x": 196,
+              "y": 160,
+              "width": 160,
+              "descendants": {
+                "O5WOIm": {
+                  "content": "步行换乘"
+                }
+              }
+            },
+            {
+              "type": "text",
+              "id": "OBKIz",
+              "x": 380,
+              "y": 170,
+              "name": "目录状态",
+              "fill": "$ui.muted",
+              "textGrowth": "fixed-width",
+              "width": 260,
+              "content": "已载入车站目录",
+              "lineHeight": 1.2,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 16,
+              "fontWeight": "normal"
+            },
+            {
+              "id": "LngfH",
+              "type": "ref",
+              "ref": "p9CcTN",
+              "name": "排序按钮",
+              "x": 692,
+              "y": 160,
+              "width": 160,
+              "descendants": {
+                "O5WOIm": {
+                  "content": "最快到达"
+                }
+              }
+            },
+            {
+              "id": "kKzfs",
+              "type": "ref",
+              "ref": "DqMUI",
+              "name": "查询按钮",
+              "x": 864,
+              "y": 160,
+              "width": 152
+            },
+            {
+              "type": "text",
+              "id": "bEJXt",
+              "x": 24,
+              "y": 222,
+              "name": "方案区标题",
+              "fill": "$ui.brass",
+              "textGrowth": "fixed-width",
+              "width": 300,
+              "content": "行程方案 · 5",
+              "lineHeight": 1.2,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 18,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "PwRQ8",
+              "x": 352,
+              "y": 222,
+              "name": "详情区标题",
+              "fill": "$ui.brass",
+              "textGrowth": "fixed-width",
+              "width": 640,
+              "content": "行程详情",
+              "lineHeight": 1.2,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 18,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "rectangle",
+              "id": "m067AV",
+              "x": 24,
+              "y": 252,
+              "name": "方案列表底板",
+              "fill": "$ui.inset",
+              "width": 304,
+              "height": 392
+            },
+            {
+              "type": "rectangle",
+              "id": "B6zgz",
+              "x": 352,
+              "y": 252,
+              "name": "详情底板",
+              "fill": "$ui.inset",
+              "width": 664,
+              "height": 392
+            },
+            {
+              "id": "oKyxW",
+              "type": "ref",
+              "ref": "uvPK2",
+              "name": "方案 1",
+              "x": 32,
+              "y": 260,
+              "width": 288,
+              "fill": "#445946",
+              "stroke": "$ui.brass",
+              "descendants": {
+                "i364z": {
+                  "content": "直达 · 28 分钟"
+                },
+                "mDexo": {
+                  "content": "1 号线 Local  /  无需换乘",
+                  "fontSize": 16
+                }
+              }
+            },
+            {
+              "id": "s3ehJo",
+              "type": "ref",
+              "ref": "uvPK2",
+              "name": "方案 2",
+              "x": 32,
+              "y": 336,
+              "width": 288,
+              "fill": "#27322D",
+              "stroke": "#455147",
+              "descendants": {
+                "i364z": {
+                  "content": "换乘 1 次 · 31 分钟"
+                },
+                "mDexo": {
+                  "content": "Local → Airport Express",
+                  "fontSize": 16
+                }
+              }
+            },
+            {
+              "id": "XMzfh",
+              "type": "ref",
+              "ref": "uvPK2",
+              "name": "方案 3",
+              "x": 32,
+              "y": 412,
+              "width": 288,
+              "fill": "#27322D",
+              "stroke": "#455147",
+              "descendants": {
+                "i364z": {
+                  "content": "换乘 1 次 · 36 分钟"
+                },
+                "mDexo": {
+                  "content": "Local → Riverside",
+                  "fontSize": 16
+                }
+              }
+            },
+            {
+              "id": "wLrtj",
+              "type": "ref",
+              "ref": "uvPK2",
+              "name": "方案 4",
+              "x": 32,
+              "y": 488,
+              "width": 288,
+              "fill": "#27322D",
+              "stroke": "#455147",
+              "descendants": {
+                "i364z": {
+                  "content": "换乘 2 次 · 42 分钟"
+                },
+                "mDexo": {
+                  "content": "Local → Central → North",
+                  "fontSize": 16
+                }
+              }
+            },
+            {
+              "id": "fUlPr",
+              "type": "ref",
+              "ref": "uvPK2",
+              "name": "方案 5",
+              "x": 32,
+              "y": 564,
+              "width": 288,
+              "fill": "#27322D",
+              "stroke": "#455147",
+              "descendants": {
+                "i364z": {
+                  "content": "步行换乘 · 45 分钟"
+                },
+                "mDexo": {
+                  "content": "Local → 步行 4 分钟 → North",
+                  "fontSize": 16
+                }
+              }
+            },
+            {
+              "type": "text",
+              "id": "Lgw4k",
+              "x": 376,
+              "y": 274,
+              "name": "路线摘要",
+              "fill": "$ui.text",
+              "textGrowth": "fixed-width",
+              "width": 600,
+              "content": "直达 · 预计 28 分钟",
+              "lineHeight": 1.2,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 24,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "cDuKr",
+              "x": 376,
+              "y": 314,
+              "name": "发车信息",
+              "fill": "$ui.muted",
+              "textGrowth": "fixed-width",
+              "width": 600,
+              "content": "下一班  08:12    /    1 站台",
+              "lineHeight": 1.2,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 18,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "rectangle",
+              "id": "MpPEF",
+              "x": 380,
+              "y": 372,
+              "name": "线路色条",
+              "fill": "#6EBA82",
+              "width": 4,
+              "height": 184
+            },
+            {
+              "type": "text",
+              "id": "ZWDCc",
+              "x": 404,
+              "y": 366,
+              "name": "上车站",
+              "fill": "$ui.text",
+              "textGrowth": "fixed-width",
+              "width": 552,
+              "content": "南苑 Nanyuan",
+              "lineHeight": 1.2,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 22,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "UBQav",
+              "x": 404,
+              "y": 402,
+              "name": "上车说明",
+              "fill": "$ui.muted",
+              "textGrowth": "fixed-width",
+              "width": 552,
+              "content": "08:12 上车 · 1 站台",
+              "lineHeight": 1.2,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 18,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "t8nQM",
+              "x": 404,
+              "y": 458,
+              "name": "途经提示",
+              "fill": "$ui.muted",
+              "textGrowth": "fixed-width",
+              "width": 552,
+              "content": "途经 6 站  ·  点击展开",
+              "lineHeight": 1.2,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 18,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "bcEtG",
+              "x": 404,
+              "y": 516,
+              "name": "下车站",
+              "fill": "$ui.text",
+              "textGrowth": "fixed-width",
+              "width": 552,
+              "content": "滨海北 Binhai North",
+              "lineHeight": 1.2,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 22,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "i7Y9w",
+              "x": 404,
+              "y": 552,
+              "name": "下车说明",
+              "fill": "$ui.muted",
+              "textGrowth": "fixed-width",
+              "width": 552,
+              "content": "08:40 到达 · 2 站台",
+              "lineHeight": 1.2,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 18,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "H1tsl",
+              "x": 376,
+              "y": 606,
+              "name": "班次状态",
+              "fill": "$ui.muted",
+              "textGrowth": "fixed-width",
+              "width": 600,
+              "content": "测试班次 · 不代表实时运行数据",
+              "lineHeight": 1.2,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 16,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "rectangle",
+              "id": "hyEjx",
+              "x": 16,
+              "y": 658,
+              "name": "页脚分界",
+              "fill": "$ui.brass",
+              "width": 1008,
+              "height": 2
+            },
+            {
+              "type": "text",
+              "id": "g4NSL",
+              "x": 24,
+              "y": 682,
+              "name": "页脚说明",
+              "fill": "$ui.muted",
+              "textGrowth": "fixed-width",
+              "width": 700,
+              "content": "已选方案 1  ·  预计 28 分钟",
+              "lineHeight": 1.2,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 18,
+              "fontWeight": "normal"
+            },
+            {
+              "id": "fifMA",
+              "type": "ref",
+              "ref": "DqMUI",
+              "name": "开始导航",
+              "x": 824,
+              "y": 672,
+              "width": 192,
+              "descendants": {
+                "XqHgn": {
+                  "content": "开始导航"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "Wpl2l",
+      "x": 1360,
+      "y": 360,
+      "name": "02／长中英文站名",
+      "clip": true,
+      "width": 1280,
+      "height": 860,
+      "fill": "#181F1C",
+      "layout": "none",
+      "children": [
+        {
+          "type": "text",
+          "id": "H5Mwc2",
+          "x": 40,
+          "y": 26,
+          "name": "设计稿标题",
+          "fill": "$ui.text",
+          "textGrowth": "fixed-width",
+          "width": 800,
+          "content": "站间物语  /  旅程查询",
+          "lineHeight": 1.2,
+          "fontFamily": "Noto Sans SC",
+          "fontSize": 24,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "text",
+          "id": "nWoT6",
+          "x": 40,
+          "y": 62,
+          "name": "设计稿状态",
+          "fill": "$ui.muted",
+          "textGrowth": "fixed-width",
+          "width": 1100,
+          "content": "设计预览 · 测试数据 · 中文字体以游戏内对照为准",
+          "lineHeight": 1.2,
+          "fontFamily": "Noto Sans SC",
+          "fontSize": 16,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "frame",
+          "id": "x7PXSp",
+          "x": 120,
+          "y": 112,
+          "name": "主界面框体 · 520×360 GUI",
+          "clip": true,
+          "width": 1040,
+          "height": 720,
+          "fill": "#939887",
+          "stroke": "#111814",
+          "strokeWidth": 4,
+          "strokeAlignment": "inner",
+          "layout": "none",
+          "children": [
+            {
+              "type": "rectangle",
+              "id": "fszB2",
+              "x": 8,
+              "y": 8,
+              "name": "内嵌面板",
+              "fill": "$ui.panel",
+              "width": 1024,
+              "height": 704
+            },
+            {
+              "type": "rectangle",
+              "id": "sHHM6",
+              "x": 12,
+              "y": 12,
+              "name": "木质标题底",
+              "fill": "#70523D",
+              "width": 1016,
+              "height": 48
+            },
+            {
+              "type": "rectangle",
+              "id": "N2RrS",
+              "x": 16,
+              "y": 62,
+              "name": "黄铜分界",
+              "fill": "$ui.brass",
+              "width": 1008,
+              "height": 2
+            },
+            {
+              "type": "text",
+              "id": "cPvEx",
+              "x": 58,
+              "y": 22,
+              "name": "窗口标题",
+              "fill": "$ui.text",
+              "textGrowth": "fixed-width",
+              "width": 400,
+              "content": "MTR：站间物语",
+              "lineHeight": 1.2,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 20,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "icon",
+              "id": "Z8W6C",
+              "x": 22,
+              "y": 22,
+              "name": "导航图标",
+              "width": 24,
+              "height": 24,
+              "icon": "explore",
+              "library": "Material Symbols Sharp",
+              "fill": "$ui.paper"
+            },
+            {
+              "id": "oFG6w",
+              "type": "ref",
+              "ref": "tPFSF",
+              "name": "查询页签",
+              "x": 624,
+              "y": 18,
+              "width": 144,
+              "descendants": {
+                "JAn03": {
+                  "content": "换乘查询"
+                }
+              }
+            },
+            {
+              "type": "text",
+              "id": "c3K6k",
+              "x": 790,
+              "y": 26,
+              "name": "到发页签",
+              "fill": "$ui.muted",
+              "textGrowth": "fixed-width",
+              "width": 120,
+              "content": "车站到发",
+              "lineHeight": 1.2,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 20,
+              "fontWeight": "normal"
+            },
+            {
+              "id": "TeefJ",
+              "type": "ref",
+              "ref": "HexOR",
+              "name": "更多工具",
+              "x": 936,
+              "y": 18,
+              "descendants": {
+                "F0tdIy": {
+                  "icon": "settings"
+                }
+              }
+            },
+            {
+              "id": "m7j5b",
+              "type": "ref",
+              "ref": "HexOR",
+              "name": "关闭窗口",
+              "x": 984,
+              "y": 18
+            },
+            {
+              "type": "text",
+              "id": "S0t0H5",
+              "x": 24,
+              "y": 78,
+              "name": "起点标签",
+              "fill": "$ui.muted",
+              "textGrowth": "fixed-width",
+              "width": 400,
+              "content": "起点",
+              "lineHeight": 1.2,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 16,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "PBib2",
+              "x": 552,
+              "y": 78,
+              "name": "终点标签",
+              "fill": "$ui.muted",
+              "textGrowth": "fixed-width",
+              "width": 400,
+              "content": "终点",
+              "lineHeight": 1.2,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 16,
+              "fontWeight": "normal"
+            },
+            {
+              "id": "lL016",
+              "type": "ref",
+              "ref": "u4gZNK",
+              "name": "起点输入",
+              "x": 24,
+              "y": 104,
+              "width": 424,
+              "descendants": {
+                "CpAYQ": {
+                  "content": "南苑 Nanyuan"
+                }
+              }
+            },
+            {
+              "id": "doRns",
+              "type": "ref",
+              "ref": "HexOR",
+              "name": "交换起终点",
+              "x": 490,
+              "y": 106,
+              "descendants": {
+                "F0tdIy": {
+                  "icon": "swap_horiz"
+                }
+              }
+            },
+            {
+              "id": "lGqPj",
+              "type": "ref",
+              "ref": "u4gZNK",
+              "name": "终点输入",
+              "x": 552,
+              "y": 104,
+              "width": 464,
+              "descendants": {
+                "CpAYQ": {
+                  "content": "滨海北 Binhai North"
+                }
+              }
+            },
+            {
+              "id": "TnXcC",
+              "type": "ref",
+              "ref": "p9CcTN",
+              "name": "打开车站目录",
+              "x": 24,
+              "y": 160,
+              "width": 160
+            },
+            {
+              "id": "w1SutS",
+              "type": "ref",
+              "ref": "p9CcTN",
+              "name": "步行换乘设置",
+              "x": 196,
+              "y": 160,
+              "width": 160,
+              "descendants": {
+                "O5WOIm": {
+                  "content": "步行换乘"
+                }
+              }
+            },
+            {
+              "type": "text",
+              "id": "Sm6Fh",
+              "x": 380,
+              "y": 170,
+              "name": "目录状态",
+              "fill": "$ui.muted",
+              "textGrowth": "fixed-width",
+              "width": 260,
+              "content": "已载入车站目录",
+              "lineHeight": 1.2,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 16,
+              "fontWeight": "normal"
+            },
+            {
+              "id": "vvz7t",
+              "type": "ref",
+              "ref": "p9CcTN",
+              "name": "排序按钮",
+              "x": 692,
+              "y": 160,
+              "width": 160,
+              "descendants": {
+                "O5WOIm": {
+                  "content": "最快到达"
+                }
+              }
+            },
+            {
+              "id": "Tu4BC",
+              "type": "ref",
+              "ref": "DqMUI",
+              "name": "查询按钮",
+              "x": 864,
+              "y": 160,
+              "width": 152
+            },
+            {
+              "type": "text",
+              "id": "yhFRd",
+              "x": 24,
+              "y": 222,
+              "name": "方案区标题",
+              "fill": "$ui.brass",
+              "textGrowth": "fixed-width",
+              "width": 300,
+              "content": "行程方案 · 5",
+              "lineHeight": 1.2,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 18,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "IqrNM",
+              "x": 352,
+              "y": 222,
+              "name": "详情区标题",
+              "fill": "$ui.brass",
+              "textGrowth": "fixed-width",
+              "width": 640,
+              "content": "行程详情",
+              "lineHeight": 1.2,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 18,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "rectangle",
+              "id": "KFPGL",
+              "x": 24,
+              "y": 252,
+              "name": "方案列表底板",
+              "fill": "$ui.inset",
+              "width": 304,
+              "height": 392
+            },
+            {
+              "type": "rectangle",
+              "id": "b4HYNQ",
+              "x": 352,
+              "y": 252,
+              "name": "详情底板",
+              "fill": "$ui.inset",
+              "width": 664,
+              "height": 392
+            },
+            {
+              "id": "r638J",
+              "type": "ref",
+              "ref": "uvPK2",
+              "name": "方案 1",
+              "x": 32,
+              "y": 260,
+              "width": 288,
+              "fill": "#445946",
+              "stroke": "$ui.brass",
+              "descendants": {
+                "i364z": {
+                  "content": "直达 · 28 分钟"
+                },
+                "mDexo": {
+                  "content": "1 号线 Local  /  无需换乘",
+                  "fontSize": 16
+                }
+              }
+            },
+            {
+              "id": "z3EMm",
+              "type": "ref",
+              "ref": "uvPK2",
+              "name": "方案 2",
+              "x": 32,
+              "y": 336,
+              "width": 288,
+              "fill": "#27322D",
+              "stroke": "#455147",
+              "descendants": {
+                "i364z": {
+                  "content": "换乘 1 次 · 31 分钟"
+                },
+                "mDexo": {
+                  "content": "Local → Airport Express",
+                  "fontSize": 16
+                }
+              }
+            },
+            {
+              "id": "CxCvV",
+              "type": "ref",
+              "ref": "uvPK2",
+              "name": "方案 3",
+              "x": 32,
+              "y": 412,
+              "width": 288,
+              "fill": "#27322D",
+              "stroke": "#455147",
+              "descendants": {
+                "i364z": {
+                  "content": "换乘 1 次 · 36 分钟"
+                },
+                "mDexo": {
+                  "content": "Local → Riverside",
+                  "fontSize": 16
+                }
+              }
+            },
+            {
+              "id": "nMrDE",
+              "type": "ref",
+              "ref": "uvPK2",
+              "name": "方案 4",
+              "x": 32,
+              "y": 488,
+              "width": 288,
+              "fill": "#27322D",
+              "stroke": "#455147",
+              "descendants": {
+                "i364z": {
+                  "content": "换乘 2 次 · 42 分钟"
+                },
+                "mDexo": {
+                  "content": "Local → Central → North",
+                  "fontSize": 16
+                }
+              }
+            },
+            {
+              "id": "G7BlS",
+              "type": "ref",
+              "ref": "uvPK2",
+              "name": "方案 5",
+              "x": 32,
+              "y": 564,
+              "width": 288,
+              "fill": "#27322D",
+              "stroke": "#455147",
+              "descendants": {
+                "i364z": {
+                  "content": "步行换乘 · 45 分钟"
+                },
+                "mDexo": {
+                  "content": "Local → 步行 4 分钟 → North",
+                  "fontSize": 16
+                }
+              }
+            },
+            {
+              "type": "text",
+              "id": "yO5KM",
+              "x": 376,
+              "y": 274,
+              "name": "路线摘要",
+              "fill": "$ui.text",
+              "textGrowth": "fixed-width",
+              "width": 600,
+              "content": "直达 · 预计 28 分钟",
+              "lineHeight": 1.2,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 24,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "ONDC2",
+              "x": 376,
+              "y": 314,
+              "name": "发车信息",
+              "fill": "$ui.muted",
+              "textGrowth": "fixed-width",
+              "width": 600,
+              "content": "下一班  08:12    /    1 站台",
+              "lineHeight": 1.2,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 18,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "rectangle",
+              "id": "Q52Ra",
+              "x": 380,
+              "y": 372,
+              "name": "线路色条",
+              "fill": "#6EBA82",
+              "width": 4,
+              "height": 184
+            },
+            {
+              "type": "text",
+              "id": "r4pRe",
+              "x": 404,
+              "y": 366,
+              "name": "上车站",
+              "fill": "$ui.text",
+              "textGrowth": "fixed-width",
+              "width": 552,
+              "content": "南苑 Nanyuan",
+              "lineHeight": 1.2,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 22,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "r6PZYv",
+              "x": 404,
+              "y": 402,
+              "name": "上车说明",
+              "fill": "$ui.muted",
+              "textGrowth": "fixed-width",
+              "width": 552,
+              "content": "08:12 上车 · 1 站台",
+              "lineHeight": 1.2,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 18,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "S4mfF",
+              "x": 404,
+              "y": 458,
+              "name": "途经提示",
+              "fill": "$ui.muted",
+              "textGrowth": "fixed-width",
+              "width": 552,
+              "content": "途经 6 站  ·  点击展开",
+              "lineHeight": 1.2,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 18,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "q0T6GJ",
+              "x": 404,
+              "y": 516,
+              "name": "下车站",
+              "fill": "$ui.text",
+              "textGrowth": "fixed-width",
+              "width": 552,
+              "content": "滨海北 Binhai North",
+              "lineHeight": 1.2,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 22,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "UmZRh",
+              "x": 404,
+              "y": 552,
+              "name": "下车说明",
+              "fill": "$ui.muted",
+              "textGrowth": "fixed-width",
+              "width": 552,
+              "content": "08:40 到达 · 2 站台",
+              "lineHeight": 1.2,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 18,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "QVCp0",
+              "x": 376,
+              "y": 606,
+              "name": "班次状态",
+              "fill": "$ui.muted",
+              "textGrowth": "fixed-width",
+              "width": 600,
+              "content": "测试班次 · 不代表实时运行数据",
+              "lineHeight": 1.2,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 16,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "rectangle",
+              "id": "mEm9F",
+              "x": 16,
+              "y": 658,
+              "name": "页脚分界",
+              "fill": "$ui.brass",
+              "width": 1008,
+              "height": 2
+            },
+            {
+              "type": "text",
+              "id": "e8jIuy",
+              "x": 24,
+              "y": 682,
+              "name": "页脚说明",
+              "fill": "$ui.muted",
+              "textGrowth": "fixed-width",
+              "width": 700,
+              "content": "已选方案 1  ·  预计 28 分钟",
+              "lineHeight": 1.2,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 18,
+              "fontWeight": "normal"
+            },
+            {
+              "id": "xjFxm",
+              "type": "ref",
+              "ref": "DqMUI",
+              "name": "开始导航",
+              "x": 824,
+              "y": 672,
+              "width": 192,
+              "descendants": {
+                "XqHgn": {
+                  "content": "开始导航"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "Noh4N",
+      "x": 2720,
+      "y": 360,
+      "name": "03／无查询结果",
+      "clip": true,
+      "width": 1280,
+      "height": 860,
+      "fill": "#181F1C",
+      "layout": "none",
+      "children": [
+        {
+          "type": "text",
+          "id": "AIMrT",
+          "x": 40,
+          "y": 26,
+          "name": "设计稿标题",
+          "fill": "$ui.text",
+          "textGrowth": "fixed-width",
+          "width": 800,
+          "content": "站间物语  /  旅程查询",
+          "lineHeight": 1.2,
+          "fontFamily": "Noto Sans SC",
+          "fontSize": 24,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "text",
+          "id": "WKars",
+          "x": 40,
+          "y": 62,
+          "name": "设计稿状态",
+          "fill": "$ui.muted",
+          "textGrowth": "fixed-width",
+          "width": 1100,
+          "content": "设计预览 · 测试数据 · 中文字体以游戏内对照为准",
+          "lineHeight": 1.2,
+          "fontFamily": "Noto Sans SC",
+          "fontSize": 16,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "frame",
+          "id": "HI0Yo",
+          "x": 120,
+          "y": 112,
+          "name": "主界面框体 · 520×360 GUI",
+          "clip": true,
+          "width": 1040,
+          "height": 720,
+          "fill": "#939887",
+          "stroke": "#111814",
+          "strokeWidth": 4,
+          "strokeAlignment": "inner",
+          "layout": "none",
+          "children": [
+            {
+              "type": "rectangle",
+              "id": "TeN6A",
+              "x": 8,
+              "y": 8,
+              "name": "内嵌面板",
+              "fill": "$ui.panel",
+              "width": 1024,
+              "height": 704
+            },
+            {
+              "type": "rectangle",
+              "id": "LKYEn",
+              "x": 12,
+              "y": 12,
+              "name": "木质标题底",
+              "fill": "#70523D",
+              "width": 1016,
+              "height": 48
+            },
+            {
+              "type": "rectangle",
+              "id": "HSbMV",
+              "x": 16,
+              "y": 62,
+              "name": "黄铜分界",
+              "fill": "$ui.brass",
+              "width": 1008,
+              "height": 2
+            },
+            {
+              "type": "text",
+              "id": "F9tVf",
+              "x": 58,
+              "y": 22,
+              "name": "窗口标题",
+              "fill": "$ui.text",
+              "textGrowth": "fixed-width",
+              "width": 400,
+              "content": "MTR：站间物语",
+              "lineHeight": 1.2,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 20,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "icon",
+              "id": "Rjqtb",
+              "x": 22,
+              "y": 22,
+              "name": "导航图标",
+              "width": 24,
+              "height": 24,
+              "icon": "explore",
+              "library": "Material Symbols Sharp",
+              "fill": "$ui.paper"
+            },
+            {
+              "id": "F0nLg",
+              "type": "ref",
+              "ref": "tPFSF",
+              "name": "查询页签",
+              "x": 624,
+              "y": 18,
+              "width": 144,
+              "descendants": {
+                "JAn03": {
+                  "content": "换乘查询"
+                }
+              }
+            },
+            {
+              "type": "text",
+              "id": "CRqSz",
+              "x": 790,
+              "y": 26,
+              "name": "到发页签",
+              "fill": "$ui.muted",
+              "textGrowth": "fixed-width",
+              "width": 120,
+              "content": "车站到发",
+              "lineHeight": 1.2,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 20,
+              "fontWeight": "normal"
+            },
+            {
+              "id": "XVZPX",
+              "type": "ref",
+              "ref": "HexOR",
+              "name": "更多工具",
+              "x": 936,
+              "y": 18,
+              "descendants": {
+                "F0tdIy": {
+                  "icon": "settings"
+                }
+              }
+            },
+            {
+              "id": "F2jYz",
+              "type": "ref",
+              "ref": "HexOR",
+              "name": "关闭窗口",
+              "x": 984,
+              "y": 18
+            },
+            {
+              "type": "text",
+              "id": "U687sq",
+              "x": 24,
+              "y": 78,
+              "name": "起点标签",
+              "fill": "$ui.muted",
+              "textGrowth": "fixed-width",
+              "width": 400,
+              "content": "起点",
+              "lineHeight": 1.2,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 16,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "A1DhsP",
+              "x": 552,
+              "y": 78,
+              "name": "终点标签",
+              "fill": "$ui.muted",
+              "textGrowth": "fixed-width",
+              "width": 400,
+              "content": "终点",
+              "lineHeight": 1.2,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 16,
+              "fontWeight": "normal"
+            },
+            {
+              "id": "y9qKqJ",
+              "type": "ref",
+              "ref": "u4gZNK",
+              "name": "起点输入",
+              "x": 24,
+              "y": 104,
+              "width": 424,
+              "descendants": {
+                "CpAYQ": {
+                  "content": "南苑 Nanyuan"
+                }
+              }
+            },
+            {
+              "id": "WWZJx",
+              "type": "ref",
+              "ref": "HexOR",
+              "name": "交换起终点",
+              "x": 490,
+              "y": 106,
+              "descendants": {
+                "F0tdIy": {
+                  "icon": "swap_horiz"
+                }
+              }
+            },
+            {
+              "id": "vAQVy",
+              "type": "ref",
+              "ref": "u4gZNK",
+              "name": "终点输入",
+              "x": 552,
+              "y": 104,
+              "width": 464,
+              "descendants": {
+                "CpAYQ": {
+                  "content": "滨海北 Binhai North"
+                }
+              }
+            },
+            {
+              "id": "ZNDld",
+              "type": "ref",
+              "ref": "p9CcTN",
+              "name": "打开车站目录",
+              "x": 24,
+              "y": 160,
+              "width": 160
+            },
+            {
+              "id": "h6mecF",
+              "type": "ref",
+              "ref": "p9CcTN",
+              "name": "步行换乘设置",
+              "x": 196,
+              "y": 160,
+              "width": 160,
+              "descendants": {
+                "O5WOIm": {
+                  "content": "步行换乘"
+                }
+              }
+            },
+            {
+              "type": "text",
+              "id": "kR9gI",
+              "x": 380,
+              "y": 170,
+              "name": "目录状态",
+              "fill": "$ui.muted",
+              "textGrowth": "fixed-width",
+              "width": 260,
+              "content": "已载入车站目录",
+              "lineHeight": 1.2,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 16,
+              "fontWeight": "normal"
+            },
+            {
+              "id": "ff2sj",
+              "type": "ref",
+              "ref": "p9CcTN",
+              "name": "排序按钮",
+              "x": 692,
+              "y": 160,
+              "width": 160,
+              "descendants": {
+                "O5WOIm": {
+                  "content": "最快到达"
+                }
+              }
+            },
+            {
+              "id": "x0jt6L",
+              "type": "ref",
+              "ref": "DqMUI",
+              "name": "查询按钮",
+              "x": 864,
+              "y": 160,
+              "width": 152
+            },
+            {
+              "type": "text",
+              "id": "o0tOd",
+              "x": 24,
+              "y": 222,
+              "name": "方案区标题",
+              "fill": "$ui.brass",
+              "textGrowth": "fixed-width",
+              "width": 300,
+              "content": "行程方案 · 5",
+              "lineHeight": 1.2,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 18,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "JrUgT",
+              "x": 352,
+              "y": 222,
+              "name": "详情区标题",
+              "fill": "$ui.brass",
+              "textGrowth": "fixed-width",
+              "width": 640,
+              "content": "行程详情",
+              "lineHeight": 1.2,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 18,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "rectangle",
+              "id": "x959DK",
+              "x": 24,
+              "y": 252,
+              "name": "方案列表底板",
+              "fill": "$ui.inset",
+              "width": 304,
+              "height": 392
+            },
+            {
+              "type": "rectangle",
+              "id": "PUpVV",
+              "x": 352,
+              "y": 252,
+              "name": "详情底板",
+              "fill": "$ui.inset",
+              "width": 664,
+              "height": 392
+            },
+            {
+              "id": "hHZ6C",
+              "type": "ref",
+              "ref": "uvPK2",
+              "name": "方案 1",
+              "x": 32,
+              "y": 260,
+              "width": 288,
+              "fill": "#445946",
+              "stroke": "$ui.brass",
+              "descendants": {
+                "i364z": {
+                  "content": "直达 · 28 分钟"
+                },
+                "mDexo": {
+                  "content": "1 号线 Local  /  无需换乘",
+                  "fontSize": 16
+                }
+              }
+            },
+            {
+              "id": "a4U6k",
+              "type": "ref",
+              "ref": "uvPK2",
+              "name": "方案 2",
+              "x": 32,
+              "y": 336,
+              "width": 288,
+              "fill": "#27322D",
+              "stroke": "#455147",
+              "descendants": {
+                "i364z": {
+                  "content": "换乘 1 次 · 31 分钟"
+                },
+                "mDexo": {
+                  "content": "Local → Airport Express",
+                  "fontSize": 16
+                }
+              }
+            },
+            {
+              "id": "Kou2n",
+              "type": "ref",
+              "ref": "uvPK2",
+              "name": "方案 3",
+              "x": 32,
+              "y": 412,
+              "width": 288,
+              "fill": "#27322D",
+              "stroke": "#455147",
+              "descendants": {
+                "i364z": {
+                  "content": "换乘 1 次 · 36 分钟"
+                },
+                "mDexo": {
+                  "content": "Local → Riverside",
+                  "fontSize": 16
+                }
+              }
+            },
+            {
+              "id": "Yh0mE",
+              "type": "ref",
+              "ref": "uvPK2",
+              "name": "方案 4",
+              "x": 32,
+              "y": 488,
+              "width": 288,
+              "fill": "#27322D",
+              "stroke": "#455147",
+              "descendants": {
+                "i364z": {
+                  "content": "换乘 2 次 · 42 分钟"
+                },
+                "mDexo": {
+                  "content": "Local → Central → North",
+                  "fontSize": 16
+                }
+              }
+            },
+            {
+              "id": "KS3ZB",
+              "type": "ref",
+              "ref": "uvPK2",
+              "name": "方案 5",
+              "x": 32,
+              "y": 564,
+              "width": 288,
+              "fill": "#27322D",
+              "stroke": "#455147",
+              "descendants": {
+                "i364z": {
+                  "content": "步行换乘 · 45 分钟"
+                },
+                "mDexo": {
+                  "content": "Local → 步行 4 分钟 → North",
+                  "fontSize": 16
+                }
+              }
+            },
+            {
+              "type": "text",
+              "id": "SE4sq",
+              "x": 376,
+              "y": 274,
+              "name": "路线摘要",
+              "fill": "$ui.text",
+              "textGrowth": "fixed-width",
+              "width": 600,
+              "content": "直达 · 预计 28 分钟",
+              "lineHeight": 1.2,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 24,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "PhMtJ",
+              "x": 376,
+              "y": 314,
+              "name": "发车信息",
+              "fill": "$ui.muted",
+              "textGrowth": "fixed-width",
+              "width": 600,
+              "content": "下一班  08:12    /    1 站台",
+              "lineHeight": 1.2,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 18,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "rectangle",
+              "id": "eLuam",
+              "x": 380,
+              "y": 372,
+              "name": "线路色条",
+              "fill": "#6EBA82",
+              "width": 4,
+              "height": 184
+            },
+            {
+              "type": "text",
+              "id": "dPqNY",
+              "x": 404,
+              "y": 366,
+              "name": "上车站",
+              "fill": "$ui.text",
+              "textGrowth": "fixed-width",
+              "width": 552,
+              "content": "南苑 Nanyuan",
+              "lineHeight": 1.2,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 22,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "xN15R",
+              "x": 404,
+              "y": 402,
+              "name": "上车说明",
+              "fill": "$ui.muted",
+              "textGrowth": "fixed-width",
+              "width": 552,
+              "content": "08:12 上车 · 1 站台",
+              "lineHeight": 1.2,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 18,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "AqnNr",
+              "x": 404,
+              "y": 458,
+              "name": "途经提示",
+              "fill": "$ui.muted",
+              "textGrowth": "fixed-width",
+              "width": 552,
+              "content": "途经 6 站  ·  点击展开",
+              "lineHeight": 1.2,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 18,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "bJy2M",
+              "x": 404,
+              "y": 516,
+              "name": "下车站",
+              "fill": "$ui.text",
+              "textGrowth": "fixed-width",
+              "width": 552,
+              "content": "滨海北 Binhai North",
+              "lineHeight": 1.2,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 22,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "TiksA",
+              "x": 404,
+              "y": 552,
+              "name": "下车说明",
+              "fill": "$ui.muted",
+              "textGrowth": "fixed-width",
+              "width": 552,
+              "content": "08:40 到达 · 2 站台",
+              "lineHeight": 1.2,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 18,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "ounuh",
+              "x": 376,
+              "y": 606,
+              "name": "班次状态",
+              "fill": "$ui.muted",
+              "textGrowth": "fixed-width",
+              "width": 600,
+              "content": "测试班次 · 不代表实时运行数据",
+              "lineHeight": 1.2,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 16,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "rectangle",
+              "id": "iNnDr",
+              "x": 16,
+              "y": 658,
+              "name": "页脚分界",
+              "fill": "$ui.brass",
+              "width": 1008,
+              "height": 2
+            },
+            {
+              "type": "text",
+              "id": "wAuW8",
+              "x": 24,
+              "y": 682,
+              "name": "页脚说明",
+              "fill": "$ui.muted",
+              "textGrowth": "fixed-width",
+              "width": 700,
+              "content": "已选方案 1  ·  预计 28 分钟",
+              "lineHeight": 1.2,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 18,
+              "fontWeight": "normal"
+            },
+            {
+              "id": "GM3ef",
+              "type": "ref",
+              "ref": "DqMUI",
+              "name": "开始导航",
+              "x": 824,
+              "y": 672,
+              "width": 192,
+              "descendants": {
+                "XqHgn": {
+                  "content": "开始导航"
+                }
+              }
+            },
+            {
+              "type": "text",
+              "id": "yFc5J",
+              "x": 384,
+              "y": 390,
+              "name": "无结果说明",
+              "fill": "$ui.text",
+              "textGrowth": "fixed-width",
+              "width": 576,
+              "content": "没有找到可用路线\n请更换站点，或调整步行换乘条件。",
+              "lineHeight": 1.5,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 22,
+              "fontWeight": "normal"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "HuAr2",
+      "x": 4080,
+      "y": 360,
+      "name": "04／线路参考 · 无可乘班次",
+      "clip": true,
+      "width": 1280,
+      "height": 860,
+      "fill": "#181F1C",
+      "layout": "none",
+      "children": [
+        {
+          "type": "text",
+          "id": "Lb4UK",
+          "x": 40,
+          "y": 26,
+          "name": "设计稿标题",
+          "fill": "$ui.text",
+          "textGrowth": "fixed-width",
+          "width": 800,
+          "content": "站间物语  /  旅程查询",
+          "lineHeight": 1.2,
+          "fontFamily": "Noto Sans SC",
+          "fontSize": 24,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "text",
+          "id": "GrYL0",
+          "x": 40,
+          "y": 62,
+          "name": "设计稿状态",
+          "fill": "$ui.muted",
+          "textGrowth": "fixed-width",
+          "width": 1100,
+          "content": "设计预览 · 测试数据 · 中文字体以游戏内对照为准",
+          "lineHeight": 1.2,
+          "fontFamily": "Noto Sans SC",
+          "fontSize": 16,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "frame",
+          "id": "wh3qJ",
+          "x": 120,
+          "y": 112,
+          "name": "主界面框体 · 520×360 GUI",
+          "clip": true,
+          "width": 1040,
+          "height": 720,
+          "fill": "#939887",
+          "stroke": "#111814",
+          "strokeWidth": 4,
+          "strokeAlignment": "inner",
+          "layout": "none",
+          "children": [
+            {
+              "type": "rectangle",
+              "id": "f9rJ6v",
+              "x": 8,
+              "y": 8,
+              "name": "内嵌面板",
+              "fill": "$ui.panel",
+              "width": 1024,
+              "height": 704
+            },
+            {
+              "type": "rectangle",
+              "id": "qwtir",
+              "x": 12,
+              "y": 12,
+              "name": "木质标题底",
+              "fill": "#70523D",
+              "width": 1016,
+              "height": 48
+            },
+            {
+              "type": "rectangle",
+              "id": "ogdW8",
+              "x": 16,
+              "y": 62,
+              "name": "黄铜分界",
+              "fill": "$ui.brass",
+              "width": 1008,
+              "height": 2
+            },
+            {
+              "type": "text",
+              "id": "T4MhzM",
+              "x": 58,
+              "y": 22,
+              "name": "窗口标题",
+              "fill": "$ui.text",
+              "textGrowth": "fixed-width",
+              "width": 400,
+              "content": "MTR：站间物语",
+              "lineHeight": 1.2,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 20,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "icon",
+              "id": "hbQsk",
+              "x": 22,
+              "y": 22,
+              "name": "导航图标",
+              "width": 24,
+              "height": 24,
+              "icon": "explore",
+              "library": "Material Symbols Sharp",
+              "fill": "$ui.paper"
+            },
+            {
+              "id": "z7ShM",
+              "type": "ref",
+              "ref": "tPFSF",
+              "name": "查询页签",
+              "x": 624,
+              "y": 18,
+              "width": 144,
+              "descendants": {
+                "JAn03": {
+                  "content": "换乘查询"
+                }
+              }
+            },
+            {
+              "type": "text",
+              "id": "vvQo3",
+              "x": 790,
+              "y": 26,
+              "name": "到发页签",
+              "fill": "$ui.muted",
+              "textGrowth": "fixed-width",
+              "width": 120,
+              "content": "车站到发",
+              "lineHeight": 1.2,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 20,
+              "fontWeight": "normal"
+            },
+            {
+              "id": "Ui59t",
+              "type": "ref",
+              "ref": "HexOR",
+              "name": "更多工具",
+              "x": 936,
+              "y": 18,
+              "descendants": {
+                "F0tdIy": {
+                  "icon": "settings"
+                }
+              }
+            },
+            {
+              "id": "jnRA1",
+              "type": "ref",
+              "ref": "HexOR",
+              "name": "关闭窗口",
+              "x": 984,
+              "y": 18
+            },
+            {
+              "type": "text",
+              "id": "Y525eU",
+              "x": 24,
+              "y": 78,
+              "name": "起点标签",
+              "fill": "$ui.muted",
+              "textGrowth": "fixed-width",
+              "width": 400,
+              "content": "起点",
+              "lineHeight": 1.2,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 16,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "jKVVd",
+              "x": 552,
+              "y": 78,
+              "name": "终点标签",
+              "fill": "$ui.muted",
+              "textGrowth": "fixed-width",
+              "width": 400,
+              "content": "终点",
+              "lineHeight": 1.2,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 16,
+              "fontWeight": "normal"
+            },
+            {
+              "id": "I2rsUs",
+              "type": "ref",
+              "ref": "u4gZNK",
+              "name": "起点输入",
+              "x": 24,
+              "y": 104,
+              "width": 424,
+              "descendants": {
+                "CpAYQ": {
+                  "content": "南苑 Nanyuan"
+                }
+              }
+            },
+            {
+              "id": "ZrtG6",
+              "type": "ref",
+              "ref": "HexOR",
+              "name": "交换起终点",
+              "x": 490,
+              "y": 106,
+              "descendants": {
+                "F0tdIy": {
+                  "icon": "swap_horiz"
+                }
+              }
+            },
+            {
+              "id": "A2oVp",
+              "type": "ref",
+              "ref": "u4gZNK",
+              "name": "终点输入",
+              "x": 552,
+              "y": 104,
+              "width": 464,
+              "descendants": {
+                "CpAYQ": {
+                  "content": "滨海北 Binhai North"
+                }
+              }
+            },
+            {
+              "id": "uFXan",
+              "type": "ref",
+              "ref": "p9CcTN",
+              "name": "打开车站目录",
+              "x": 24,
+              "y": 160,
+              "width": 160
+            },
+            {
+              "id": "i0DfI3",
+              "type": "ref",
+              "ref": "p9CcTN",
+              "name": "步行换乘设置",
+              "x": 196,
+              "y": 160,
+              "width": 160,
+              "descendants": {
+                "O5WOIm": {
+                  "content": "步行换乘"
+                }
+              }
+            },
+            {
+              "type": "text",
+              "id": "G5PdBj",
+              "x": 380,
+              "y": 170,
+              "name": "目录状态",
+              "fill": "$ui.muted",
+              "textGrowth": "fixed-width",
+              "width": 260,
+              "content": "已载入车站目录",
+              "lineHeight": 1.2,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 16,
+              "fontWeight": "normal"
+            },
+            {
+              "id": "Y5ciX",
+              "type": "ref",
+              "ref": "p9CcTN",
+              "name": "排序按钮",
+              "x": 692,
+              "y": 160,
+              "width": 160,
+              "descendants": {
+                "O5WOIm": {
+                  "content": "最快到达"
+                }
+              }
+            },
+            {
+              "id": "GciX4",
+              "type": "ref",
+              "ref": "DqMUI",
+              "name": "查询按钮",
+              "x": 864,
+              "y": 160,
+              "width": 152
+            },
+            {
+              "type": "text",
+              "id": "v2AXE",
+              "x": 24,
+              "y": 222,
+              "name": "方案区标题",
+              "fill": "$ui.brass",
+              "textGrowth": "fixed-width",
+              "width": 300,
+              "content": "行程方案 · 5",
+              "lineHeight": 1.2,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 18,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "lf9wT",
+              "x": 352,
+              "y": 222,
+              "name": "详情区标题",
+              "fill": "$ui.brass",
+              "textGrowth": "fixed-width",
+              "width": 640,
+              "content": "行程详情",
+              "lineHeight": 1.2,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 18,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "rectangle",
+              "id": "LvqEF",
+              "x": 24,
+              "y": 252,
+              "name": "方案列表底板",
+              "fill": "$ui.inset",
+              "width": 304,
+              "height": 392
+            },
+            {
+              "type": "rectangle",
+              "id": "zq4tC",
+              "x": 352,
+              "y": 252,
+              "name": "详情底板",
+              "fill": "$ui.inset",
+              "width": 664,
+              "height": 392
+            },
+            {
+              "id": "DHLTR",
+              "type": "ref",
+              "ref": "uvPK2",
+              "name": "方案 1",
+              "x": 32,
+              "y": 260,
+              "width": 288,
+              "fill": "#445946",
+              "stroke": "$ui.brass",
+              "descendants": {
+                "i364z": {
+                  "content": "直达 · 28 分钟"
+                },
+                "mDexo": {
+                  "content": "1 号线 Local  /  无需换乘",
+                  "fontSize": 16
+                }
+              }
+            },
+            {
+              "id": "pqNOT",
+              "type": "ref",
+              "ref": "uvPK2",
+              "name": "方案 2",
+              "x": 32,
+              "y": 336,
+              "width": 288,
+              "fill": "#27322D",
+              "stroke": "#455147",
+              "descendants": {
+                "i364z": {
+                  "content": "换乘 1 次 · 31 分钟"
+                },
+                "mDexo": {
+                  "content": "Local → Airport Express",
+                  "fontSize": 16
+                }
+              }
+            },
+            {
+              "id": "v3SN1",
+              "type": "ref",
+              "ref": "uvPK2",
+              "name": "方案 3",
+              "x": 32,
+              "y": 412,
+              "width": 288,
+              "fill": "#27322D",
+              "stroke": "#455147",
+              "descendants": {
+                "i364z": {
+                  "content": "换乘 1 次 · 36 分钟"
+                },
+                "mDexo": {
+                  "content": "Local → Riverside",
+                  "fontSize": 16
+                }
+              }
+            },
+            {
+              "id": "qMMbD",
+              "type": "ref",
+              "ref": "uvPK2",
+              "name": "方案 4",
+              "x": 32,
+              "y": 488,
+              "width": 288,
+              "fill": "#27322D",
+              "stroke": "#455147",
+              "descendants": {
+                "i364z": {
+                  "content": "换乘 2 次 · 42 分钟"
+                },
+                "mDexo": {
+                  "content": "Local → Central → North",
+                  "fontSize": 16
+                }
+              }
+            },
+            {
+              "id": "hUBx1",
+              "type": "ref",
+              "ref": "uvPK2",
+              "name": "方案 5",
+              "x": 32,
+              "y": 564,
+              "width": 288,
+              "fill": "#27322D",
+              "stroke": "#455147",
+              "descendants": {
+                "i364z": {
+                  "content": "步行换乘 · 45 分钟"
+                },
+                "mDexo": {
+                  "content": "Local → 步行 4 分钟 → North",
+                  "fontSize": 16
+                }
+              }
+            },
+            {
+              "type": "text",
+              "id": "RLnmT",
+              "x": 376,
+              "y": 274,
+              "name": "路线摘要",
+              "fill": "$ui.text",
+              "textGrowth": "fixed-width",
+              "width": 600,
+              "content": "直达 · 预计 28 分钟",
+              "lineHeight": 1.2,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 24,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "utfwM",
+              "x": 376,
+              "y": 314,
+              "name": "发车信息",
+              "fill": "$ui.warning",
+              "textGrowth": "fixed-width",
+              "width": 600,
+              "content": "下一班  08:12    /    1 站台",
+              "lineHeight": 1.2,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 18,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "rectangle",
+              "id": "kMI6S",
+              "x": 380,
+              "y": 372,
+              "name": "线路色条",
+              "fill": "#6EBA82",
+              "width": 4,
+              "height": 184
+            },
+            {
+              "type": "text",
+              "id": "Grqgb",
+              "x": 404,
+              "y": 366,
+              "name": "上车站",
+              "fill": "$ui.text",
+              "textGrowth": "fixed-width",
+              "width": 552,
+              "content": "南苑 Nanyuan",
+              "lineHeight": 1.2,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 22,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "ee9pP",
+              "x": 404,
+              "y": 402,
+              "name": "上车说明",
+              "fill": "$ui.muted",
+              "textGrowth": "fixed-width",
+              "width": 552,
+              "content": "上车 · 1 站台",
+              "lineHeight": 1.2,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 18,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "ysXb5",
+              "x": 404,
+              "y": 458,
+              "name": "途经提示",
+              "fill": "$ui.muted",
+              "textGrowth": "fixed-width",
+              "width": 552,
+              "content": "途经 6 站  ·  点击展开",
+              "lineHeight": 1.2,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 18,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "Gsh6E",
+              "x": 404,
+              "y": 516,
+              "name": "下车站",
+              "fill": "$ui.text",
+              "textGrowth": "fixed-width",
+              "width": 552,
+              "content": "滨海北 Binhai North",
+              "lineHeight": 1.2,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 22,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "tKGvg",
+              "x": 404,
+              "y": 552,
+              "name": "下车说明",
+              "fill": "$ui.muted",
+              "textGrowth": "fixed-width",
+              "width": 552,
+              "content": "下车 · 2 站台",
+              "lineHeight": 1.2,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 18,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "umc6g",
+              "x": 376,
+              "y": 606,
+              "name": "班次状态",
+              "fill": "$ui.muted",
+              "textGrowth": "fixed-width",
+              "width": 600,
+              "content": "测试班次 · 不代表实时运行数据",
+              "lineHeight": 1.2,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 16,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "rectangle",
+              "id": "h8CG1",
+              "x": 16,
+              "y": 658,
+              "name": "页脚分界",
+              "fill": "$ui.brass",
+              "width": 1008,
+              "height": 2
+            },
+            {
+              "type": "text",
+              "id": "n8yMB",
+              "x": 24,
+              "y": 682,
+              "name": "页脚说明",
+              "fill": "$ui.muted",
+              "textGrowth": "fixed-width",
+              "width": 700,
+              "content": "已选方案 1  ·  预计 28 分钟",
+              "lineHeight": 1.2,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 18,
+              "fontWeight": "normal"
+            },
+            {
+              "id": "tOo9a",
+              "type": "ref",
+              "ref": "DqMUI",
+              "name": "开始导航",
+              "x": 824,
+              "y": 672,
+              "width": 192,
+              "descendants": {
+                "XqHgn": {
+                  "content": "开始导航"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "CjfDi",
+      "x": 0,
+      "y": 1300,
+      "name": "05／HUD 编辑 · 预览与设置分区",
+      "clip": true,
+      "width": 1280,
+      "height": 860,
+      "fill": "#181F1C",
+      "layout": "none",
+      "children": [
+        {
+          "type": "text",
+          "id": "Q3Z1AQ",
+          "x": 40,
+          "y": 26,
+          "name": "HUD 稿标题",
+          "fill": "$ui.text",
+          "textGrowth": "fixed-width",
+          "width": 1140,
+          "content": "HUD 编辑  /  设置与预览互不遮挡",
+          "lineHeight": 1.2,
+          "fontFamily": "Noto Sans SC",
+          "fontSize": 24,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "text",
+          "id": "oDzzW",
+          "x": 40,
+          "y": 64,
+          "name": "HUD 稿说明",
+          "fill": "$ui.muted",
+          "textGrowth": "fixed-width",
+          "width": 1140,
+          "content": "测试预览 · 拖动时收起设置 · 空间不足时设置独立滚动",
+          "lineHeight": 1.2,
+          "fontFamily": "Noto Sans SC",
+          "fontSize": 16,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "frame",
+          "id": "krCjU",
+          "x": 120,
+          "y": 112,
+          "name": "HUD 框体",
+          "clip": true,
+          "width": 1040,
+          "height": 720,
+          "fill": "$ui.panel",
+          "stroke": "$ui.metal",
+          "strokeWidth": 4,
+          "strokeAlignment": "inner",
+          "layout": "none",
+          "children": [
+            {
+              "type": "rectangle",
+              "id": "QdLvx",
+              "x": 8,
+              "y": 8,
+              "name": "HUD 标题木框",
+              "fill": "$ui.wood",
+              "width": 1024,
+              "height": 48
+            },
+            {
+              "type": "text",
+              "id": "D41FoT",
+              "x": 24,
+              "y": 22,
+              "name": "HUD 标题",
+              "fill": "$ui.text",
+              "textGrowth": "fixed-width",
+              "width": 900,
+              "content": "HUD 设置",
+              "lineHeight": 1.2,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 20,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "rectangle",
+              "id": "Q0hGbi",
+              "x": 24,
+              "y": 84,
+              "name": "设置区底板",
+              "fill": "$ui.inset",
+              "width": 400,
+              "height": 540
+            },
+            {
+              "type": "rectangle",
+              "id": "ItO7s",
+              "x": 448,
+              "y": 84,
+              "name": "预览区底板",
+              "fill": "$ui.inset",
+              "width": 568,
+              "height": 540
+            },
+            {
+              "type": "text",
+              "id": "Nzxoc",
+              "x": 472,
+              "y": 104,
+              "name": "预览区标签",
+              "fill": "$ui.muted",
+              "textGrowth": "fixed-width",
+              "width": 520,
+              "content": "预览区域  ·  150%",
+              "lineHeight": 1.2,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 18,
+              "fontWeight": "normal"
+            },
+            {
+              "id": "AUJIQ",
+              "type": "ref",
+              "ref": "p9CcTN",
+              "name": "HUD 设置 1",
+              "x": 40,
+              "y": 104,
+              "width": 368,
+              "height": 40,
+              "descendants": {
+                "O5WOIm": {
+                  "content": "导航框  /  班次提醒框",
+                  "fontSize": 20
+                }
+              }
+            },
+            {
+              "id": "Lm10f",
+              "type": "ref",
+              "ref": "p9CcTN",
+              "name": "HUD 设置 2",
+              "x": 40,
+              "y": 172,
+              "width": 368,
+              "height": 40,
+              "descendants": {
+                "O5WOIm": {
+                  "content": "HUD 大小：150%",
+                  "fontSize": 20
+                }
+              }
+            },
+            {
+              "id": "BnIl8",
+              "type": "ref",
+              "ref": "p9CcTN",
+              "name": "HUD 设置 3",
+              "x": 40,
+              "y": 240,
+              "width": 368,
+              "height": 40,
+              "descendants": {
+                "O5WOIm": {
+                  "content": "自动适配：开",
+                  "fontSize": 20
+                }
+              }
+            },
+            {
+              "id": "R2dze",
+              "type": "ref",
+              "ref": "p9CcTN",
+              "name": "HUD 设置 4",
+              "x": 40,
+              "y": 308,
+              "width": 368,
+              "height": 40,
+              "descendants": {
+                "O5WOIm": {
+                  "content": "左上  /  右上  /  左下  /  右下",
+                  "fontSize": 16
+                }
+              }
+            },
+            {
+              "id": "nfDKY",
+              "type": "ref",
+              "ref": "p9CcTN",
+              "name": "HUD 设置 5",
+              "x": 40,
+              "y": 376,
+              "width": 368,
+              "height": 40,
+              "descendants": {
+                "O5WOIm": {
+                  "content": "提醒条：自动收起",
+                  "fontSize": 20
+                }
+              }
+            },
+            {
+              "id": "SECdG",
+              "type": "ref",
+              "ref": "p9CcTN",
+              "name": "HUD 设置 6",
+              "x": 40,
+              "y": 444,
+              "width": 368,
+              "height": 40,
+              "descendants": {
+                "O5WOIm": {
+                  "content": "恢复所选框默认值",
+                  "fontSize": 20
+                }
+              }
+            },
+            {
+              "type": "frame",
+              "id": "I9cJ0V",
+              "x": 476,
+              "y": 172,
+              "name": "导航 HUD 预览",
+              "width": 512,
+              "height": 132,
+              "fill": "$ui.panel",
+              "stroke": "$ui.brass",
+              "strokeWidth": 2,
+              "strokeAlignment": "inner",
+              "layout": "none",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "QqoEl",
+                  "x": 16,
+                  "y": 16,
+                  "name": "HUD 0 标题",
+                  "fill": "$ui.paper",
+                  "textGrowth": "fixed-width",
+                  "width": 476,
+                  "content": "导航预览 · 上车站",
+                  "lineHeight": 1.2,
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 20,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "text",
+                  "id": "aGvvA",
+                  "x": 16,
+                  "y": 48,
+                  "name": "HUD 0 班次",
+                  "fill": "$ui.text",
+                  "textGrowth": "fixed-width",
+                  "width": 476,
+                  "content": "Local  /  1 站台",
+                  "lineHeight": 1.2,
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 18,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "text",
+                  "id": "FLgFC",
+                  "x": 16,
+                  "y": 80,
+                  "name": "HUD 0 状态",
+                  "fill": "$ui.muted",
+                  "textGrowth": "fixed-width",
+                  "width": 476,
+                  "content": "测试预览 · 03:20",
+                  "lineHeight": 1.2,
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 16,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "bOrj8",
+              "x": 476,
+              "y": 340,
+              "name": "提醒 HUD 预览",
+              "width": 512,
+              "height": 132,
+              "fill": "$ui.panel",
+              "stroke": "$ui.metal",
+              "strokeWidth": 2,
+              "strokeAlignment": "inner",
+              "layout": "none",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "DkFQj",
+                  "x": 16,
+                  "y": 16,
+                  "name": "HUD 1 标题",
+                  "fill": "$ui.paper",
+                  "textGrowth": "fixed-width",
+                  "width": 476,
+                  "content": "班次提醒预览",
+                  "lineHeight": 1.2,
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 20,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "text",
+                  "id": "yWS0W",
+                  "x": 16,
+                  "y": 48,
+                  "name": "HUD 1 班次",
+                  "fill": "$ui.text",
+                  "textGrowth": "fixed-width",
+                  "width": 476,
+                  "content": "Local  /  1 站台",
+                  "lineHeight": 1.2,
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 18,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "text",
+                  "id": "F0cqP",
+                  "x": 16,
+                  "y": 80,
+                  "name": "HUD 1 状态",
+                  "fill": "$ui.muted",
+                  "textGrowth": "fixed-width",
+                  "width": 476,
+                  "content": "测试预览 · 03:20",
+                  "lineHeight": 1.2,
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 16,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "cBB48",
+              "x": 24,
+              "y": 682,
+              "name": "HUD 页脚",
+              "fill": "$ui.muted",
+              "textGrowth": "fixed-width",
+              "width": 750,
+              "content": "拖动预览调整位置 · 滚轮查看设置",
+              "lineHeight": 1.2,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 18,
+              "fontWeight": "normal"
+            },
+            {
+              "id": "Mz2QJ",
+              "type": "ref",
+              "ref": "DqMUI",
+              "name": "完成 HUD 编辑",
+              "x": 824,
+              "y": 672,
+              "width": 192,
+              "height": 40,
+              "descendants": {
+                "XqHgn": {
+                  "content": "完成"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "s3zoVW",
+      "x": 1360,
+      "y": 1300,
+      "name": "06／854×480 窄窗口 · 条件收起",
+      "clip": true,
+      "width": 854,
+      "height": 560,
+      "fill": "#181F1C",
+      "layout": "none",
+      "children": [
+        {
+          "type": "text",
+          "id": "tHoJP",
+          "x": 16,
+          "y": 20,
+          "name": "窄窗口标题",
+          "fill": "$ui.text",
+          "textGrowth": "fixed-width",
+          "width": 820,
+          "content": "854×480  /  单栏切换 · 主要操作常驻",
+          "lineHeight": 1.2,
+          "fontFamily": "Noto Sans SC",
+          "fontSize": 22,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "frame",
+          "id": "I24ti",
+          "x": 16,
+          "y": 88,
+          "name": "窄窗口框体",
+          "clip": true,
+          "width": 822,
+          "height": 448,
+          "fill": "$ui.panel",
+          "stroke": "$ui.metal",
+          "strokeWidth": 4,
+          "strokeAlignment": "inner",
+          "layout": "none",
+          "children": [
+            {
+              "type": "rectangle",
+              "id": "tMuBO",
+              "x": 8,
+              "y": 8,
+              "name": "窄窗木框",
+              "fill": "$ui.wood",
+              "width": 806,
+              "height": 48
+            },
+            {
+              "type": "text",
+              "id": "Ef5hb",
+              "x": 24,
+              "y": 22,
+              "name": "窄窗标题",
+              "fill": "$ui.paper",
+              "textGrowth": "fixed-width",
+              "width": 460,
+              "content": "站间物语",
+              "lineHeight": 1.2,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 20,
+              "fontWeight": "normal"
+            },
+            {
+              "id": "xHSAD",
+              "type": "ref",
+              "ref": "HexOR",
+              "name": "窄窗关闭",
+              "x": 762,
+              "y": 14
+            },
+            {
+              "type": "text",
+              "id": "zbaRI",
+              "x": 16,
+              "y": 78,
+              "name": "收起的起终点",
+              "fill": "$ui.text",
+              "textGrowth": "fixed-width",
+              "width": 624,
+              "content": "南苑 Nanyuan → 滨海北 Binhai North",
+              "lineHeight": 1.2,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 18,
+              "fontWeight": "normal"
+            },
+            {
+              "id": "zNawU",
+              "type": "ref",
+              "ref": "p9CcTN",
+              "name": "展开查询",
+              "x": 658,
+              "y": 68,
+              "width": 148,
+              "height": 40,
+              "descendants": {
+                "O5WOIm": {
+                  "content": "修改站点",
+                  "fontSize": 18
+                }
+              }
+            },
+            {
+              "id": "U8lVH",
+              "type": "ref",
+              "ref": "tPFSF",
+              "name": "窄窗方案页签",
+              "x": 16,
+              "y": 128,
+              "width": 160,
+              "height": 36,
+              "fill": "$ui.paper",
+              "descendants": {
+                "JAn03": {
+                  "content": "行程方案",
+                  "fill": "$ui.ink"
+                }
+              }
+            },
+            {
+              "id": "mg0dV",
+              "type": "ref",
+              "ref": "tPFSF",
+              "name": "窄窗详情页签",
+              "x": 188,
+              "y": 128,
+              "width": 160,
+              "height": 36,
+              "fill": "$ui.raised",
+              "descendants": {
+                "JAn03": {
+                  "content": "行程详情",
+                  "fill": "$ui.text"
+                }
+              }
+            },
+            {
+              "type": "rectangle",
+              "id": "X3pK4C",
+              "x": 16,
+              "y": 172,
+              "name": "窄窗列表",
+              "fill": "$ui.inset",
+              "width": 790,
+              "height": 216
+            },
+            {
+              "id": "NNYOt",
+              "type": "ref",
+              "ref": "uvPK2",
+              "name": "窄窗方案 1",
+              "x": 20,
+              "y": 176,
+              "width": 778,
+              "height": 64,
+              "descendants": {
+                "i364z": {
+                  "content": "直达 · 28 分钟"
+                },
+                "mDexo": {
+                  "content": "1 号线 Local  /  无需换乘"
+                }
+              }
+            },
+            {
+              "id": "b5afiO",
+              "type": "ref",
+              "ref": "uvPK2",
+              "name": "窄窗方案 2",
+              "x": 20,
+              "y": 248,
+              "width": 778,
+              "height": 64,
+              "fill": "#27322D",
+              "stroke": "#455147",
+              "descendants": {
+                "i364z": {
+                  "content": "换乘 1 次 · 31 分钟"
+                },
+                "mDexo": {
+                  "content": "Local → Airport Express"
+                }
+              }
+            },
+            {
+              "id": "zjWdw",
+              "type": "ref",
+              "ref": "uvPK2",
+              "name": "窄窗方案 3",
+              "x": 20,
+              "y": 320,
+              "width": 778,
+              "height": 64,
+              "fill": "#27322D",
+              "stroke": "#455147",
+              "descendants": {
+                "i364z": {
+                  "content": "换乘 1 次 · 36 分钟"
+                },
+                "mDexo": {
+                  "content": "Local → Riverside"
+                }
+              }
+            },
+            {
+              "type": "text",
+              "id": "A4RsL0",
+              "x": 16,
+              "y": 414,
+              "name": "窄窗页脚",
+              "fill": "$ui.muted",
+              "textGrowth": "fixed-width",
+              "width": 580,
+              "content": "测试数据 · 5 个方案 · 列表可滚动",
+              "lineHeight": 1.2,
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 18,
+              "fontWeight": "normal"
+            },
+            {
+              "id": "Jpt07",
+              "type": "ref",
+              "ref": "DqMUI",
+              "name": "窄窗开始导航",
+              "x": 614,
+              "y": 400,
+              "width": 192,
+              "height": 40,
+              "descendants": {
+                "XqHgn": {
+                  "content": "开始导航"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variables": {
+    "ui.panel": {
+      "type": "color",
+      "value": "#303834"
+    },
+    "ui.inset": {
+      "type": "color",
+      "value": "#202724"
+    },
+    "ui.paper": {
+      "type": "color",
+      "value": "#E9DDC4"
+    },
+    "ui.ink": {
+      "type": "color",
+      "value": "#39362B"
+    },
+    "ui.text": {
+      "type": "color",
+      "value": "#F3F0DE"
+    },
+    "ui.muted": {
+      "type": "color",
+      "value": "#B9C3B8"
+    },
+    "ui.brass": {
+      "type": "color",
+      "value": "#C8AA72"
+    },
+    "ui.control": {
+      "type": "number",
+      "value": 40
+    },
+    "ui.gap": {
+      "type": "number",
+      "value": 8
+    },
+    "ui.font": {
+      "type": "string",
+      "value": "Noto Sans SC"
+    },
+    "ui.metal": {
+      "type": "color",
+      "value": "#939887"
+    },
+    "ui.wood": {
+      "type": "color",
+      "value": "#70523D"
+    },
+    "ui.raised": {
+      "type": "color",
+      "value": "#3D4942"
+    },
+    "ui.warning": {
+      "type": "color",
+      "value": "#E1BA73"
+    }
+  },
+  "fileToken": "716cd0bb-18fa-4d23-86d2-2455cf45fae2"
+}

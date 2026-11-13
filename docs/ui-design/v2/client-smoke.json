@@ -1,0 +1,23 @@
+[
+  {
+    "target": "1.21.1-fabric",
+    "status": "captured-awaiting-image-review",
+    "screenshot": "docs/ui-design/exports/game/1.21.1-fabric-v2/graphite-client-smoke.png",
+    "log": "build/v2-smoke-1.21.1-fabric.log",
+    "label": "1.21.1-fabric-v2"
+  },
+  {
+    "target": "1.21.4-neoforge",
+    "status": "captured-awaiting-image-review",
+    "screenshot": "docs/ui-design/exports/game/1.21.4-neoforge-v2/graphite-client-smoke.png",
+    "log": "build/v2-smoke-1.21.4-neoforge.log",
+    "label": "1.21.4-neoforge-v2"
+  },
+  {
+    "target": "1.21.4-fabric",
+    "status": "captured-awaiting-image-review",
+    "screenshot": "docs/ui-design/exports/game/1.21.4-fabric-v2/graphite-client-smoke.png",
+    "log": "build/v2-smoke-1.21.4-fabric.log",
+    "label": "1.21.4-fabric-v2"
+  }
+]

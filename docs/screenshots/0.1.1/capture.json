@@ -1,0 +1,69 @@
+{
+  "version": "0.1.1",
+  "world": "苔灯群岛 / Mosslight Isles",
+  "fictional": true,
+  "captureMethod": "Actual Minecraft framebuffer; native game-thread input; no image retouching",
+  "target": "Minecraft 1.21.1 / NeoForge with Modern UI",
+  "stations": [
+    "苔灯港",
+    "风铃渡",
+    "雾松丘",
+    "星沼湾"
+  ],
+  "lines": [
+    "星汐快线",
+    "萤环线",
+    "岚湾轻轨"
+  ],
+  "captures": [
+    {
+      "file": "journey-query.png",
+      "screen": "NavigationScreen",
+      "viewport": [
+        960,
+        540
+      ]
+    },
+    {
+      "file": "vehicle-selection.png",
+      "screen": "VehicleSelectionScreen",
+      "viewport": [
+        960,
+        540
+      ]
+    },
+    {
+      "file": "station-directory.png",
+      "screen": "StationDirectoryScreen",
+      "viewport": [
+        960,
+        540
+      ]
+    },
+    {
+      "file": "departures.png",
+      "screen": "NavigationScreen",
+      "viewport": [
+        960,
+        540
+      ]
+    },
+    {
+      "file": "hud-settings.png",
+      "screen": "HudSettingsScreen",
+      "viewport": [
+        960,
+        540
+      ]
+    },
+    {
+      "file": "walking-editor.png",
+      "screen": "WalkingEditorScreen",
+      "viewport": [
+        960,
+        540
+      ]
+    }
+  ],
+  "exitCode": 0
+}

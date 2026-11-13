@@ -1,0 +1,104 @@
+{
+  "date": "2026-11-12",
+  "status": "three-style-trial-awaiting-user-selection",
+  "runtime": "1.21.1 NeoForge, LDLib2 2.2.46.a, Modern UI 3.13.0.1",
+  "screenshots": [
+    {
+      "file": "docs/ui-design/ldlib2/screenshots/compare-native-1920x1080.png",
+      "sha256": "a7c7d47232312072e5bc8f7e101d334cd99375650c10df382dd93d2cba9c2f82",
+      "size": [
+        1920,
+        1080
+      ]
+    },
+    {
+      "file": "docs/ui-design/ldlib2/screenshots/compare-native-854x480.png",
+      "sha256": "3a0e98b5a969dbbfecc9d9ff8f8940a2c3682997f83ffc71dd6adbe60a418fb9",
+      "size": [
+        854,
+        480
+      ]
+    },
+    {
+      "file": "docs/ui-design/ldlib2/screenshots/compare-editor-1920x1080.png",
+      "sha256": "1b8662f50f789adc9b6ada95d16184cfff1fda5eba7631f3a382977016ac1a42",
+      "size": [
+        1920,
+        1080
+      ]
+    },
+    {
+      "file": "docs/ui-design/ldlib2/screenshots/compare-editor-854x480.png",
+      "sha256": "3823a4ed2b66c62b8a1cf496b8d3e57ceb046cf4221814be2ac424f4aa94ac14",
+      "size": [
+        854,
+        480
+      ]
+    },
+    {
+      "file": "docs/ui-design/ldlib2/screenshots/compare-create-1920x1080.png",
+      "sha256": "28e508519d00546d4ce70c62752f10d6eafcc1e6c7b73fb2f0fae22b4b1dcb14",
+      "size": [
+        1920,
+        1080
+      ]
+    },
+    {
+      "file": "docs/ui-design/ldlib2/screenshots/compare-create-854x480.png",
+      "sha256": "18ee4d561bf1bdebe243bee81972aad5bc6ef6380a9837feda97a12bae853864",
+      "size": [
+        854,
+        480
+      ]
+    }
+  ],
+  "normal_packages": [
+    {
+      "file": "build/multiversion/MTR-Navigation-fabric-0.1.0-alpha.1+1.21.1.jar",
+      "sha256": "7b7f91ebd9532d622c3b5017ff0c1c1a152ff7d60482abd904505ce447ee0c91",
+      "contains_ldlib2_trial": false
+    },
+    {
+      "file": "build/multiversion/MTR-Navigation-fabric-0.1.0-alpha.1+1.21.4.jar",
+      "sha256": "d93671abc58cfad6f1836fe1391f9703ff1ff8278b5a3c7a939b5934b91dae8b",
+      "contains_ldlib2_trial": false
+    },
+    {
+      "file": "build/multiversion/MTR-Navigation-neoforge-0.1.0-alpha.1+1.21.1.jar",
+      "sha256": "f120b62f1b616d55817c96d0ee8dc48a6f0e266a1c5a6106547bddc971510a8f",
+      "contains_ldlib2_trial": false
+    },
+    {
+      "file": "build/multiversion/MTR-Navigation-neoforge-0.1.0-alpha.1+1.21.4.jar",
+      "sha256": "d106b7b12e3a2f3611414b09c9e467266e94202acf7d2510b567c3dd45b1aa20",
+      "contains_ldlib2_trial": false
+    }
+  ],
+  "trial_package": {
+    "file": "build/targets/1.21.1-neoforge-ldlib2/libs/MTR-Navigation-neoforge-ldlib2-preview-0.1.0-alpha.1.jar",
+    "sha256": "044091ac3125ff371fa1b10694cbe5f8913b7cda112a785ca4bd987378869dac",
+    "three_xml_and_templates_match_sources": true
+  },
+  "tests": {
+    "test": {
+      "tests": 101,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 2
+    },
+    "testFabricCore": {
+      "tests": 101,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 2
+    }
+  },
+  "formal_pages_migrated": false,
+  "axolotl_instance_modified": false,
+  "limitations": [
+    "OS IME candidate window and complete selection shortcuts not validated",
+    "LDLib2 port to other three targets not validated",
+    "Create material local reference only; release licensing not approved",
+    "Fonts and final visual direction await user choice"
+  ]
+}

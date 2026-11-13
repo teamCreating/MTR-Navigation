@@ -1,0 +1,12 @@
+{
+  "target": "1.21.1-neoforge-ore-fixtures",
+  "source": "Minecraft Screenshot.grab framebuffer, native Screen events on the game thread",
+  "frames": 64,
+  "checks": [
+    "pointer-down holds state",
+    "held face reaches full travel",
+    "outside release cancels",
+    "inside release activates"
+  ],
+  "control": "最快到达 ▾"
+}

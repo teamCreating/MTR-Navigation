@@ -1,0 +1,62 @@
+{
+  "screen": "NavigationMenuScreen",
+  "viewport": [
+    960,
+    540
+  ],
+  "scale": 2.0,
+  "fixtures": true,
+  "skin": "ORE",
+  "stations": 4,
+  "journeys": 5,
+  "origin": "a",
+  "destination": "d",
+  "status": "mtrnav.ready",
+  "tracking": "",
+  "reminder": false,
+  "font": "minecraft-current-default",
+  "hudPercent": 150,
+  "reminderPercent": 150,
+  "autoFit": true,
+  "controls": [
+    {
+      "label": "提醒",
+      "rect": [
+        314,
+        194,
+        332,
+        22
+      ],
+      "active": true,
+      "focused": true,
+      "selected": false,
+      "role": "button"
+    },
+    {
+      "label": "HUD 设置",
+      "rect": [
+        314,
+        255,
+        332,
+        22
+      ],
+      "active": true,
+      "focused": false,
+      "selected": false,
+      "role": "button"
+    },
+    {
+      "label": "返回",
+      "rect": [
+        566,
+        363,
+        80,
+        20
+      ],
+      "active": true,
+      "focused": false,
+      "selected": false,
+      "role": "button"
+    }
+  ]
+}

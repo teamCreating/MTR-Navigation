@@ -1,0 +1,18 @@
+{
+  "recorded": "2026-11-12",
+  "pencilDesktop": {
+    "version": "1.2.22",
+    "installedAt": "D:/Apps/Pen",
+    "source": "https://www.pen.dev/download/Pen-win-x64.exe",
+    "installerSha256": "8683e28e3e158a313f161b081889026c3db3f86b7330ee1ee5b1440cf7d6dd51",
+    "signature": "Valid, High Agency Inc",
+    "verified": ["signed-in MCP access", "read", "edit", "PNG export", "save and reopen project .pen"]
+  },
+  "pencilCli": {"version": "0.3.15", "source": "https://www.npmjs.com/package/@pen.dev/cli", "localPrefix": ".cache/ui-tools/pen"},
+  "uiUxProMax": {"source": "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill", "commit": "6ae86f61f520d6ca229d2f40e070410638c908c5", "localPath": ".agents/skills/ui-ux-pro-max"},
+  "projectRules": ".agents/skills/mtrnav-ui/SKILL.md",
+  "fontTools": "4.61.1",
+  "pyYaml": "6.0.3",
+  "fontSources": "../../src/main/resources/assets/mtrnav/ui/font-sources.json",
+  "paidServicesAdded": false
+}

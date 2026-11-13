@@ -29,6 +29,9 @@ public final class NeoNavigation {
         registrar.playToServer(NavRequestV2.TYPE, NavRequestV2.CODEC, (request, context) -> context.enqueueWork(() -> {
             if (context.player() instanceof net.minecraft.server.level.ServerPlayer player) NavigationServer.receiveV2(player, request);
         }));
+        registrar.playToServer(NavRequestV3.TYPE, NavRequestV3.CODEC, (request, context) -> context.enqueueWork(() -> {
+            if (context.player() instanceof net.minecraft.server.level.ServerPlayer player) NavigationServer.receiveV3(player, request);
+        }));
         registrar.playToServer(WalkingRequest.TYPE, WalkingRequest.CODEC, (request, context) -> context.enqueueWork(() -> {
             if (context.player() instanceof net.minecraft.server.level.ServerPlayer player) io.github.teamcreating.mtrnav.server.WalkingServer.receive(player, request);
         }));

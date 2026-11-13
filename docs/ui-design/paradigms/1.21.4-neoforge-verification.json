@@ -1,0 +1,97 @@
+{
+  "target": "1.21.4-neoforge",
+  "checks": [
+    "Chinese search survives the font switch",
+    "Station selection returns to the query",
+    "Simulated navigation starts",
+    "HUD snapshot saves in memory",
+    "Narrow query keeps three rows and the primary action",
+    "Closing preview restores the original GUI scale",
+    "Formal client preferences unchanged"
+  ],
+  "captures": [
+    {
+      "name": "client-smoke-query",
+      "variant": "BEDROCK",
+      "page": "QUERY",
+      "scenario": "NORMAL",
+      "font": "PIXEL",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "../exports/game/1.21.4-neoforge-paradigms/client-smoke-query.png"
+    },
+    {
+      "name": "client-smoke-stations",
+      "variant": "BEDROCK",
+      "page": "STATIONS",
+      "scenario": "NORMAL",
+      "font": "PIXEL",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "../exports/game/1.21.4-neoforge-paradigms/client-smoke-stations.png"
+    },
+    {
+      "name": "client-smoke-hud",
+      "variant": "BEDROCK",
+      "page": "HUD",
+      "scenario": "NORMAL",
+      "font": "PIXEL",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "../exports/game/1.21.4-neoforge-paradigms/client-smoke-hud.png"
+    },
+    {
+      "name": "client-smoke-smooth-input",
+      "variant": "BEDROCK",
+      "page": "STATIONS",
+      "scenario": "NORMAL",
+      "font": "SMOOTH",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "../exports/game/1.21.4-neoforge-paradigms/client-smoke-smooth-input.png"
+    },
+    {
+      "name": "client-smoke-active",
+      "variant": "BEDROCK",
+      "page": "QUERY",
+      "scenario": "NORMAL",
+      "font": "SMOOTH",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "../exports/game/1.21.4-neoforge-paradigms/client-smoke-active.png"
+    },
+    {
+      "name": "client-smoke-narrow",
+      "variant": "BEDROCK",
+      "page": "QUERY",
+      "scenario": "NORMAL",
+      "font": "SMOOTH",
+      "size": [
+        854,
+        480
+      ],
+      "file": "../exports/game/1.21.4-neoforge-paradigms/client-smoke-narrow.png"
+    }
+  ],
+  "log": "build\\paradigm-review-1.21.4-neoforge.log",
+  "mods": [
+    {
+      "name": "MTR-neoforge-4.1.0-beta.2+1.21.4.jar",
+      "sha256": "8f36b90ea8ed31056caea9f23bd146b4fe83f080ad3021bc223c4da07ad1af7e"
+    }
+  ],
+  "limitations": [
+    "Injected Chinese characters do not establish system IME composition/candidate-window acceptance.",
+    "Formal-screen migration awaits design and font selection."
+  ]
+}

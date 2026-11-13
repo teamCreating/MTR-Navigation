@@ -1,0 +1,110 @@
+{
+  "screen": "WalkingSettingsScreen",
+  "viewport": [
+    960,
+    540
+  ],
+  "scale": 2.0,
+  "enteredScale": 2.0,
+  "fixtures": true,
+  "skin": "ORE",
+  "stations": 4,
+  "journeys": 5,
+  "arrivals": 0,
+  "boardStation": "",
+  "origin": "a",
+  "destination": "d",
+  "status": "mtrnav.ready",
+  "tracking": "",
+  "reminder": true,
+  "font": "minecraft-current-default",
+  "hudPercent": 150,
+  "reminderPercent": 150,
+  "autoFit": true,
+  "controls": [
+    {
+      "label": "个人查询发送：关",
+      "rect": [
+        190,
+        182,
+        580,
+        20
+      ],
+      "active": true,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "switch"
+    },
+    {
+      "label": "15 分钟",
+      "rect": [
+        190,
+        278,
+        142,
+        20
+      ],
+      "active": true,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "segment"
+    },
+    {
+      "label": "30 分钟",
+      "rect": [
+        336,
+        278,
+        142,
+        20
+      ],
+      "active": true,
+      "focused": false,
+      "selected": true,
+      "pressDepth": 0.0,
+      "role": "segment"
+    },
+    {
+      "label": "60 分钟",
+      "rect": [
+        482,
+        278,
+        142,
+        20
+      ],
+      "active": true,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "segment"
+    },
+    {
+      "label": "不限",
+      "rect": [
+        628,
+        278,
+        142,
+        20
+      ],
+      "active": true,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "segment"
+    },
+    {
+      "label": "返回",
+      "rect": [
+        690,
+        422,
+        88,
+        20
+      ],
+      "active": true,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    }
+  ]
+}

@@ -56,7 +56,7 @@ public final class MtrCoreReader {
                 ids.add(id(p));
             }
             if (valid && ids.size() >= 2) routes.add(new Model.Route(id(route), route.getName(), route.getColor(), ids,
-                    route.getCircularState() != org.mtr.core.data.Route.CircularState.NONE));
+                    route.getCircularState() != org.mtr.core.data.Route.CircularState.NONE, RouteType.valueOf(route.getRouteType().name())));
         }
         stations.sort(Comparator.comparing(Model.Station::id)); platforms.sort(Comparator.comparing(Model.Platform::id)); routes.sort(Comparator.comparing(Model.Route::id));
         // Record hashes include full names, coordinates, connected IDs and ordered stop occurrences.
@@ -64,8 +64,11 @@ public final class MtrCoreReader {
         var catalog = new Catalog(simulator.dimension, revision, stations, platforms, routes);
         var validRoutes = new HashSet<String>(); routes.forEach(r -> validRoutes.add(r.id()));
         var events = new ArrayList<StopEvent>();
+        var fleet = new TreeSet<String>();
         for (var siding : simulator.sidings) {
             if (siding.getTransportMode() != TransportMode.TRAIN || siding.area == null) continue;
+            siding.getVehicleCars().forEach(car -> fleet.add(car.getVehicleId()));
+            siding.iterateVehicles(v -> v.vehicleExtraData.immutableVehicleCars.forEach(car -> fleet.add(car.getVehicleId())));
             var ids = new LinkedHashSet<Long>();
             for (var route : siding.area.routes) if (validRoutes.contains(id(route))) for (var stop : route.getRoutePlatforms()) {
                 if (stop.getPlatform() != null) ids.add(stop.getPlatform().getId());
@@ -78,7 +81,9 @@ public final class MtrCoreReader {
                     long deviation = (long) args[7];
                     events.add(new StopEvent(new RunKey(id(siding), trip.tripIndexInBlock, (int) args[8], (long) args[9]),
                             vehicle == null ? "" : vehicleId(siding, vehicle), id(trip.route), Long.toHexString(stop.platformId), (int) args[2],
-                            stop.customDestination, (long) args[4] + deviation, (long) args[5] + deviation, deviation, (boolean) args[6]));
+                            stop.customDestination, (long) args[4] + deviation, (long) args[5] + deviation, deviation, (boolean) args[6], vehicle != null && !vehicle.vehicleExtraData.immutableVehicleCars.isEmpty()
+                                    ? new Consist(vehicle.vehicleExtraData.immutableVehicleCars.stream().map(c -> c.getVehicleId()).toList(), StockSource.ACTUAL)
+                                    : new Consist(siding.getVehicleCars().stream().map(c -> c.getVehicleId()).toList(), StockSource.PLANNED)));
                     return null;
                 }
                 return switch (method.getName()) { case "toString" -> "MTR Navigation arrivals consumer"; case "hashCode" -> System.identityHashCode(proxy); case "equals" -> proxy == args[0]; default -> null; };
@@ -116,7 +121,7 @@ public final class MtrCoreReader {
                     : new Riding(id, target.routeId(), target.platformId(), target.stopIndex(), atPlatform, target.run());
             extra.iterateRidingEntities(entity -> { if (entity.isOnVehicle()) riders.put(entity.uuid, riding); });
         });
-        return new Snapshot(catalog, now, events, riders);
+        return new Snapshot(catalog, now, events, riders, List.copyOf(fleet));
     }
     private static String id(org.mtr.core.data.NameColorDataBase value) { return Long.toHexString(value.getId()); }
     private static String vehicleId(Siding siding, Vehicle vehicle) { return id(siding) + ":" + id(vehicle); }

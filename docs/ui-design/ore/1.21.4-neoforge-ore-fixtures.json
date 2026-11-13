@@ -1,0 +1,23 @@
+{
+  "target": "1.21.4-neoforge",
+  "fixtures": true,
+  "checks": [
+    "five actual fixture results",
+    "five whole cards at 1920x1080 / 2x",
+    "repeated direct expand/collapse",
+    "directory return preserves query",
+    "three whole double-line cards at 854x480",
+    "closing the workspace restores entry GUI scale"
+  ],
+  "captures": [
+    "query-wide",
+    "stops-expanded",
+    "active-start",
+    "stations",
+    "hud",
+    "query-narrow",
+    "details-narrow",
+    "hud-narrow"
+  ],
+  "exitCode": 0
+}

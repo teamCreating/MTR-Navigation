@@ -1,0 +1,409 @@
+{
+  "variant": "HYBRID",
+  "page": "QUERY",
+  "view": "ACTIVE",
+  "lastInput": "mouse 750.0,460.0 button=0",
+  "scenario": "NORMAL",
+  "font": "PIXEL",
+  "pixelSize": [
+    1920,
+    1080
+  ],
+  "guiSize": [
+    960,
+    540
+  ],
+  "guiScale": 2.0,
+  "frame": [
+    150,
+    62,
+    660,
+    416
+  ],
+  "compact": false,
+  "origin": "中央车站 Central",
+  "destination": "中央车站 Central",
+  "selectedJourney": 0,
+  "selectedStation": "central",
+  "stationSearch": "",
+  "stationCount": 1,
+  "stationScroll": 0,
+  "index": "C",
+  "nearby": true,
+  "indexOpen": false,
+  "listScroll": {
+    "ROUTES": 0,
+    "DEPARTURES": 0,
+    "ACTIVE": 0
+  },
+  "detailScroll": 0,
+  "queryCollapsed": false,
+  "details": false,
+  "activeTrip": true,
+  "canStart": true,
+  "notice": "测试导航已开始 · 不连接真实班次",
+  "hud": {
+    "navigationPercent": 150,
+    "reminderPercent": 150,
+    "navigationX": 0.05,
+    "navigationY": 0.1,
+    "reminderX": 0.7,
+    "reminderY": 0.1,
+    "autoFit": true,
+    "expanded": true
+  },
+  "hudReminderSelected": false,
+  "settingsScroll": 0,
+  "hudSaved": false,
+  "dragging": false,
+  "list": [
+    158,
+    182,
+    276,
+    260
+  ],
+  "detail": [
+    442,
+    182,
+    360,
+    260
+  ],
+  "visibleRows": 6,
+  "detailHeight": 166,
+  "detailText": [
+    "进行中的测试行程 · 步骤 1/5",
+    "中央车站 Central",
+    "08:12 上车 · 1 站台",
+    "1 号线 Local",
+    "途经 6 站 · 可展开经停站",
+    "中央车站 Central",
+    "08:40 到达 · 4 站台",
+    "固定测试数据 · 非实时班次"
+  ],
+  "controls": [
+    {
+      "rect": [
+        584,
+        70,
+        94,
+        20
+      ],
+      "active": true,
+      "label": "融合方案",
+      "focused": false,
+      "id": "variant"
+    },
+    {
+      "rect": [
+        682,
+        70,
+        96,
+        20
+      ],
+      "active": true,
+      "label": "A · 像素中文",
+      "focused": false,
+      "id": "font"
+    },
+    {
+      "rect": [
+        784,
+        71,
+        18,
+        18
+      ],
+      "active": true,
+      "label": "×",
+      "focused": false,
+      "id": "close"
+    },
+    {
+      "rect": [
+        158,
+        94,
+        48,
+        20
+      ],
+      "active": true,
+      "label": "路线",
+      "focused": false,
+      "id": "nav0"
+    },
+    {
+      "rect": [
+        210,
+        94,
+        48,
+        20
+      ],
+      "active": true,
+      "label": "到发",
+      "focused": false,
+      "id": "nav1"
+    },
+    {
+      "rect": [
+        262,
+        94,
+        48,
+        20
+      ],
+      "active": true,
+      "label": "行程 · 已选中",
+      "focused": false,
+      "id": "nav2"
+    },
+    {
+      "rect": [
+        314,
+        94,
+        48,
+        20
+      ],
+      "active": true,
+      "label": "选站",
+      "focused": false,
+      "id": "nav3"
+    },
+    {
+      "rect": [
+        366,
+        94,
+        48,
+        20
+      ],
+      "active": true,
+      "label": "HUD",
+      "focused": false,
+      "id": "nav4"
+    },
+    {
+      "rect": [
+        418,
+        94,
+        48,
+        20
+      ],
+      "active": true,
+      "label": "组件",
+      "focused": false,
+      "id": "nav5"
+    },
+    {
+      "rect": [
+        158,
+        134,
+        275,
+        20
+      ],
+      "active": true,
+      "label": "起点",
+      "focused": false,
+      "id": "origin"
+    },
+    {
+      "rect": [
+        437,
+        135,
+        18,
+        18
+      ],
+      "active": true,
+      "label": "交换起点与终点",
+      "focused": false,
+      "id": "swap"
+    },
+    {
+      "rect": [
+        459,
+        134,
+        275,
+        20
+      ],
+      "active": true,
+      "label": "终点",
+      "focused": false,
+      "id": "destination"
+    },
+    {
+      "rect": [
+        738,
+        134,
+        64,
+        20
+      ],
+      "active": true,
+      "label": "查询",
+      "focused": false,
+      "id": "query"
+    },
+    {
+      "rect": [
+        158,
+        158,
+        56,
+        20
+      ],
+      "active": true,
+      "label": "选起点",
+      "focused": false,
+      "id": "pickOrigin"
+    },
+    {
+      "rect": [
+        218,
+        158,
+        56,
+        20
+      ],
+      "active": true,
+      "label": "选终点",
+      "focused": false,
+      "id": "pickDestination"
+    },
+    {
+      "rect": [
+        278,
+        158,
+        48,
+        20
+      ],
+      "active": true,
+      "label": "附近",
+      "focused": false,
+      "id": "nearby"
+    },
+    {
+      "rect": [
+        330,
+        158,
+        72,
+        20
+      ],
+      "active": true,
+      "label": "最快到达",
+      "focused": false,
+      "id": "sort"
+    },
+    {
+      "rect": [
+        754,
+        158,
+        48,
+        20
+      ],
+      "active": true,
+      "label": "收起",
+      "focused": false,
+      "id": "collapseQuery"
+    },
+    {
+      "rect": [
+        158,
+        182,
+        268,
+        36
+      ],
+      "active": true,
+      "label": "前往上车站, 当前步骤 · 点击下一步, 已选中",
+      "focused": false,
+      "id": "row0"
+    },
+    {
+      "rect": [
+        158,
+        222,
+        268,
+        36
+      ],
+      "active": true,
+      "label": "乘坐 1 号线, 等待前一步完成",
+      "focused": false,
+      "id": "row1"
+    },
+    {
+      "rect": [
+        158,
+        262,
+        268,
+        36
+      ],
+      "active": true,
+      "label": "中央车站换乘, 等待前一步完成",
+      "focused": false,
+      "id": "row2"
+    },
+    {
+      "rect": [
+        158,
+        302,
+        268,
+        36
+      ],
+      "active": true,
+      "label": "乘坐 North 线, 等待前一步完成",
+      "focused": false,
+      "id": "row3"
+    },
+    {
+      "rect": [
+        158,
+        342,
+        268,
+        36
+      ],
+      "active": true,
+      "label": "到达目的地, 等待前一步完成",
+      "focused": false,
+      "id": "row4"
+    },
+    {
+      "rect": [
+        450,
+        420,
+        112,
+        20
+      ],
+      "active": true,
+      "label": "推进测试步骤",
+      "focused": false,
+      "id": "detailAction"
+    },
+    {
+      "rect": [
+        158,
+        450,
+        96,
+        20
+      ],
+      "active": true,
+      "label": "五个方案",
+      "focused": false,
+      "id": "scenario"
+    },
+    {
+      "rect": [
+        698,
+        450,
+        104,
+        20
+      ],
+      "active": true,
+      "label": "结束测试导航",
+      "focused": false,
+      "id": "primary"
+    }
+  ],
+  "inputs": {
+    "origin": {
+      "selected": "",
+      "cursor": 0,
+      "value": "中央车站 Central"
+    },
+    "destination": {
+      "selected": "",
+      "cursor": 0,
+      "value": "中央车站 Central"
+    }
+  }
+}

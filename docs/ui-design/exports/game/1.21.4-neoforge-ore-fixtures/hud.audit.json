@@ -1,0 +1,175 @@
+{
+  "screen": "HudSettingsScreen",
+  "viewport": [
+    960,
+    540
+  ],
+  "scale": 2.0,
+  "enteredScale": 2.0,
+  "fixtures": true,
+  "skin": "ORE",
+  "stations": 4,
+  "journeys": 5,
+  "arrivals": 0,
+  "boardStation": "",
+  "origin": "a",
+  "destination": "d",
+  "status": "mtrnav.ready",
+  "tracking": "",
+  "reminder": false,
+  "font": "minecraft-current-default",
+  "hudPercent": 150,
+  "reminderPercent": 150,
+  "autoFit": true,
+  "hudBounds": [
+    706.5,
+    6.0,
+    247.5,
+    85.5
+  ],
+  "reminderBounds": [
+    357.5,
+    6.0,
+    245.0,
+    57.75
+  ],
+  "controls": [
+    {
+      "label": "导航框",
+      "rect": [
+        28,
+        236,
+        136,
+        22
+      ],
+      "active": true,
+      "focused": true,
+      "selected": true,
+      "pressDepth": 0.0,
+      "role": "tab"
+    },
+    {
+      "label": "班次提醒框",
+      "rect": [
+        168,
+        236,
+        136,
+        22
+      ],
+      "active": true,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "tab"
+    },
+    {
+      "label": "150%",
+      "rect": [
+        36,
+        298,
+        260,
+        20
+      ],
+      "active": true,
+      "focused": false
+    },
+    {
+      "label": "自动适配两个提示框",
+      "rect": [
+        28,
+        328,
+        276,
+        24
+      ],
+      "active": true,
+      "focused": false,
+      "selected": true,
+      "pressDepth": 0.0,
+      "role": "switch"
+    },
+    {
+      "label": "左上",
+      "rect": [
+        28,
+        382,
+        66,
+        20
+      ],
+      "active": true,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "segment"
+    },
+    {
+      "label": "右上",
+      "rect": [
+        98,
+        382,
+        66,
+        20
+      ],
+      "active": true,
+      "focused": false,
+      "selected": true,
+      "pressDepth": 0.0,
+      "role": "segment"
+    },
+    {
+      "label": "左下",
+      "rect": [
+        168,
+        382,
+        66,
+        20
+      ],
+      "active": true,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "segment"
+    },
+    {
+      "label": "右下",
+      "rect": [
+        238,
+        382,
+        66,
+        20
+      ],
+      "active": true,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "segment"
+    },
+    {
+      "label": "恢复所选框默认值",
+      "rect": [
+        28,
+        508,
+        192,
+        20
+      ],
+      "active": true,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    },
+    {
+      "label": "完成",
+      "rect": [
+        228,
+        508,
+        76,
+        20
+      ],
+      "active": true,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    }
+  ]
+}

@@ -1,0 +1,79 @@
+{
+  "version": 3,
+  "status": "ore-implemented-under-game-review",
+  "colors": {
+    "background": "#48494A",
+    "panel": "#48494A",
+    "inset": "#313233",
+    "raised": "#58585A",
+    "edge": "#1E1E1F",
+    "header": "#E6E8EB",
+    "headerInk": "#1E1E1F",
+    "text": "#FFFFFF",
+    "muted": "#D0D1D4",
+    "faint": "#B1B2B5",
+    "primary": "#3C8527",
+    "primaryHover": "#2A641C",
+    "primaryPressed": "#1D4D13",
+    "secondary": "#D0D1D4",
+    "secondaryShadow": "#58585A",
+    "selected": "#58585A",
+    "positive": "#6CC349",
+    "warning": "#FFB366"
+  },
+  "metrics": {
+    "grid": 2,
+    "gap": 4,
+    "padding": 8,
+    "icon": 18,
+    "control": 20,
+    "line": 12,
+    "row": 56,
+    "panelWidth": 620,
+    "panelHeight": 480,
+    "compactWidth": 480,
+    "compactHeight": 330,
+    "compactRow": 34,
+    "header": 28,
+    "compactHeader": 24
+  },
+  "reference": "docs/ui-design/ore/README.md",
+  "font": "minecraft-current-default",
+  "material": {
+    "source": "original-native-pixel-drawing",
+    "reference": "Bedrock Ore UI elevated pressable, field, toggle and tab states",
+    "upstream_pixels_copied": false
+  },
+  "user_accepted_rules": [
+    "All formal pages use Ore UI",
+    "Use real query, navigation, reminder and walking services",
+    "MC current font",
+    "Retain prior settings and server protocol",
+    "Intermediate stops expand directly on the row"
+  ],
+  "motion": {
+    "activation": "release-inside; release-outside cancels",
+    "faceTravelGui": 3,
+    "pressMillis": 60,
+    "releaseMillis": 100,
+    "timingSource": "native adaptation; not claimed as exact upstream timing",
+    "switchMillis": 250,
+    "switchStepsGui": {
+      "onOffsets": [
+        0,
+        3,
+        14,
+        13,
+        14
+      ],
+      "thumbWidths": [
+        16,
+        20,
+        16,
+        16,
+        16
+      ],
+      "source": "read-only Bedrock BaseSwitch step-start keyframes, adapted to half-size GUI units"
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "fusion": {
+    "release": "2026.11.10",
+    "url": "https://github.com/TakWolf/fusion-pixel-font/releases/download/2026.11.10/fusion-pixel-font-10px-proportional-ttf-v2026.11.10.zip",
+    "archive_sha256": "cccdaef5abca366b014895981c1856e7831e617a0cff7f2326515848fd5c0935",
+    "face": "fusion-pixel-10px-proportional-zh_hans.ttf",
+    "sha256": "de4d8583f45d400313725321c80ce625f9ebecc2c9727518cb62feb300aceea1",
+    "license": "OFL-1.1"
+  },
+  "noto": {
+    "commit": "f8d157532fbfaeda587e826d4cd5b21a49186f7c",
+    "url": "https://raw.githubusercontent.com/notofonts/noto-cjk/f8d157532fbfaeda587e826d4cd5b21a49186f7c/Sans/Variable/TTF/Subset/NotoSansSC-VF.ttf",
+    "git_blob": "5371a543be5fc670c7cdee9760c03554ee3e9b8e",
+    "source_sha256": "d68bafcb48a2707749396aa12bbbd833cb70401f3a9a689fd2902c7e0d295964",
+    "sha256": "12a7fef9f024f411ed7e2d89a614b9865f14ae4129ad4993a7e117f36322a794",
+    "derivation": "fonttools 4.61.1 instantiateVariableFont wght=400; TrueType outlines",
+    "license": "OFL-1.1"
+  }
+}

@@ -13,5 +13,5 @@
     "client": ["io.github.teamcreating.mtrnav.platform.fabric.FabricNavigationClient"]
   },
   "mixins": ["mtrnav.mixins.json"],
-  "depends": {"fabricloader": ">=0.16.14", "fabric-api": "*", "minecraft": "1.21.1", "java": ">=21", "mtr": "4.1.0-beta.2"}
+  "depends": {"fabricloader": ">=0.16.14", "fabric-api": "*", "minecraft": "${minecraft_version}", "java": ">=21", "mtr": "4.1.0-beta.2"}
 }

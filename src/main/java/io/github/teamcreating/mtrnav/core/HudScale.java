@@ -2,7 +2,7 @@ package io.github.teamcreating.mtrnav.core;
 
 /** Physical HUD size is independent of Minecraft's GUI scale and bounded by the viewport. */
 public final class HudScale {
-    public static final int WIDTH = 180, HEIGHT = 43, DEFAULT_PERCENT = 150;
+    public static final int WIDTH = 220, HEIGHT = 88, DEFAULT_PERCENT = 150;
     public static final int MIN_PERCENT = 75, MAX_PERCENT = 200;
     private HudScale() {}
     public static int clamp(int percent) { return Math.max(MIN_PERCENT, Math.min(MAX_PERCENT, percent)); }

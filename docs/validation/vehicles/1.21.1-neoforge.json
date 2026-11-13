@@ -1,0 +1,35 @@
+{
+  "target": "1.21.1-neoforge",
+  "world": "VehicleReview",
+  "fixtures": false,
+  "checks": [
+    "real catalog, route categories and observed/planned model IDs",
+    "five real usable journeys with actual and planned consists",
+    "five complete cards and ordered icon chains at 1920x1080 / 2x",
+    "typed model search filters the native list",
+    "strict query matches any ridden leg using real server search",
+    "preferred model is ranked first",
+    "selection survives resize",
+    "clearing conditions restores normal search",
+    "mixed-consist trailer matches regardless of cab model",
+    "departure board remains populated while strict filter is active",
+    "HUD 100% respects edges and avoids the second HUD",
+    "HUD 150% respects edges and avoids the second HUD",
+    "HUD 200% respects edges and avoids the second HUD",
+    "closing screens restores entry GUI scale"
+  ],
+  "captures": [
+    "vehicle-query-real",
+    "vehicle-consist-real",
+    "vehicle-search-focused",
+    "vehicle-search-typed",
+    "vehicle-selector-real",
+    "vehicle-require-real",
+    "vehicle-prefer-real",
+    "vehicle-selector-small",
+    "vehicle-active-real",
+    "vehicle-board-real",
+    "vehicle-hud-real"
+  ],
+  "exitCode": 0
+}

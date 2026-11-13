@@ -12,13 +12,14 @@ public final class RoutePlanner {
     }
     private static final class Budget {
         private final long expires = System.nanoTime() + 5_000_000_000L;
-        private int operations;
+        private int operations, expansions;
+        void expand() { if (++expansions > MAX_EXPANSIONS || Thread.currentThread().isInterrupted()) throw new SearchLimitException("Search budget exceeded"); step(); }
         void step() {
             if ((++operations & 1023) == 0 && (operations > 2_000_000 || System.nanoTime() > expires || Thread.currentThread().isInterrupted()))
                 throw new SearchLimitException("Search budget exceeded");
         }
     }
-    private record Label(String station, String platform, long time, int transfers, List<RideLeg> legs, Set<RunKey> usedRuns, String signature, List<WalkLeg> walks, RunKey continuation) {}
+    private record Label(String station, String platform, long time, int transfers, List<RideLeg> legs, Set<RunKey> usedRuns, String signature, List<WalkLeg> walks, RunKey continuation, boolean matched) {}
     private record Candidate(List<StopEvent> stops, int boardIndex) {}
     private record Distance(String station, long millis) {}
     private record RideDistance(String station, int rides) {}
@@ -28,10 +29,31 @@ public final class RoutePlanner {
     }
     public SearchResult search(Snapshot snapshot, String origin, String destination, Sort sort, Settings settings,
                                QueryOptions options, List<WalkingConnection> shared, List<WalkingConnection> personal, long walkingRevision) {
-        if (Thread.currentThread().isInterrupted()) throw new SearchLimitException("Search cancelled");
+        return search(snapshot, origin, destination, sort, settings, options, shared, personal, walkingRevision, VehicleCondition.none());
+    }
+    public SearchResult search(Snapshot snapshot, String origin, String destination, Sort sort, Settings settings,
+                               QueryOptions options, List<WalkingConnection> shared, List<WalkingConnection> personal, long walkingRevision, VehicleCondition condition) {
         var budget = new Budget();
+        if (condition.mode() != VehicleMode.PREFER) return search(snapshot, origin, destination, sort, settings, options, shared, personal, walkingRevision, condition, budget, Long.MAX_VALUE);
+        var baseline = search(snapshot, origin, destination, sort, settings, options, shared, personal, walkingRevision, VehicleCondition.none(), budget, Long.MAX_VALUE);
+        if (baseline.journeys().isEmpty()) return baseline;
+        long deadline = options.extraMinutes() < 0 ? Long.MAX_VALUE : baseline.fastestArrival() + options.extraMinutes() * 60_000L;
+        try {
+            var matching = search(snapshot, origin, destination, sort, settings, options, shared, personal, walkingRevision,
+                    new VehicleCondition(VehicleMode.REQUIRE, condition.models()), budget, deadline);
+            var combined = new ArrayList<>(matching.journeys());
+            var seen = new HashSet<String>(); combined.forEach(j -> seen.add(pattern(j)));
+            for (var journey : baseline.journeys()) if (seen.add(pattern(journey))) combined.add(journey);
+            return new SearchResult(combined.stream().limit(options.limit()).toList(), baseline.fastestArrival(), baseline.incomplete() || matching.incomplete());
+        } catch (SearchLimitException exhausted) { return new SearchResult(baseline.journeys().stream().sorted(Comparator.comparing(j -> !condition.matches(j))).toList(), baseline.fastestArrival(), true); }
+    }
+    private SearchResult search(Snapshot snapshot, String origin, String destination, Sort sort, Settings settings,
+                               QueryOptions options, List<WalkingConnection> shared, List<WalkingConnection> personal, long walkingRevision,
+                               VehicleCondition condition, Budget budget, long maxArrival) {
+        if (Thread.currentThread().isInterrupted()) throw new SearchLimitException("Search cancelled");
         var catalog = snapshot.catalog();
         if (catalog.station(origin) == null || catalog.station(destination) == null) throw new IllegalArgumentException("Unknown station");
+        if (origin.equals(destination) && condition.active()) return new SearchResult(List.of(), 0, false);
         if (origin.equals(destination)) return new SearchResult(List.of(new Journey(UUID.randomUUID().toString(), catalog.dimension(), catalog.revision(), origin, destination,
                 snapshot.sampleMillis(), snapshot.sampleMillis(), 0, List.of())), snapshot.sampleMillis(), false);
         var walking = new WalkingGraph(catalog, shared, personal);
@@ -111,19 +133,20 @@ public final class RoutePlanner {
         Comparator<Label> order = Comparator.comparingLong(arrivalBound).thenComparingInt(changes).thenComparingLong(l -> remaining.get(l.station()));
         if (!options.distinct()) order = requestedOrder;
         var queue = new PriorityQueue<>(order);
-        queue.add(new Label(origin, "", snapshot.sampleMillis(), 0, List.of(), Set.of(), "", List.of(), null));
+        queue.add(new Label(origin, "", snapshot.sampleMillis(), 0, List.of(), Set.of(), "", List.of(), null, false));
         var labels = new HashMap<String, List<Label>>();
         var results = new ArrayList<Journey>(); var signatures = new HashSet<String>();
-        long deadline = snapshot.sampleMillis() + settings.horizonHours() * 3_600_000L;
-        int expansions = 0; boolean incomplete = false, baselineFound = false; long fastest = 0;
+        long deadline = Math.min(maxArrival, snapshot.sampleMillis() + settings.horizonHours() * 3_600_000L);
+        boolean incomplete = false, baselineFound = false; long fastest = 0;
         int wanted = options.limit() + (sort == Sort.FEWEST_TRANSFERS && options.distinct() ? 1 : 0);
         try { while (!queue.isEmpty() && results.size() < wanted) {
-            if (++expansions > MAX_EXPANSIONS || Thread.currentThread().isInterrupted()) throw new SearchLimitException("Search budget exceeded");
+            budget.expand();
             var label = queue.poll();
             if (label.time() > deadline) continue;
             // Labels displaced from the retained alternatives no longer need expanding.
-            if (!label.station().equals(destination) && !label.legs().isEmpty() && !labels.getOrDefault(label.platform() + ":" + label.transfers(), List.of()).contains(label)) continue;
+            if (!label.station().equals(destination) && !label.legs().isEmpty() && !labels.getOrDefault(bucketKey(label), List.of()).contains(label)) continue;
             if (label.station().equals(destination)) {
+                if (condition.active() && !label.matched()) continue;
                 String signature = label.signature();
                 if (signatures.add(signature)) {
                     results.add(new Journey(UUID.randomUUID().toString(), catalog.dimension(), catalog.revision(), origin, destination,
@@ -143,7 +166,7 @@ public final class RoutePlanner {
                     var walks = new ArrayList<>(label.walks()); walks.add(tail.leg(label.station(), destination, label.time(), label.legs().size()));
                     if (queue.size() >= MAX_QUEUED_LABELS) throw new SearchLimitException("Search queue budget exceeded");
                     queue.add(new Label(destination, label.platform(), label.time() + tail.seconds() * 1000L, label.transfers(), label.legs(), label.usedRuns(),
-                            label.signature() + "/walk:" + tail.id(), List.copyOf(walks), null));
+                            label.signature() + "/walk:" + tail.id(), List.copyOf(walks), null, label.matched()));
                 }
             }
             var reachable = walking.reachable(label.station());
@@ -178,17 +201,17 @@ public final class RoutePlanner {
                     }
                     var leg = new RideLeg(from.run(), from.vehicleId(), from.routeId(), stationId, platform.stationId(),
                             from.platformId(), to.platformId(), from.stopIndex(), to.stopIndex(), from.destination(), from.departure(), to.arrival(),
-                            from.realtime() && to.realtime(), via);
+                            from.realtime() && to.realtime(), via, from.consist());
                     var nextLegs = new ArrayList<>(label.legs()); nextLegs.add(leg);
                     var used = new HashSet<>(label.usedRuns()); used.add(from.run());
                     String pattern = from.routeId() + ":" + from.platformId() + ":" + from.stopIndex() + ">" + to.platformId() + ":" + to.stopIndex();
                     String signature = options.distinct() ? pathPattern(nextLegs, nextWalks) : label.signature() + "/" + from.run() + ":" + from.stopIndex() + "-" + to.stopIndex();
                     var nextRun = new RunKey(from.run().sidingId(), from.run().tripIndex() + 1, from.run().departureIndex(), from.run().departureOffset());
                     var continuationKey = runs.containsKey(nextRun) ? nextRun : null;
-                    var next = new Label(platform.stationId(), to.platformId(), to.arrival(), transfers, List.copyOf(nextLegs), Set.copyOf(used), signature, List.copyOf(nextWalks), continuationKey);
+                    var next = new Label(platform.stationId(), to.platformId(), to.arrival(), transfers, List.copyOf(nextLegs), Set.copyOf(used), signature, List.copyOf(nextWalks), continuationKey, label.matched() || condition.matches(from.consist()));
                     if (changes.applyAsInt(next) <= settings.maxTransfers() && admit(next, labels, order)) {
                         if (queue.size() >= MAX_QUEUED_LABELS) {
-                            queue.removeIf(old -> !old.station().equals(destination) && !labels.getOrDefault(old.platform() + ":" + old.transfers(), List.of()).contains(old));
+                            queue.removeIf(old -> !old.station().equals(destination) && !labels.getOrDefault(bucketKey(old), List.of()).contains(old));
                             if (queue.size() >= MAX_QUEUED_LABELS) throw new SearchLimitException("Search queue budget exceeded");
                         }
                         queue.add(next);
@@ -218,9 +241,11 @@ public final class RoutePlanner {
         return low;
     }
 
+    private static String bucketKey(Label label) { return label.platform() + ":" + label.transfers() + ":" + label.matched(); }
+
     private static boolean admit(Label candidate, Map<String, List<Label>> labels, Comparator<Label> order) {
         // Keep several distinct paths at each platform/boarding count so alternative results survive.
-        String key = candidate.platform() + ":" + candidate.transfers();
+        String key = bucketKey(candidate);
         var bucket = labels.computeIfAbsent(key, ignored -> new ArrayList<>());
         var same = bucket.stream().filter(l -> l.signature().equals(candidate.signature()) && Objects.equals(l.continuation(), candidate.continuation())).toList();
         if (same.stream().anyMatch(l -> l.time() <= candidate.time())) return false;

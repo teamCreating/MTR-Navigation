@@ -1,0 +1,409 @@
+{
+  "variant": "JAVA",
+  "page": "QUERY",
+  "view": "ROUTES",
+  "lastInput": "",
+  "scenario": "NORMAL",
+  "font": "PIXEL",
+  "pixelSize": [
+    1920,
+    1080
+  ],
+  "guiSize": [
+    960,
+    540
+  ],
+  "guiScale": 2.0,
+  "frame": [
+    150,
+    62,
+    660,
+    416
+  ],
+  "compact": false,
+  "origin": "南苑 Nanyuan",
+  "destination": "滨海北 Binhai North",
+  "selectedJourney": 0,
+  "selectedStation": "",
+  "stationSearch": "",
+  "stationCount": 14,
+  "stationScroll": 0,
+  "index": "",
+  "nearby": false,
+  "indexOpen": false,
+  "listScroll": {
+    "ROUTES": 0,
+    "DEPARTURES": 0,
+    "ACTIVE": 0
+  },
+  "detailScroll": 0,
+  "queryCollapsed": false,
+  "details": false,
+  "activeTrip": false,
+  "canStart": true,
+  "notice": "",
+  "hud": {
+    "navigationPercent": 150,
+    "reminderPercent": 150,
+    "navigationX": 0.05,
+    "navigationY": 0.1,
+    "reminderX": 0.7,
+    "reminderY": 0.1,
+    "autoFit": true,
+    "expanded": true
+  },
+  "hudReminderSelected": false,
+  "settingsScroll": 0,
+  "hudSaved": false,
+  "dragging": false,
+  "list": [
+    158,
+    182,
+    276,
+    260
+  ],
+  "detail": [
+    442,
+    182,
+    360,
+    260
+  ],
+  "visibleRows": 6,
+  "detailHeight": 166,
+  "detailText": [
+    "28 分钟 · 1 号线 Local",
+    "南苑 Nanyuan",
+    "08:12 上车 · 1 站台",
+    "1 号线 Local",
+    "途经 6 站 · 可展开经停站",
+    "滨海北 Binhai North",
+    "08:40 到达 · 4 站台",
+    "固定测试数据 · 非实时班次"
+  ],
+  "controls": [
+    {
+      "focused": false,
+      "id": "variant",
+      "rect": [
+        584,
+        70,
+        94,
+        20
+      ],
+      "active": true,
+      "label": "Java 原生"
+    },
+    {
+      "focused": false,
+      "id": "font",
+      "rect": [
+        682,
+        70,
+        96,
+        20
+      ],
+      "active": true,
+      "label": "A · 像素中文"
+    },
+    {
+      "focused": false,
+      "id": "close",
+      "rect": [
+        784,
+        71,
+        18,
+        18
+      ],
+      "active": true,
+      "label": "×"
+    },
+    {
+      "focused": false,
+      "id": "nav0",
+      "rect": [
+        158,
+        94,
+        48,
+        20
+      ],
+      "active": true,
+      "label": "路线 · 已选中"
+    },
+    {
+      "focused": false,
+      "id": "nav1",
+      "rect": [
+        210,
+        94,
+        48,
+        20
+      ],
+      "active": true,
+      "label": "到发"
+    },
+    {
+      "focused": false,
+      "id": "nav2",
+      "rect": [
+        262,
+        94,
+        48,
+        20
+      ],
+      "active": true,
+      "label": "行程"
+    },
+    {
+      "focused": false,
+      "id": "nav3",
+      "rect": [
+        314,
+        94,
+        48,
+        20
+      ],
+      "active": true,
+      "label": "选站"
+    },
+    {
+      "focused": false,
+      "id": "nav4",
+      "rect": [
+        366,
+        94,
+        48,
+        20
+      ],
+      "active": true,
+      "label": "HUD"
+    },
+    {
+      "focused": false,
+      "id": "nav5",
+      "rect": [
+        418,
+        94,
+        48,
+        20
+      ],
+      "active": true,
+      "label": "组件"
+    },
+    {
+      "focused": false,
+      "id": "origin",
+      "rect": [
+        158,
+        134,
+        275,
+        20
+      ],
+      "active": true,
+      "label": "起点"
+    },
+    {
+      "focused": false,
+      "id": "swap",
+      "rect": [
+        437,
+        135,
+        18,
+        18
+      ],
+      "active": true,
+      "label": "交换起点与终点"
+    },
+    {
+      "focused": false,
+      "id": "destination",
+      "rect": [
+        459,
+        134,
+        275,
+        20
+      ],
+      "active": true,
+      "label": "终点"
+    },
+    {
+      "focused": false,
+      "id": "query",
+      "rect": [
+        738,
+        134,
+        64,
+        20
+      ],
+      "active": true,
+      "label": "查询"
+    },
+    {
+      "focused": false,
+      "id": "pickOrigin",
+      "rect": [
+        158,
+        158,
+        56,
+        20
+      ],
+      "active": true,
+      "label": "选起点"
+    },
+    {
+      "focused": false,
+      "id": "pickDestination",
+      "rect": [
+        218,
+        158,
+        56,
+        20
+      ],
+      "active": true,
+      "label": "选终点"
+    },
+    {
+      "focused": false,
+      "id": "nearby",
+      "rect": [
+        278,
+        158,
+        48,
+        20
+      ],
+      "active": true,
+      "label": "附近"
+    },
+    {
+      "focused": false,
+      "id": "sort",
+      "rect": [
+        330,
+        158,
+        72,
+        20
+      ],
+      "active": true,
+      "label": "最快到达"
+    },
+    {
+      "focused": false,
+      "id": "collapseQuery",
+      "rect": [
+        754,
+        158,
+        48,
+        20
+      ],
+      "active": true,
+      "label": "收起"
+    },
+    {
+      "focused": false,
+      "id": "row0",
+      "rect": [
+        158,
+        182,
+        268,
+        36
+      ],
+      "active": true,
+      "label": "28 分钟 · 直达, 1 号线 Local, 已选中"
+    },
+    {
+      "focused": false,
+      "id": "row1",
+      "rect": [
+        158,
+        222,
+        268,
+        36
+      ],
+      "active": true,
+      "label": "31 分钟 · 换乘 1 次, Local → Airport Express"
+    },
+    {
+      "focused": false,
+      "id": "row2",
+      "rect": [
+        158,
+        262,
+        268,
+        36
+      ],
+      "active": true,
+      "label": "36 分钟 · 换乘 1 次, Local → Riverside"
+    },
+    {
+      "focused": false,
+      "id": "row3",
+      "rect": [
+        158,
+        302,
+        268,
+        36
+      ],
+      "active": true,
+      "label": "42 分钟 · 换乘 2 次, Local → Central → North"
+    },
+    {
+      "focused": false,
+      "id": "row4",
+      "rect": [
+        158,
+        342,
+        268,
+        36
+      ],
+      "active": true,
+      "label": "45 分钟 · 换乘 1 次, Local → 步行 → North"
+    },
+    {
+      "focused": false,
+      "id": "detailAction",
+      "rect": [
+        450,
+        420,
+        112,
+        20
+      ],
+      "active": true,
+      "label": "展开经停"
+    },
+    {
+      "focused": false,
+      "id": "scenario",
+      "rect": [
+        158,
+        450,
+        96,
+        20
+      ],
+      "active": true,
+      "label": "五个方案"
+    },
+    {
+      "focused": false,
+      "id": "primary",
+      "rect": [
+        698,
+        450,
+        104,
+        20
+      ],
+      "active": true,
+      "label": "开始导航"
+    }
+  ],
+  "inputs": {
+    "origin": {
+      "selected": "",
+      "cursor": 0,
+      "value": "南苑 Nanyuan"
+    },
+    "destination": {
+      "selected": "",
+      "cursor": 0,
+      "value": "滨海北 Binhai North"
+    }
+  }
+}

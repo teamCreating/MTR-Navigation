@@ -1,0 +1,575 @@
+{
+  "target": "1.21.1-neoforge",
+  "checks": [
+    "AE2: five double-line journeys at full HD / 2x",
+    "AE2: separate HUD settings, contained nonoverlapping boxes",
+    "BEDROCK: five double-line journeys at full HD / 2x",
+    "BEDROCK: separate HUD settings, contained nonoverlapping boxes",
+    "JAVA: five double-line journeys at full HD / 2x",
+    "JAVA: separate HUD settings, contained nonoverlapping boxes",
+    "HYBRID: five double-line journeys at full HD / 2x",
+    "HYBRID: separate HUD settings, contained nonoverlapping boxes",
+    "variant state retained: AE2",
+    "variant state retained: BEDROCK",
+    "variant state retained: JAVA",
+    "variant state retained: HYBRID",
+    "font switch preserves selection and independent scroll offsets",
+    "station selection returns to the preserved query",
+    "Chinese character input and Enter selection",
+    "Nearby filtering rejects a previously selected distant station",
+    "Distance sort puts the closest station first",
+    "Alphabet index filters to Central",
+    "start activates only the simulated trip",
+    "departure reminder stays in preview",
+    "EMPTY: navigation disabled",
+    "LOADING: navigation disabled",
+    "ERROR: navigation disabled",
+    "REFERENCE: navigation disabled",
+    "HUD scale 200%",
+    "HUD scale 100%",
+    "HUD scale 150%",
+    "HUD save/restore is session local",
+    "HUD drag hides settings controls",
+    "HUD drag keeps both boxes on screen",
+    "Tab reaches native controls",
+    "AE2: narrow layout retains three rows and primary action",
+    "BEDROCK: narrow layout retains three rows and primary action",
+    "JAVA: narrow layout retains three rows and primary action",
+    "HYBRID: narrow layout retains three rows and primary action",
+    "Closing preview restores the original GUI scale",
+    "Formal client preferences unchanged"
+  ],
+  "captures": [
+    {
+      "name": "ae2-query",
+      "variant": "AE2",
+      "page": "QUERY",
+      "scenario": "NORMAL",
+      "font": "PIXEL",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "../exports/game/1.21.1-neoforge-paradigms/ae2-query.png"
+    },
+    {
+      "name": "ae2-stations",
+      "variant": "AE2",
+      "page": "STATIONS",
+      "scenario": "NORMAL",
+      "font": "PIXEL",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "../exports/game/1.21.1-neoforge-paradigms/ae2-stations.png"
+    },
+    {
+      "name": "ae2-hud",
+      "variant": "AE2",
+      "page": "HUD",
+      "scenario": "NORMAL",
+      "font": "PIXEL",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "../exports/game/1.21.1-neoforge-paradigms/ae2-hud.png"
+    },
+    {
+      "name": "bedrock-query",
+      "variant": "BEDROCK",
+      "page": "QUERY",
+      "scenario": "NORMAL",
+      "font": "PIXEL",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "../exports/game/1.21.1-neoforge-paradigms/bedrock-query.png"
+    },
+    {
+      "name": "bedrock-stations",
+      "variant": "BEDROCK",
+      "page": "STATIONS",
+      "scenario": "NORMAL",
+      "font": "PIXEL",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "../exports/game/1.21.1-neoforge-paradigms/bedrock-stations.png"
+    },
+    {
+      "name": "bedrock-hud",
+      "variant": "BEDROCK",
+      "page": "HUD",
+      "scenario": "NORMAL",
+      "font": "PIXEL",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "../exports/game/1.21.1-neoforge-paradigms/bedrock-hud.png"
+    },
+    {
+      "name": "java-query",
+      "variant": "JAVA",
+      "page": "QUERY",
+      "scenario": "NORMAL",
+      "font": "PIXEL",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "../exports/game/1.21.1-neoforge-paradigms/java-query.png"
+    },
+    {
+      "name": "java-stations",
+      "variant": "JAVA",
+      "page": "STATIONS",
+      "scenario": "NORMAL",
+      "font": "PIXEL",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "../exports/game/1.21.1-neoforge-paradigms/java-stations.png"
+    },
+    {
+      "name": "java-hud",
+      "variant": "JAVA",
+      "page": "HUD",
+      "scenario": "NORMAL",
+      "font": "PIXEL",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "../exports/game/1.21.1-neoforge-paradigms/java-hud.png"
+    },
+    {
+      "name": "hybrid-query",
+      "variant": "HYBRID",
+      "page": "QUERY",
+      "scenario": "NORMAL",
+      "font": "PIXEL",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "../exports/game/1.21.1-neoforge-paradigms/hybrid-query.png"
+    },
+    {
+      "name": "hybrid-stations",
+      "variant": "HYBRID",
+      "page": "STATIONS",
+      "scenario": "NORMAL",
+      "font": "PIXEL",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "../exports/game/1.21.1-neoforge-paradigms/hybrid-stations.png"
+    },
+    {
+      "name": "hybrid-hud",
+      "variant": "HYBRID",
+      "page": "HUD",
+      "scenario": "NORMAL",
+      "font": "PIXEL",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "../exports/game/1.21.1-neoforge-paradigms/hybrid-hud.png"
+    },
+    {
+      "name": "hybrid-smooth-many",
+      "variant": "HYBRID",
+      "page": "QUERY",
+      "scenario": "MANY",
+      "font": "SMOOTH",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "../exports/game/1.21.1-neoforge-paradigms/hybrid-smooth-many.png"
+    },
+    {
+      "name": "hybrid-chinese-input",
+      "variant": "HYBRID",
+      "page": "STATIONS",
+      "scenario": "NORMAL",
+      "font": "PIXEL",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "../exports/game/1.21.1-neoforge-paradigms/hybrid-chinese-input.png"
+    },
+    {
+      "name": "hybrid-active",
+      "variant": "HYBRID",
+      "page": "QUERY",
+      "scenario": "NORMAL",
+      "font": "PIXEL",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "../exports/game/1.21.1-neoforge-paradigms/hybrid-active.png"
+    },
+    {
+      "name": "hybrid-departures",
+      "variant": "HYBRID",
+      "page": "QUERY",
+      "scenario": "NORMAL",
+      "font": "PIXEL",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "../exports/game/1.21.1-neoforge-paradigms/hybrid-departures.png"
+    },
+    {
+      "name": "hybrid-long_names",
+      "variant": "HYBRID",
+      "page": "QUERY",
+      "scenario": "LONG_NAMES",
+      "font": "PIXEL",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "../exports/game/1.21.1-neoforge-paradigms/hybrid-long_names.png"
+    },
+    {
+      "name": "hybrid-smooth-long-names",
+      "variant": "HYBRID",
+      "page": "QUERY",
+      "scenario": "LONG_NAMES",
+      "font": "SMOOTH",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "../exports/game/1.21.1-neoforge-paradigms/hybrid-smooth-long-names.png"
+    },
+    {
+      "name": "hybrid-empty",
+      "variant": "HYBRID",
+      "page": "QUERY",
+      "scenario": "EMPTY",
+      "font": "PIXEL",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "../exports/game/1.21.1-neoforge-paradigms/hybrid-empty.png"
+    },
+    {
+      "name": "hybrid-loading",
+      "variant": "HYBRID",
+      "page": "QUERY",
+      "scenario": "LOADING",
+      "font": "PIXEL",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "../exports/game/1.21.1-neoforge-paradigms/hybrid-loading.png"
+    },
+    {
+      "name": "hybrid-error",
+      "variant": "HYBRID",
+      "page": "QUERY",
+      "scenario": "ERROR",
+      "font": "PIXEL",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "../exports/game/1.21.1-neoforge-paradigms/hybrid-error.png"
+    },
+    {
+      "name": "hybrid-reference",
+      "variant": "HYBRID",
+      "page": "QUERY",
+      "scenario": "REFERENCE",
+      "font": "PIXEL",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "../exports/game/1.21.1-neoforge-paradigms/hybrid-reference.png"
+    },
+    {
+      "name": "hybrid-hud-200",
+      "variant": "HYBRID",
+      "page": "HUD",
+      "scenario": "NORMAL",
+      "font": "PIXEL",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "../exports/game/1.21.1-neoforge-paradigms/hybrid-hud-200.png"
+    },
+    {
+      "name": "hybrid-hud-100",
+      "variant": "HYBRID",
+      "page": "HUD",
+      "scenario": "NORMAL",
+      "font": "PIXEL",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "../exports/game/1.21.1-neoforge-paradigms/hybrid-hud-100.png"
+    },
+    {
+      "name": "hybrid-hud-150",
+      "variant": "HYBRID",
+      "page": "HUD",
+      "scenario": "NORMAL",
+      "font": "PIXEL",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "../exports/game/1.21.1-neoforge-paradigms/hybrid-hud-150.png"
+    },
+    {
+      "name": "hybrid-hud-dragging",
+      "variant": "HYBRID",
+      "page": "HUD",
+      "scenario": "NORMAL",
+      "font": "PIXEL",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "../exports/game/1.21.1-neoforge-paradigms/hybrid-hud-dragging.png"
+    },
+    {
+      "name": "hybrid-components",
+      "variant": "HYBRID",
+      "page": "COMPONENTS",
+      "scenario": "NORMAL",
+      "font": "PIXEL",
+      "size": [
+        1920,
+        1080
+      ],
+      "file": "../exports/game/1.21.1-neoforge-paradigms/hybrid-components.png"
+    },
+    {
+      "name": "ae2-narrow-query",
+      "variant": "AE2",
+      "page": "QUERY",
+      "scenario": "NORMAL",
+      "font": "PIXEL",
+      "size": [
+        854,
+        480
+      ],
+      "file": "../exports/game/1.21.1-neoforge-paradigms/ae2-narrow-query.png"
+    },
+    {
+      "name": "ae2-narrow-details",
+      "variant": "AE2",
+      "page": "QUERY",
+      "scenario": "NORMAL",
+      "font": "PIXEL",
+      "size": [
+        854,
+        480
+      ],
+      "file": "../exports/game/1.21.1-neoforge-paradigms/ae2-narrow-details.png"
+    },
+    {
+      "name": "ae2-narrow-stations",
+      "variant": "AE2",
+      "page": "STATIONS",
+      "scenario": "NORMAL",
+      "font": "PIXEL",
+      "size": [
+        854,
+        480
+      ],
+      "file": "../exports/game/1.21.1-neoforge-paradigms/ae2-narrow-stations.png"
+    },
+    {
+      "name": "ae2-narrow-hud",
+      "variant": "AE2",
+      "page": "HUD",
+      "scenario": "NORMAL",
+      "font": "PIXEL",
+      "size": [
+        854,
+        480
+      ],
+      "file": "../exports/game/1.21.1-neoforge-paradigms/ae2-narrow-hud.png"
+    },
+    {
+      "name": "bedrock-narrow-query",
+      "variant": "BEDROCK",
+      "page": "QUERY",
+      "scenario": "NORMAL",
+      "font": "PIXEL",
+      "size": [
+        854,
+        480
+      ],
+      "file": "../exports/game/1.21.1-neoforge-paradigms/bedrock-narrow-query.png"
+    },
+    {
+      "name": "bedrock-narrow-details",
+      "variant": "BEDROCK",
+      "page": "QUERY",
+      "scenario": "NORMAL",
+      "font": "PIXEL",
+      "size": [
+        854,
+        480
+      ],
+      "file": "../exports/game/1.21.1-neoforge-paradigms/bedrock-narrow-details.png"
+    },
+    {
+      "name": "bedrock-narrow-stations",
+      "variant": "BEDROCK",
+      "page": "STATIONS",
+      "scenario": "NORMAL",
+      "font": "PIXEL",
+      "size": [
+        854,
+        480
+      ],
+      "file": "../exports/game/1.21.1-neoforge-paradigms/bedrock-narrow-stations.png"
+    },
+    {
+      "name": "bedrock-narrow-hud",
+      "variant": "BEDROCK",
+      "page": "HUD",
+      "scenario": "NORMAL",
+      "font": "PIXEL",
+      "size": [
+        854,
+        480
+      ],
+      "file": "../exports/game/1.21.1-neoforge-paradigms/bedrock-narrow-hud.png"
+    },
+    {
+      "name": "java-narrow-query",
+      "variant": "JAVA",
+      "page": "QUERY",
+      "scenario": "NORMAL",
+      "font": "PIXEL",
+      "size": [
+        854,
+        480
+      ],
+      "file": "../exports/game/1.21.1-neoforge-paradigms/java-narrow-query.png"
+    },
+    {
+      "name": "java-narrow-details",
+      "variant": "JAVA",
+      "page": "QUERY",
+      "scenario": "NORMAL",
+      "font": "PIXEL",
+      "size": [
+        854,
+        480
+      ],
+      "file": "../exports/game/1.21.1-neoforge-paradigms/java-narrow-details.png"
+    },
+    {
+      "name": "java-narrow-stations",
+      "variant": "JAVA",
+      "page": "STATIONS",
+      "scenario": "NORMAL",
+      "font": "PIXEL",
+      "size": [
+        854,
+        480
+      ],
+      "file": "../exports/game/1.21.1-neoforge-paradigms/java-narrow-stations.png"
+    },
+    {
+      "name": "java-narrow-hud",
+      "variant": "JAVA",
+      "page": "HUD",
+      "scenario": "NORMAL",
+      "font": "PIXEL",
+      "size": [
+        854,
+        480
+      ],
+      "file": "../exports/game/1.21.1-neoforge-paradigms/java-narrow-hud.png"
+    },
+    {
+      "name": "hybrid-narrow-query",
+      "variant": "HYBRID",
+      "page": "QUERY",
+      "scenario": "NORMAL",
+      "font": "PIXEL",
+      "size": [
+        854,
+        480
+      ],
+      "file": "../exports/game/1.21.1-neoforge-paradigms/hybrid-narrow-query.png"
+    },
+    {
+      "name": "hybrid-narrow-details",
+      "variant": "HYBRID",
+      "page": "QUERY",
+      "scenario": "NORMAL",
+      "font": "PIXEL",
+      "size": [
+        854,
+        480
+      ],
+      "file": "../exports/game/1.21.1-neoforge-paradigms/hybrid-narrow-details.png"
+    },
+    {
+      "name": "hybrid-narrow-stations",
+      "variant": "HYBRID",
+      "page": "STATIONS",
+      "scenario": "NORMAL",
+      "font": "PIXEL",
+      "size": [
+        854,
+        480
+      ],
+      "file": "../exports/game/1.21.1-neoforge-paradigms/hybrid-narrow-stations.png"
+    },
+    {
+      "name": "hybrid-narrow-hud",
+      "variant": "HYBRID",
+      "page": "HUD",
+      "scenario": "NORMAL",
+      "font": "PIXEL",
+      "size": [
+        854,
+        480
+      ],
+      "file": "../exports/game/1.21.1-neoforge-paradigms/hybrid-narrow-hud.png"
+    }
+  ],
+  "log": "build\\paradigm-review-1.21.1-neoforge.log",
+  "mods": [
+    {
+      "name": "ModernUI-NeoForge-1.21.1-3.13.0.1-universal.jar",
+      "sha256": "258623778012daad6fdd8793add3324b970df62a07c477697c43fe85deef1db6"
+    },
+    {
+      "name": "MTR-neoforge-4.1.0-beta.2+1.21.1.jar",
+      "sha256": "ff2b753d03f2bcc000d053a9014e4250c8ba720daa9b69b6899fe7dc26be1efa"
+    }
+  ],
+  "limitations": [
+    "Injected Chinese characters do not establish system IME composition/candidate-window acceptance.",
+    "Formal-screen migration awaits design and font selection."
+  ]
+}

@@ -32,6 +32,7 @@ public final class NavigationServer {
         String dimension;
         Map<String, Journey> offered = Map.of();
         JourneyTracker tracker;
+        VehicleCondition offeredCondition = VehicleCondition.none();
         FutureTask<Void> searchTask;
         final ArrayDeque<NavChunk> outbound = new ArrayDeque<>();
         Session(String dimension) { this.dimension = dimension; }
@@ -79,16 +80,24 @@ public final class NavigationServer {
         final Messages.Request request;
         try { NetworkLimits.upload(packet.json()); request = WireCodec.GSON.fromJson(packet.json(), Messages.Request.class); }
         catch (RuntimeException e) { return; }
-        receive(player, request, null);
+        receive(player, request, null, VehicleCondition.none());
     }
     public static void receiveV2(ServerPlayer player, NavRequestV2 packet) {
         if (owner == null || player.getServer() != owner) return;
         var upload = session(player, dimension(player));
         upload.seen = System.nanoTime(); if (!upload.v2Uploads.allow(upload.seen)) return;
-        try { var request = WireCodec.GSON.fromJson(packet.json(), QueryV2.Request.class); if (request != null) receive(player, request.request(), request); }
+        try { var request = WireCodec.GSON.fromJson(packet.json(), QueryV2.Request.class); if (request != null) receive(player, request.request(), request, VehicleCondition.none()); }
         catch (RuntimeException ignored) { }
     }
-    private static void receive(ServerPlayer player, Messages.Request request, QueryV2.Request extended) {
+    public static void receiveV3(ServerPlayer player, NavRequestV3 packet) {
+        if (owner == null || player.getServer() != owner) return;
+        var upload = session(player, dimension(player));
+        upload.seen = System.nanoTime(); if (!upload.v2Uploads.allow(upload.seen)) return;
+        try { var request = WireCodec.GSON.fromJson(packet.json(), QueryV3.Request.class);
+            if (request != null) receive(player, request.query().request(), request.query(), request.vehicles());
+        } catch (RuntimeException ignored) { }
+    }
+    private static void receive(ServerPlayer player, Messages.Request request, QueryV2.Request extended, VehicleCondition condition) {
         if (owner == null || player.getServer() != owner || request == null || !dimension(player).equals(request.dimension())) return;
         WalkingServer.touch(player);
         var session = session(player, request.dimension());
@@ -116,7 +125,7 @@ public final class NavigationServer {
                 if (owner != server || sessions.get(player.getUUID()) != context || !dimension(player).equals(request.dimension())) return;
                 if (request.action().equals("query") && context.queryId != request.id()) return;
                 if (error != null) { fail(player, context, request, "core_unavailable"); LOG.log(System.Logger.Level.WARNING, "MTR read failed", error); return; }
-                handle(player, context, request, snapshot, extended);
+                handle(player, context, request, snapshot, extended, condition);
             }));
         } catch (RuntimeException e) { fail(player, context, request, "core_unavailable"); }
     }
@@ -140,7 +149,7 @@ public final class NavigationServer {
         });
         return result;
     }
-    private static void handle(ServerPlayer player, Session session, Messages.Request request, Snapshot snapshot, QueryV2.Request extended) {
+    private static void handle(ServerPlayer player, Session session, Messages.Request request, Snapshot snapshot, QueryV2.Request extended, VehicleCondition condition) {
         boolean catalogChanged = request.revision() != snapshot.catalog().revision();
         switch (request.action()) {
             case "hello" -> reply(player, session, response(request, snapshot, snapshot.catalog(), List.of(), List.of(), null, ""));
@@ -155,17 +164,17 @@ public final class NavigationServer {
                 var task = new FutureTask<Void>(() -> {
                     try {
                         var search = new RoutePlanner().search(snapshot, request.origin(), request.destination(), request.sort(), config,
-                                extended == null ? QueryOptions.legacy() : extended.options(), shared, personal, walkRevision);
+                                extended == null ? QueryOptions.legacy() : extended.options(), shared, personal, walkRevision, condition);
                         var results = search.journeys();
                         var reference = results.isEmpty() ? io.github.teamcreating.mtrnav.core.ConnectionPlan.find(snapshot.catalog(), request.origin(), request.destination(), shared, personal).orElse(null) : null;
-                        String message = reference == null ? "" : reference.transfers() > config.maxTransfers() ? "reference_limit" : "reference_no_service";
+                        String message = results.isEmpty() && condition.active() && !snapshot.events().isEmpty() ? (snapshot.events().stream().anyMatch(e -> e.consist().source() == StockSource.UNKNOWN) ? "vehicle_unknown" : "vehicle_no_match") : reference == null ? "" : reference.transfers() > config.maxTransfers() ? "reference_limit" : "reference_no_service";
                         server.execute(() -> {
                             if (owner != server || sessions.get(player.getUUID()) != session || session.queryId != request.id()) return;
                             if (extended != null && WalkingServer.revision() != walkRevision) { fail(player, session, request, "walking_changed"); return; }
-                            var offered = new HashMap<String, Journey>(); results.forEach(j -> offered.put(j.id(), j)); session.offered = Map.copyOf(offered);
+                            var offered = new HashMap<String, Journey>(); results.forEach(j -> offered.put(j.id(), j)); session.offered = Map.copyOf(offered); session.offeredCondition = condition;
                             var reply = response(request, snapshot, catalogChanged ? snapshot.catalog() : null, results, List.of(), null, search.incomplete() ? "partial_results" : message);
                             reply(player, session, new Messages.Response(reply.kind(), reply.dimension(), reply.id(), reply.revision(), reply.sampleMillis(), reply.catalog(), reply.journeys(), reply.arrivals(), reply.tracking(), reply.message(),
-                                    extended == null ? null : new QueryV2.Report(search.fastestArrival(), search.incomplete(), walkRevision)));
+                                    extended == null ? null : new QueryV2.Report(search.fastestArrival(), search.incomplete(), walkRevision), snapshot.fleet()));
                         });
                     } catch (RoutePlanner.SearchLimitException e) { server.execute(() -> fail(player, session, request, "search_budget")); }
                     catch (Exception e) { server.execute(() -> fail(player, session, request, "search_failed")); }
@@ -177,6 +186,7 @@ public final class NavigationServer {
                 var journey = session.offered.get(request.journeyId());
                 if (journey == null || journey.revision() != snapshot.catalog().revision()) { fail(player, session, request, "network_changed"); return; }
                 if (WalkingServer.changed(journey, snapshot.catalog())) { fail(player, session, request, "walking_changed"); return; }
+                if (session.offeredCondition.mode() == VehicleMode.REQUIRE && !session.offeredCondition.matchesCurrent(journey, snapshot)) { fail(player, session, request, "vehicle_changed"); return; }
                 session.tracker = new JourneyTracker(journey);
                 reply(player, session, response(request, snapshot, catalogChanged ? snapshot.catalog() : null, List.of(), List.of(), session.tracker.update(snapshot, player.getUUID()), ""));
             }
@@ -189,6 +199,8 @@ public final class NavigationServer {
                 if (session.tracker != null) {
                     if (request.action().equals("correct") && session.tracker.state(false).journey().id().equals(request.journeyId())) session.tracker.correct(request.correction());
                     tracking = session.tracker.update(snapshot, player.getUUID());
+                    if (stockChanged(tracking, snapshot))
+                        tracking = new JourneyTracker.State(tracking.journey(), tracking.legIndex(), tracking.phase(), "vehicle_changed", false, tracking.stepIndex());
                     if (WalkingServer.changed(tracking.journey(), snapshot.catalog())) tracking = new JourneyTracker.State(tracking.journey(), tracking.legIndex(), tracking.phase(), "walking_changed", false, tracking.stepIndex());
                 }
                 var platformIds = new HashSet<String>();
@@ -201,9 +213,14 @@ public final class NavigationServer {
             default -> { }
         }
     }
+    private static boolean stockChanged(JourneyTracker.State state, Snapshot snapshot) {
+        return state.journey().legs().stream().skip(state.legIndex()).filter(l -> !l.consist().cars().isEmpty()).anyMatch(l ->
+                snapshot.events().stream().anyMatch(e -> e.run().equals(l.run())
+                        && !e.consist().cars().isEmpty() && !l.consist().cars().equals(e.consist().cars())));
+    }
     private static Messages.Response response(Messages.Request request, Snapshot snapshot, Catalog catalog, List<Journey> journeys,
                                                List<StopEvent> arrivals, JourneyTracker.State tracking, String message) {
-        return new Messages.Response(request.action(), request.dimension(), request.id(), snapshot.catalog().revision(), snapshot.sampleMillis(), catalog, journeys, arrivals, tracking, message);
+        return new Messages.Response(request.action(), request.dimension(), request.id(), snapshot.catalog().revision(), snapshot.sampleMillis(), catalog, journeys, arrivals, tracking, message, null, snapshot.fleet());
     }
     private static void fail(ServerPlayer player, Session session, Messages.Request request, String message) {
         if (owner == null || sessions.get(player.getUUID()) != session || request.action().equals("query") && session.queryId != request.id()) return;

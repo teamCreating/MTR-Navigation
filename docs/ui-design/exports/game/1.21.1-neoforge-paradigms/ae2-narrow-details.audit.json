@@ -1,0 +1,266 @@
+{
+  "variant": "AE2",
+  "page": "QUERY",
+  "view": "ROUTES",
+  "lastInput": "mouse 54.0,214.0 button=0",
+  "scenario": "NORMAL",
+  "font": "PIXEL",
+  "pixelSize": [
+    854,
+    480
+  ],
+  "guiSize": [
+    427,
+    240
+  ],
+  "guiScale": 2.0,
+  "frame": [
+    8,
+    8,
+    411,
+    224
+  ],
+  "compact": true,
+  "origin": "南苑 Nanyuan",
+  "destination": "滨海北 Binhai North",
+  "selectedJourney": 0,
+  "selectedStation": "central",
+  "stationSearch": "",
+  "stationCount": 1,
+  "stationScroll": 0,
+  "index": "C",
+  "nearby": true,
+  "indexOpen": false,
+  "listScroll": {
+    "ROUTES": 0,
+    "DEPARTURES": 0,
+    "ACTIVE": 0
+  },
+  "detailScroll": 0,
+  "queryCollapsed": true,
+  "details": true,
+  "activeTrip": false,
+  "canStart": true,
+  "notice": "已恢复本次预览保存值",
+  "hud": {
+    "navigationPercent": 150,
+    "reminderPercent": 150,
+    "navigationX": 1.0,
+    "navigationY": 1.0,
+    "reminderX": 0.7,
+    "reminderY": 0.1,
+    "autoFit": true,
+    "expanded": true
+  },
+  "hudReminderSelected": false,
+  "settingsScroll": 0,
+  "hudSaved": true,
+  "dragging": false,
+  "list": [
+    16,
+    96,
+    395,
+    100
+  ],
+  "detail": [
+    16,
+    96,
+    395,
+    100
+  ],
+  "visibleRows": 3,
+  "detailHeight": 166,
+  "detailText": [
+    "28 分钟 · 1 号线 Local",
+    "南苑 Nanyuan",
+    "08:12 上车 · 1 站台",
+    "1 号线 Local",
+    "途经 6 站 · 可展开经停站",
+    "滨海北 Binhai North",
+    "08:40 到达 · 4 站台",
+    "固定测试数据 · 非实时班次"
+  ],
+  "controls": [
+    {
+      "rect": [
+        193,
+        16,
+        94,
+        20
+      ],
+      "active": true,
+      "label": "AE2 终端",
+      "focused": false,
+      "id": "variant"
+    },
+    {
+      "rect": [
+        291,
+        16,
+        96,
+        20
+      ],
+      "active": true,
+      "label": "A · 像素中文",
+      "focused": false,
+      "id": "font"
+    },
+    {
+      "rect": [
+        393,
+        17,
+        18,
+        18
+      ],
+      "active": true,
+      "label": "×",
+      "focused": false,
+      "id": "close"
+    },
+    {
+      "rect": [
+        16,
+        40,
+        48,
+        20
+      ],
+      "active": true,
+      "label": "路线 · 已选中",
+      "focused": false,
+      "id": "nav0"
+    },
+    {
+      "rect": [
+        68,
+        40,
+        48,
+        20
+      ],
+      "active": true,
+      "label": "到发",
+      "focused": false,
+      "id": "nav1"
+    },
+    {
+      "rect": [
+        120,
+        40,
+        48,
+        20
+      ],
+      "active": true,
+      "label": "行程",
+      "focused": false,
+      "id": "nav2"
+    },
+    {
+      "rect": [
+        172,
+        40,
+        48,
+        20
+      ],
+      "active": true,
+      "label": "选站",
+      "focused": false,
+      "id": "nav3"
+    },
+    {
+      "rect": [
+        224,
+        40,
+        48,
+        20
+      ],
+      "active": true,
+      "label": "HUD",
+      "focused": false,
+      "id": "nav4"
+    },
+    {
+      "rect": [
+        276,
+        40,
+        48,
+        20
+      ],
+      "active": true,
+      "label": "组件",
+      "focused": false,
+      "id": "nav5"
+    },
+    {
+      "rect": [
+        251,
+        68,
+        48,
+        20
+      ],
+      "active": true,
+      "label": "条件",
+      "focused": false,
+      "id": "expandQuery"
+    },
+    {
+      "rect": [
+        303,
+        68,
+        48,
+        20
+      ],
+      "active": true,
+      "label": "选站",
+      "focused": false,
+      "id": "stations"
+    },
+    {
+      "rect": [
+        355,
+        68,
+        56,
+        20
+      ],
+      "active": true,
+      "label": "查询",
+      "focused": false,
+      "id": "query"
+    },
+    {
+      "rect": [
+        24,
+        174,
+        112,
+        20
+      ],
+      "active": true,
+      "label": "展开经停",
+      "focused": false,
+      "id": "detailAction"
+    },
+    {
+      "rect": [
+        16,
+        204,
+        76,
+        20
+      ],
+      "active": true,
+      "label": "返回列表",
+      "focused": false,
+      "id": "details"
+    },
+    {
+      "rect": [
+        307,
+        204,
+        104,
+        20
+      ],
+      "active": true,
+      "label": "开始导航",
+      "focused": false,
+      "id": "primary"
+    }
+  ],
+  "inputs": {}
+}

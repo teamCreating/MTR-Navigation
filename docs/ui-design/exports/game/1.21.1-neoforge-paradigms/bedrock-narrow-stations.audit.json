@@ -1,0 +1,278 @@
+{
+  "variant": "BEDROCK",
+  "page": "STATIONS",
+  "view": "ROUTES",
+  "lastInput": "key 297",
+  "scenario": "NORMAL",
+  "font": "PIXEL",
+  "pixelSize": [
+    854,
+    480
+  ],
+  "guiSize": [
+    427,
+    240
+  ],
+  "guiScale": 2.0,
+  "frame": [
+    8,
+    8,
+    411,
+    224
+  ],
+  "compact": true,
+  "origin": "南苑 Nanyuan",
+  "destination": "滨海北 Binhai North",
+  "selectedJourney": 0,
+  "selectedStation": "central",
+  "stationSearch": "",
+  "stationCount": 1,
+  "stationScroll": 0,
+  "index": "C",
+  "nearby": true,
+  "indexOpen": false,
+  "listScroll": {
+    "ROUTES": 0,
+    "DEPARTURES": 0,
+    "ACTIVE": 0
+  },
+  "detailScroll": 0,
+  "queryCollapsed": true,
+  "details": false,
+  "activeTrip": false,
+  "canStart": true,
+  "notice": "已恢复本次预览保存值",
+  "hud": {
+    "navigationPercent": 150,
+    "reminderPercent": 150,
+    "navigationX": 1.0,
+    "navigationY": 1.0,
+    "reminderX": 0.7,
+    "reminderY": 0.1,
+    "autoFit": true,
+    "expanded": true
+  },
+  "hudReminderSelected": false,
+  "settingsScroll": 0,
+  "hudSaved": true,
+  "dragging": false,
+  "stationList": [
+    16,
+    132,
+    395,
+    64
+  ],
+  "controls": [
+    {
+      "rect": [
+        193,
+        16,
+        94,
+        20
+      ],
+      "active": true,
+      "label": "BE / Ore UI",
+      "focused": false,
+      "id": "variant"
+    },
+    {
+      "rect": [
+        291,
+        16,
+        96,
+        20
+      ],
+      "active": true,
+      "label": "A · 像素中文",
+      "focused": false,
+      "id": "font"
+    },
+    {
+      "rect": [
+        393,
+        17,
+        18,
+        18
+      ],
+      "active": true,
+      "label": "×",
+      "focused": false,
+      "id": "close"
+    },
+    {
+      "rect": [
+        16,
+        40,
+        48,
+        20
+      ],
+      "active": true,
+      "label": "路线",
+      "focused": false,
+      "id": "nav0"
+    },
+    {
+      "rect": [
+        68,
+        40,
+        48,
+        20
+      ],
+      "active": true,
+      "label": "到发",
+      "focused": false,
+      "id": "nav1"
+    },
+    {
+      "rect": [
+        120,
+        40,
+        48,
+        20
+      ],
+      "active": true,
+      "label": "行程",
+      "focused": false,
+      "id": "nav2"
+    },
+    {
+      "rect": [
+        172,
+        40,
+        48,
+        20
+      ],
+      "active": true,
+      "label": "选站 · 已选中",
+      "focused": false,
+      "id": "nav3"
+    },
+    {
+      "rect": [
+        224,
+        40,
+        48,
+        20
+      ],
+      "active": true,
+      "label": "HUD",
+      "focused": false,
+      "id": "nav4"
+    },
+    {
+      "rect": [
+        276,
+        40,
+        48,
+        20
+      ],
+      "active": true,
+      "label": "组件",
+      "focused": false,
+      "id": "nav5"
+    },
+    {
+      "rect": [
+        16,
+        80,
+        347,
+        20
+      ],
+      "active": true,
+      "label": "搜索中文或英文站名",
+      "focused": true,
+      "id": "stationSearch"
+    },
+    {
+      "rect": [
+        367,
+        80,
+        44,
+        20
+      ],
+      "active": true,
+      "label": "清空",
+      "focused": false,
+      "id": "clearSearch"
+    },
+    {
+      "rect": [
+        16,
+        104,
+        80,
+        20
+      ],
+      "active": true,
+      "label": "距离排序",
+      "focused": false,
+      "id": "stationSort"
+    },
+    {
+      "rect": [
+        100,
+        104,
+        80,
+        20
+      ],
+      "active": true,
+      "label": "附近：开 · 已选中",
+      "focused": false,
+      "id": "nearbyStations"
+    },
+    {
+      "rect": [
+        184,
+        104,
+        88,
+        20
+      ],
+      "active": true,
+      "label": "索引：C",
+      "focused": false,
+      "id": "index"
+    },
+    {
+      "rect": [
+        16,
+        132,
+        387,
+        28
+      ],
+      "active": true,
+      "label": "中央车站, Central · 620 m, 已选中",
+      "focused": false,
+      "id": "station-central"
+    },
+    {
+      "rect": [
+        16,
+        204,
+        56,
+        20
+      ],
+      "active": true,
+      "label": "返回",
+      "focused": false,
+      "id": "back"
+    },
+    {
+      "rect": [
+        299,
+        204,
+        112,
+        20
+      ],
+      "active": true,
+      "label": "设为起点",
+      "focused": false,
+      "id": "applyStation"
+    }
+  ],
+  "inputs": {
+    "stationSearch": {
+      "selected": "",
+      "cursor": 0,
+      "value": ""
+    }
+  }
+}

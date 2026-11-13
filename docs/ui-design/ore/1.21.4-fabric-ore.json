@@ -1,0 +1,16 @@
+{
+  "target": "1.21.4-fabric",
+  "fixtures": false,
+  "checks": [
+    "real MTR catalog and query path",
+    "no timetable keeps start disabled",
+    "closing the workspace restores entry GUI scale"
+  ],
+  "captures": [
+    "query-real",
+    "stations-real",
+    "hud-real",
+    "walking-real"
+  ],
+  "exitCode": 0
+}

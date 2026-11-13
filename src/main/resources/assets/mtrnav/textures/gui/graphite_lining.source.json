@@ -1,0 +1,19 @@
+{
+  "author": "MTR Navigation contributors",
+  "license": "MIT (project LICENSE)",
+  "description": "Original 64px seamless graphite weave generated from an integer periodic pattern. Create schedule GUI is a visual reference only; no upstream pixels copied.",
+  "reference": "Existing local Create schedule.png; see create/SOURCES.json",
+  "base_rgb": [
+    49,
+    49,
+    48
+  ],
+  "range_rgb": [
+    47,
+    47,
+    46,
+    52,
+    52,
+    51
+  ]
+}

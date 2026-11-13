@@ -9,8 +9,8 @@ class HudScaleTest {
         double old = HudScale.guiScale(4, 2560, 1351, 100);
         double current = HudScale.guiScale(4, 2560, 1351, HudScale.DEFAULT_PERCENT);
         assertEquals(1.5, current / old, .0001);
-        assertEquals(405, current * 4 * HudScale.WIDTH, .0001);
-        assertEquals(96.75, current * 4 * HudScale.HEIGHT, .0001);
+        assertEquals(495, current * 4 * HudScale.WIDTH, .0001);
+        assertEquals(198, current * 4 * HudScale.HEIGHT, .0001);
     }
     @Test void guiScalingDoesNotChangePhysicalSizeAndSmallWindowsStayUsable() {
         for (int width : new int[]{640, 854, 1280, 2560}) for (int percent : new int[]{75, 100, 150, 200}) {

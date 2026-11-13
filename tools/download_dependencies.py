@@ -5,6 +5,7 @@ import json
 import pathlib
 import urllib.request
 import time
+import argparse
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 CACHE = ROOT / '.cache' / 'downloads'
@@ -55,12 +56,27 @@ def download(version):
     print(target.name, 'verified', flush=True)
 
 if __name__ == '__main__':
+    targets = json.loads((ROOT / 'gradle/minecraft-targets.json').read_text(encoding='utf-8'))
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--minecraft', choices=list(targets), default='1.21.1')
+    parser.add_argument('--platform', choices=['neoforge', 'fabric', 'all'], default='all')
+    args = parser.parse_args()
+    loaders = ['neoforge', 'fabric'] if args.platform == 'all' else [args.platform]
+    wanted = {f'{loader.upper()}-{targets[args.minecraft]["mtr"]}+{args.minecraft}' for loader in loaders}
     CACHE.mkdir(parents=True, exist_ok=True)
     metadata = CACHE / 'mtr-versions.json'
-    if not metadata.exists():
-        with urllib.request.urlopen('https://api.modrinth.com/v2/project/minecraft-transit-railway/version') as response:
+    versions = json.loads(metadata.read_text(encoding='utf-8-sig')) if metadata.exists() else []
+    if not wanted.issubset({v['version_number'] for v in versions}):
+        request = urllib.request.Request('https://api.modrinth.com/v2/project/minecraft-transit-railway/version',
+                                         headers={'User-Agent': 'MTR-Navigation-development/0.1'})
+        with urllib.request.urlopen(request, timeout=30) as response:
             versions = json.load(response)
-        metadata.write_text(json.dumps([v for v in versions if v['version_number'] in {
-            'NEOFORGE-4.1.0-beta.2+1.21.1', 'FABRIC-4.1.0-beta.2+1.21.1'}]), encoding='utf-8')
-    for version in json.loads(metadata.read_text(encoding='utf-8-sig')):
+        supported = {f'{loader.upper()}-{target["mtr"]}+{mc}'
+                     for mc, target in targets.items() for loader in ['neoforge', 'fabric']}
+        versions = [v for v in versions if v['version_number'] in supported]
+        metadata.write_text(json.dumps(versions), encoding='utf-8')
+    selected = [v for v in versions if v['version_number'] in wanted]
+    if {v['version_number'] for v in selected} != wanted:
+        raise SystemExit('Some pinned MTR releases are not available from the official release metadata')
+    for version in selected:
         download(version)

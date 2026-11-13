@@ -1,5 +1,6 @@
 param(
     [ValidateSet('neoforge', 'fabric')][string]$Platform = 'neoforge',
+    [string]$MinecraftVersion,
     [Parameter(ValueFromRemainingArguments = $true)][string[]]$GradleArgs
 )
 $ErrorActionPreference = 'Stop'
@@ -13,6 +14,12 @@ if (-not $env:JAVA_HOME -or -not (Test-Path "$env:JAVA_HOME/bin/javac.exe")) {
 $env:JAVA_TOOL_OPTIONS = "-Djava.io.tmpdir=$($env:TEMP)"
 $env:PATH = "$env:JAVA_HOME/bin;$env:PATH"
 if (-not $GradleArgs) { $GradleArgs = @('build') }
+if ($MinecraftVersion) {
+    $targets = Get-Content -LiteralPath (Join-Path $projectRoot 'gradle/minecraft-targets.json') -Raw | ConvertFrom-Json
+    if ($MinecraftVersion -notin $targets.PSObject.Properties.Name) { throw "Unsupported Minecraft version: $MinecraftVersion" }
+    if (@($GradleArgs | Where-Object { $_ -like '-Pminecraft_version=*' }).Count) { throw 'Specify MinecraftVersion only once' }
+    $GradleArgs += "-Pminecraft_version=$MinecraftVersion"
+}
 Push-Location $projectRoot
 try {
     if ($Platform -eq 'fabric') {

@@ -1,0 +1,43 @@
+{
+  "target": "1.21.1-neoforge",
+  "fixtures": true,
+  "checks": [
+    "five actual fixture results",
+    "five whole cards at 1920x1080 / 2x",
+    "repeated direct expand/collapse",
+    "press hold / outside cancel / release activation recording",
+    "keyboard release activates the focused sort button",
+    "directory return preserves query",
+    "HUD native slider 100 / 150 / 200",
+    "HUD controls hide during drag",
+    "three whole double-line cards at 854x480",
+    "closing the workspace restores entry GUI scale"
+  ],
+  "captures": [
+    "query-wide",
+    "stops-expanded",
+    "active-start",
+    "stations",
+    "departures",
+    "reminder",
+    "hud",
+    "hud-reminder",
+    "walking",
+    "walking-editor",
+    "walking-settings",
+    "long-names",
+    "empty-selection",
+    "no-service",
+    "departures-scene",
+    "hud-scene",
+    "active",
+    "loading",
+    "error",
+    "no-result",
+    "query-narrow",
+    "details-narrow",
+    "hud-narrow",
+    "hud-preview-narrow"
+  ],
+  "exitCode": 0
+}

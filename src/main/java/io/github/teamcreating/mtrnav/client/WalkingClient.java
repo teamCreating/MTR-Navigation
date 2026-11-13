@@ -88,8 +88,13 @@ public final class WalkingClient {
     public static boolean needsConsent() { load(); return !personal.consentDecided() && !activeLocal().isEmpty(); }
     public static void consent(boolean consent) { load(); try { save(new Personal(1, consent, true, personal.extraMinutes(), personal.connections())); message = "saved"; } catch (Exception e) { message = "save_failed"; } }
     public static void nextWindow() {
-        load(); int next = switch (personal.extraMinutes()) { case 15 -> 30; case 30 -> 60; case 60 -> -1; default -> 15; };
-        try { save(new Personal(1, personal.consent(), personal.consentDecided(), next, personal.connections())); NavigationClient.clearSearchResults(); } catch (Exception e) { message = "save_failed"; }
+        int next = switch (options().extraMinutes()) { case 15 -> 30; case 30 -> 60; case 60 -> -1; default -> 15; };
+        setWindow(next);
+    }
+    public static void setWindow(int minutes) {
+        load(); new Model.QueryOptions(5, minutes, true);
+        try { save(new Personal(1, personal.consent(), personal.consentDecided(), minutes, personal.connections())); NavigationClient.clearSearchResults(); message = "saved"; }
+        catch (Exception e) { message = "save_failed"; }
     }
     public static void putLocal(List<WalkingConnection> values) {
         load(); var all = new LinkedHashMap<String, WalkingConnection>(); personal.connections().forEach(c -> all.put(c.id(), c)); values.forEach(c -> all.put(c.id(), c));
@@ -103,8 +108,11 @@ public final class WalkingClient {
     public static boolean supportsShared() { return available.getAsBoolean(); }
     public static boolean supportsQuery() { return queryAvailable.getAsBoolean(); }
     public static void sendQuery(Messages.Request request) {
+        querySender.accept(new NavRequestV2(WireCodec.GSON.toJson(queryEnvelope(request))));
+    }
+    static QueryV2.Request queryEnvelope(Messages.Request request) {
         var links = consent() ? activeLocal().stream().map(WalkingConnection::privateWire).toList() : List.<WalkingConnection>of();
-        querySender.accept(new NavRequestV2(WireCodec.GSON.toJson(new QueryV2.Request(request, options(), revision, links))));
+        return new QueryV2.Request(request, options(), revision, links);
     }
     public static List<WalkingLibrary.Proposal> proposals() { return proposalPages.getOrDefault(page, List.of()); }
     public static int proposalPages() { return Math.max(1, (proposalsExpected + 24) / 25); }

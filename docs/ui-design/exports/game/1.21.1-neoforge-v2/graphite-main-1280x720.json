@@ -1,0 +1,13 @@
+{
+  "target": "1.21.1-neoforge-v2",
+  "source": "run\\ui-review\\1.21.1-neoforge-v2\\screenshots\\2026-11-13_13.13.16.png",
+  "requested_client_size": [
+    1280,
+    720
+  ],
+  "actual_image_size": [
+    1280,
+    720
+  ],
+  "keys_before_capture": []
+}

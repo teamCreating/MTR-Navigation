@@ -1,0 +1,21 @@
+{
+  "providers": [
+    {"type": "reference", "id": "minecraft:include/space"},
+    {"type": "reference", "id": "minecraft:include/default"},
+    {
+      "type": "ttf",
+      "file": "mtrnav:ui/fusion_pixel_10.ttf",
+      "size": 10.0,
+      "oversample": 1.0,
+      "shift": [
+        0.0,
+        0.0
+      ],
+      "skip": " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"
+    },
+    {
+      "type": "reference",
+      "id": "minecraft:default"
+    }
+  ]
+}

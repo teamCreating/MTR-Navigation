@@ -11,12 +11,12 @@ description='''Native MTR journey planning, live departures and journey guidance
 [[dependencies.mtrnav]]
 modId="neoforge"
 type="required"
-versionRange="[21.1,)"
+versionRange="${neoforge_range}"
 side="BOTH"
 [[dependencies.mtrnav]]
 modId="minecraft"
 type="required"
-versionRange="[1.21.1,1.21.2)"
+versionRange="${minecraft_range}"
 side="BOTH"
 [[dependencies.mtrnav]]
 modId="mtr"

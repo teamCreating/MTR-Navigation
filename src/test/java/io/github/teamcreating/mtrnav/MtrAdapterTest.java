@@ -35,6 +35,7 @@ class MtrAdapterTest {
             var depot = new Depot(TransportMode.TRAIN, simulator); depot.setUseRealTime(true); depot.routes.add(route); simulator.depots.add(depot);
             var siding = new Siding(new Position(300, 64, 0), new Position(400, 64, 0), 100, TransportMode.TRAIN, simulator);
             siding.setMaxVehicles(1);
+            siding.setVehicleCars(new ObjectArrayList<>(List.of(new VehicleCar("model_head", 20, 3, 100, 6, -6, .5, .5), new VehicleCar("model_trailer", 20, 3, 100, 6, -6, .5, .5))));
             siding.area = depot; simulator.sidings.add(siding); depot.savedRails.add(siding);
             var departureField = Siding.class.getDeclaredField("departures"); departureField.setAccessible(true);
             ((LongArrayList) departureField.get(siding)).add(Math.floorMod(now + 10_000, 86_400_000L));
@@ -60,9 +61,16 @@ class MtrAdapterTest {
                 assertEquals(now + 10_000 + event.stopIndex() * 60_000L, event.arrival());
                 assertEquals(event.arrival() + 10_000, event.departure());
                 assertFalse(event.realtime()); assertEquals("", event.vehicleId());
+                assertEquals(Model.StockSource.PLANNED, event.consist().source());
+                assertEquals(List.of("model_head", "model_trailer"), event.consist().cars());
             }
             assertFalse(new RoutePlanner().find(snapshot, NativeTimetable.id(a.getHexId()), NativeTimetable.id(b.getHexId()), Model.Sort.FASTEST, Model.Settings.defaults()).isEmpty());
-            var revision = snapshot.catalog().revision(); a.setName("renamed");
+            var revision = snapshot.catalog().revision();
+            siding.setVehicleCars(new ObjectArrayList<>(List.of(new VehicleCar("changed", 20, 3, 100, 6, -6, .5, .5))));
+            var changed = reader.capture(simulator, Model.Settings.defaults());
+            assertEquals(revision, changed.catalog().revision(), "rolling stock must not invalidate topology");
+            assertEquals(List.of("changed"), changed.events().getFirst().consist().cars());
+            a.setName("renamed");
             assertNotEquals(revision, reader.capture(simulator, Model.Settings.defaults()).catalog().revision());
         } finally { simulator.stop(); }
     }

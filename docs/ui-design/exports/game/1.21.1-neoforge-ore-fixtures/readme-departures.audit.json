@@ -1,0 +1,291 @@
+{
+  "screen": "NavigationScreen",
+  "viewport": [
+    960,
+    540
+  ],
+  "scale": 2.0,
+  "enteredScale": 2.0,
+  "fixtures": true,
+  "skin": "ORE",
+  "stations": 4,
+  "journeys": 5,
+  "arrivals": 6,
+  "boardStation": "a",
+  "origin": "a",
+  "destination": "d",
+  "status": "mtrnav.ready",
+  "tracking": "",
+  "reminder": false,
+  "vehicleSupported": true,
+  "fleet": [
+    "m_train_cab_1",
+    "m_train_trailer",
+    "sp1900_cab_1"
+  ],
+  "vehicleMode": "NONE",
+  "vehicleModels": [],
+  "journeyStocks": [
+    [
+      {
+        "cars": [
+          "m_train_cab_1",
+          "m_train_trailer",
+          "m_train_cab_1"
+        ],
+        "source": "ACTUAL"
+      },
+      {
+        "cars": [
+          "m_train_cab_1",
+          "m_train_trailer"
+        ],
+        "source": "PLANNED"
+      }
+    ],
+    [
+      {
+        "cars": [
+          "sp1900_cab_1",
+          "m_train_trailer",
+          "m_train_cab_1"
+        ],
+        "source": "ACTUAL"
+      },
+      {
+        "cars": [
+          "m_train_cab_1",
+          "m_train_trailer"
+        ],
+        "source": "PLANNED"
+      }
+    ],
+    [
+      {
+        "cars": [
+          "m_train_cab_1",
+          "m_train_trailer",
+          "m_train_cab_1"
+        ],
+        "source": "ACTUAL"
+      },
+      {
+        "cars": [
+          "m_train_cab_1",
+          "m_train_trailer"
+        ],
+        "source": "PLANNED"
+      }
+    ],
+    [
+      {
+        "cars": [
+          "m_train_cab_1",
+          "m_train_trailer",
+          "m_train_cab_1"
+        ],
+        "source": "ACTUAL"
+      },
+      {
+        "cars": [
+          "m_train_cab_1",
+          "m_train_trailer"
+        ],
+        "source": "PLANNED"
+      }
+    ],
+    [
+      {
+        "cars": [
+          "m_train_cab_1",
+          "m_train_trailer",
+          "m_train_cab_1"
+        ],
+        "source": "ACTUAL"
+      },
+      {
+        "cars": [
+          "m_train_cab_1",
+          "m_train_trailer"
+        ],
+        "source": "PLANNED"
+      }
+    ]
+  ],
+  "routeTypes": [
+    "HIGH_SPEED",
+    "NORMAL",
+    "LIGHT_RAIL"
+  ],
+  "font": "minecraft-current-default",
+  "hudPercent": 150,
+  "reminderPercent": 150,
+  "autoFit": true,
+  "frame": [
+    170,
+    30,
+    620,
+    480
+  ],
+  "body": [
+    182,
+    162,
+    596,
+    311
+  ],
+  "expandedStops": 0,
+  "controls": [
+    {
+      "label": "换乘查询",
+      "rect": [
+        182,
+        64,
+        196,
+        22
+      ],
+      "active": true,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "tab"
+    },
+    {
+      "label": "车站到发",
+      "rect": [
+        382,
+        64,
+        196,
+        22
+      ],
+      "active": true,
+      "focused": false,
+      "selected": true,
+      "pressDepth": 0.0,
+      "role": "tab"
+    },
+    {
+      "label": "当前导航",
+      "rect": [
+        582,
+        64,
+        196,
+        22
+      ],
+      "active": false,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "tab"
+    },
+    {
+      "label": "×",
+      "rect": [
+        762,
+        34,
+        20,
+        20
+      ],
+      "active": true,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    },
+    {
+      "label": "…",
+      "rect": [
+        738,
+        34,
+        20,
+        20
+      ],
+      "active": true,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    },
+    {
+      "label": "返回",
+      "rect": [
+        178,
+        34,
+        20,
+        20
+      ],
+      "active": true,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    },
+    {
+      "label": "查询车站",
+      "rect": [
+        182,
+        94,
+        528,
+        34
+      ],
+      "active": true,
+      "focused": true,
+      "value": "苔灯港 Mosslight Harbour"
+    },
+    {
+      "label": "×",
+      "rect": [
+        692,
+        108,
+        16,
+        18
+      ],
+      "active": true,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    },
+    {
+      "label": "查看到发",
+      "rect": [
+        718,
+        106,
+        60,
+        22
+      ],
+      "active": true,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    },
+    {
+      "label": "全部车站",
+      "rect": [
+        182,
+        134,
+        18,
+        18
+      ],
+      "active": true,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    },
+    {
+      "label": "刷新到发",
+      "rect": [
+        638,
+        484,
+        140,
+        20
+      ],
+      "active": true,
+      "focused": false,
+      "selected": false,
+      "pressDepth": 0.0,
+      "role": "button"
+    }
+  ]
+}

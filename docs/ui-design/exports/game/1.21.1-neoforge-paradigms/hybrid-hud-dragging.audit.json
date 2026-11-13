@@ -1,0 +1,218 @@
+{
+  "variant": "HYBRID",
+  "page": "HUD",
+  "view": "ROUTES",
+  "lastInput": "mouse 454.0,184.0 button=0",
+  "scenario": "NORMAL",
+  "font": "PIXEL",
+  "pixelSize": [
+    1920,
+    1080
+  ],
+  "guiSize": [
+    960,
+    540
+  ],
+  "guiScale": 2.0,
+  "frame": [
+    150,
+    62,
+    660,
+    416
+  ],
+  "compact": false,
+  "origin": "南苑 Nanyuan",
+  "destination": "滨海北 Binhai North",
+  "selectedJourney": 0,
+  "selectedStation": "central",
+  "stationSearch": "",
+  "stationCount": 1,
+  "stationScroll": 0,
+  "index": "C",
+  "nearby": true,
+  "indexOpen": false,
+  "listScroll": {
+    "ROUTES": 0,
+    "DEPARTURES": 0,
+    "ACTIVE": 0
+  },
+  "detailScroll": 0,
+  "queryCollapsed": false,
+  "details": false,
+  "activeTrip": false,
+  "canStart": true,
+  "notice": "已恢复本次预览保存值",
+  "hud": {
+    "navigationPercent": 150,
+    "reminderPercent": 150,
+    "navigationX": 1.0,
+    "navigationY": 1.0,
+    "reminderX": 0.7,
+    "reminderY": 0.1,
+    "autoFit": true,
+    "expanded": true
+  },
+  "hudReminderSelected": false,
+  "settingsScroll": 0,
+  "hudSaved": true,
+  "dragging": true,
+  "settings": [
+    158,
+    122,
+    184,
+    320
+  ],
+  "preview": [
+    354,
+    122,
+    448,
+    320
+  ],
+  "navigationHud": [
+    638,
+    340,
+    154,
+    62
+  ],
+  "reminderHud": [
+    556,
+    154,
+    154,
+    50
+  ],
+  "controls": [
+    {
+      "rect": [
+        584,
+        70,
+        94,
+        20
+      ],
+      "active": true,
+      "label": "融合方案",
+      "focused": false,
+      "id": "variant"
+    },
+    {
+      "rect": [
+        682,
+        70,
+        96,
+        20
+      ],
+      "active": true,
+      "label": "A · 像素中文",
+      "focused": false,
+      "id": "font"
+    },
+    {
+      "rect": [
+        784,
+        71,
+        18,
+        18
+      ],
+      "active": true,
+      "label": "×",
+      "focused": false,
+      "id": "close"
+    },
+    {
+      "rect": [
+        158,
+        94,
+        48,
+        20
+      ],
+      "active": true,
+      "label": "路线",
+      "focused": false,
+      "id": "nav0"
+    },
+    {
+      "rect": [
+        210,
+        94,
+        48,
+        20
+      ],
+      "active": true,
+      "label": "到发",
+      "focused": false,
+      "id": "nav1"
+    },
+    {
+      "rect": [
+        262,
+        94,
+        48,
+        20
+      ],
+      "active": true,
+      "label": "行程",
+      "focused": false,
+      "id": "nav2"
+    },
+    {
+      "rect": [
+        314,
+        94,
+        48,
+        20
+      ],
+      "active": true,
+      "label": "选站",
+      "focused": false,
+      "id": "nav3"
+    },
+    {
+      "rect": [
+        366,
+        94,
+        48,
+        20
+      ],
+      "active": true,
+      "label": "HUD · 已选中",
+      "focused": false,
+      "id": "nav4"
+    },
+    {
+      "rect": [
+        418,
+        94,
+        48,
+        20
+      ],
+      "active": true,
+      "label": "组件",
+      "focused": false,
+      "id": "nav5"
+    },
+    {
+      "rect": [
+        158,
+        450,
+        56,
+        20
+      ],
+      "active": true,
+      "label": "返回",
+      "focused": false,
+      "id": "back"
+    },
+    {
+      "rect": [
+        698,
+        450,
+        104,
+        20
+      ],
+      "active": true,
+      "label": "保存预览设置",
+      "focused": false,
+      "id": "saveHud"
+    }
+  ],
+  "inputs": {}
+}
