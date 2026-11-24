@@ -17,6 +17,7 @@ public final class FabricNavigationClient implements ClientModInitializer {
     @Override public void onInitializeClient() {
         var open = KeyBindingHelper.registerKeyBinding(new KeyMapping("key.mtrnav.open", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_N, "category.mtrnav"));
         NavigationClient.openKey = () -> open.getTranslatedKeyMessage().getString();
+        NavigationClient.isOpenKey = open::matches;
         NavigationClient.transport(() -> ClientPlayNetworking.canSend(NavRequest.TYPE), ClientPlayNetworking::send);
         NavigationClient.vehicleTransport(() -> ClientPlayNetworking.canSend(NavRequestV3.TYPE), ClientPlayNetworking::send);
         WalkingClient.transport(() -> ClientPlayNetworking.canSend(WalkingRequest.TYPE), ClientPlayNetworking::send, () -> ClientPlayNetworking.canSend(NavRequestV2.TYPE), ClientPlayNetworking::send);

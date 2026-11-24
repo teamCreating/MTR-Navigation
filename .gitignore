@@ -9,4 +9,6 @@ fabric/run-server/
 *.log
 .idea/
 .vscode/
+.agents/
+.workbuddy/
 __pycache__/

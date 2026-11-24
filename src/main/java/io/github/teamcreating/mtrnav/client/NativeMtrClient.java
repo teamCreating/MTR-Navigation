@@ -64,7 +64,8 @@ public final class NativeMtrClient {
         if (!dimension.equals(currentDimension)) { reset(); dimension = currentDimension; }
         long now = System.nanoTime();
         var currentScreen = Minecraft.getInstance().screen;
-        boolean active = currentScreen instanceof NavigationScreen || currentScreen instanceof ReminderSettingsScreen || NavigationClient.tracking != null || NavigationClient.reminder != null;
+        boolean active = currentScreen instanceof io.github.teamcreating.mtrnav.client.ui.workspace.WorkspaceScreen
+                || NavigationClient.tracking != null || NavigationClient.reminder != null;
         if (!active || !gate.enabled()) return;
         var expired = pending.entrySet().stream().filter(e -> now - e.getValue().started() > 8_000_000_000L).map(Map.Entry::getKey).toList();
         if (!expired.isEmpty()) { fail("Native timetable request timed out", null); return; }
@@ -74,8 +75,9 @@ public final class NativeMtrClient {
         }
         if (lastCatalog == 0 || now - lastCatalog > 120_000_000_000L) catalog(overlay);
         if (network == null) return;
-        boolean wantsBoard = currentScreen instanceof NavigationScreen screen && screen.wantsBoard() || currentScreen instanceof ReminderSettingsScreen;
-        boolean needsTimetable = NavigationClient.tracking != null || waitingQuery || currentScreen instanceof NavigationScreen && !wantsBoard;
+        boolean wantsBoard = currentScreen instanceof io.github.teamcreating.mtrnav.client.ui.workspace.WorkspaceScreen ws && ws.wantsBoard();
+        boolean needsTimetable = NavigationClient.tracking != null || waitingQuery
+                || (currentScreen instanceof io.github.teamcreating.mtrnav.client.ui.workspace.WorkspaceScreen && !wantsBoard);
         boolean departuresDue = needsTimetable && (lastDepartures == 0 || now - lastDepartures >= 3_000_000_000L);
         var reminder = NavigationClient.reminder;
         boolean boardDue = wantsBoard && !NavigationClient.boardStation.isEmpty() && (lastBoard == 0 || now - lastBoard >= 1_000_000_000L);

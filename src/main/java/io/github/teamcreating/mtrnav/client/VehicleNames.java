@@ -36,7 +36,7 @@ final class VehicleNames {
         if (consist.cars().isEmpty()) return tr("mtrnav.vehicle_unknown_short");
         String suffix = " · " + tr("mtrnav.vehicle_cars", consist.count()) + " · " + tr("mtrnav.stock_source." + consist.source().name().toLowerCase(Locale.ROOT));
         String names = String.join(" + ", consist.cars().stream().map(id -> info(id).name()).distinct().toList());
-        var font = NavigationTheme.uiFont();
+        var font = net.minecraft.client.Minecraft.getInstance().font;
         int available = Math.max(0, width - font.width(suffix));
         if (font.width(names) > available) names = font.plainSubstrByWidth(names, Math.max(0, available - font.width("…"))) + "…";
         return names + suffix;

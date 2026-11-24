@@ -1,6 +1,9 @@
 package io.github.teamcreating.mtrnav.client;
 
 import io.github.teamcreating.mtrnav.api.*;
+import io.github.teamcreating.mtrnav.client.ui.NavigationUi;
+import io.github.teamcreating.mtrnav.client.ui.workspace.NewUiFixtures;
+import io.github.teamcreating.mtrnav.client.ui.workspace.WorkspaceScreen;
 import io.github.teamcreating.mtrnav.core.*;
 import io.github.teamcreating.mtrnav.network.*;
 import net.minecraft.client.Minecraft;
@@ -19,7 +22,7 @@ public final class NavigationClient {
     private static BooleanSupplier vehicleAvailable = () -> false;
     private static Consumer<NavRequestV3> vehicleSender = ignored -> {};
     public static void vehicleTransport(BooleanSupplier available, Consumer<NavRequestV3> sender) { vehicleAvailable = available; vehicleSender = sender; }
-    public static boolean supportsVehicles() { return !usingNative && (V2Review.enabled() || vehicleAvailable.getAsBoolean()); }
+    public static boolean supportsVehicles() { return !usingNative && vehicleAvailable.getAsBoolean(); }
     public static void vehicleCondition(VehicleCondition value) { if (!vehicleCondition.equals(value)) { vehicleCondition = value; clearSearchResults(); } }
     public static List<Journey> journeys = List.of();
     public static ConnectionPlan referencePlan;
@@ -50,51 +53,21 @@ public final class NavigationClient {
     private static long nextId, queryId, lastPoll, startedNanos, lastTrackingId, lastSample;
     private static long oldestResponseId, lastCatalogId, lastHello, boardRequestId;
     private static long lastTickNanos;
-    private static boolean reviewOpened;
     private static boolean helloSent;
     private record PollContext(String station, String reminderId) {}
     private static final Map<Long, PollContext> pollContexts = new LinkedHashMap<>();
     public static boolean usingNative;
     public static Supplier<String> openKey = () -> "N";
+    public static BiPredicate<Integer, Integer> isOpenKey = (key, scan) -> false;
 
     public static void transport(BooleanSupplier canSend, Consumer<NavRequest> send) { available = canSend; sender = send; }
     public static void open() {
-        var mc = Minecraft.getInstance();
-        if (mc.player != null) {
-            if (Boolean.getBoolean("mtrnav.uiPreview")) { mc.setScreen(createReviewScreen()); return; }
-            NativeMtrClient.opened(); var navigation = new NavigationScreen();
-            if (reminder != null && tracking == null) mc.setScreen(new ReminderSettingsScreen(navigation, reminder.stationId(), reminder.event(), reminder.minutes()));
-            else mc.setScreen(navigation);
-        }
-    }
-    private static net.minecraft.client.gui.screens.Screen createReviewScreen() {
-        if (Boolean.getBoolean("mtrnav.paradigmPreview")) return new ParadigmPreviewScreen();
-        if(V2Review.enabled()) return V2Review.open();
-        if (Boolean.getBoolean("mtrnav.ldlib2Preview")) {
-            try {
-                return (net.minecraft.client.gui.screens.Screen) Class.forName(
-                        "io.github.teamcreating.mtrnav.client.Ldlib2NavigationPreview").getMethod("create").invoke(null);
-            } catch (ReflectiveOperationException e) {
-                throw new IllegalStateException("LDLib2 preview requires the isolated -Pldlib2Preview build", e);
-            }
-        }
-        return new UiPreviewScreen();
+        NavigationUi.openWorkspace();
     }
     public static void tick() {
-        OreReview.tick();
+        NavigationUi.tickFixtures();
+        if (NewUiFixtures.enabled()) return;
         var mc = Minecraft.getInstance();
-        if (Boolean.getBoolean("mtrnav.uiPreview")) {
-            if(V2Review.enabled())V2Review.refresh();
-            mc.getWindow().setTitle("MTRNav UI Review " + System.getProperty("mtrnav.uiPreviewLabel", "development"));
-            if (!reviewOpened && mc.player != null && mc.level != null && mc.screen == null) {
-                reviewOpened = true; mc.setScreen(createReviewScreen());
-            }
-            return;
-        }
-        if(Boolean.getBoolean("mtrnav.oreReview")){
-            mc.getWindow().setTitle("MTRNav UI Review "+System.getProperty("mtrnav.uiPreviewLabel","ore"));
-            if(!reviewOpened&&connection==mc.getConnection()&&mc.player!=null&&mc.level!=null&&mc.screen==null){reviewOpened=true;mc.setScreen(new NavigationScreen());}
-        }
         long tickTime = System.nanoTime();
         if (lastTickNanos != 0 && connection != null && connection == mc.getConnection() && tickTime - lastTickNanos > 5_000_000_000L)
             com.mojang.logging.LogUtils.getLogger().warn("[MTR Navigation] Client tick paused {} ms", (tickTime - lastTickNanos) / 1_000_000);
@@ -107,7 +80,7 @@ public final class NavigationClient {
         if (mc.player == null || mc.level == null) return;
         long now = System.nanoTime();
         tickReminder(now);
-        WalkingClient.tick(mc.screen instanceof NavigationScreen || mc.screen instanceof WalkingListScreen || mc.screen instanceof WalkingEditorScreen || mc.screen instanceof WalkingTextScreen || tracking != null);
+        WalkingClient.tick(mc.screen instanceof WorkspaceScreen || tracking != null);
         if (!available.getAsBoolean() || Boolean.getBoolean("mtrnav.forceNative")) {
             usingNative = true;
             NativeMtrClient.tick(dim);
@@ -115,7 +88,7 @@ public final class NavigationClient {
         }
         if (usingNative) { NativeMtrClient.reset(); usingNative = false; catalog = null; }
         if (!helloSent || (catalog == null && now - lastHello > 3_000_000_000L)) { helloSent = true; lastHello = now; send("hello", "", ""); }
-        if ((mc.screen instanceof NavigationPanel || tracking != null || reminder != null) && now - lastPoll > 1_000_000_000L) {
+        if ((mc.screen instanceof WorkspaceScreen || tracking != null || reminder != null) && now - lastPoll > 1_000_000_000L) {
             lastPoll = now;
             String primary = !boardStation.isEmpty() ? boardStation : reminder == null ? "" : reminder.stationId();
             send("poll", "", "", primary);
@@ -123,10 +96,11 @@ public final class NavigationClient {
         }
     }
     public static void reset() {
-        reviewOpened = false; fleet = List.of(); vehicleCondition = VehicleCondition.none();
+        fleet = List.of(); vehicleCondition = VehicleCondition.none();
         originLocation.reset(); WalkingClient.reset(); fastestArrival = 0; partialResults = false;
         catalog = null; journeys = List.of(); referencePlan = null; referenceReason = ""; arrivals = List.of(); tracking = null; reminder = null;
-        boardLoading = false; boardUpdatedNanos = boardSampleMillis = 0; pollContexts.clear(); ReminderHud.reset();
+        boardLoading = false; boardUpdatedNanos = boardSampleMillis = 0; pollContexts.clear();
+        NavigationUi.reset();
         origin = destination = boardStation = ""; status = "mtrnav.connecting";
         queryId = lastTrackingId = lastPoll = lastSample = 0; helloSent = false;
         oldestResponseId = nextId + 1; lastCatalogId = lastHello = 0;
@@ -134,10 +108,9 @@ public final class NavigationClient {
         NativeMtrClient.reset(); usingNative = false;
     }
     public static void query() {
-        if(V2Review.enabled()){V2Review.query();return;}
         if (origin.isEmpty() || destination.isEmpty()) { status = "mtrnav.choose_stations"; return; }
         if (!usingNative && WalkingClient.supportsQuery() && WalkingClient.needsConsent()) {
-            WalkingManagementScreen.confirmConsent(Minecraft.getInstance().screen, NavigationClient::query); return;
+            NavigationUi.confirmWalkingConsent(NavigationClient::query); return;
         }
         if (vehicleCondition.active() && !supportsVehicles()) { status = "mtrnav.vehicle_unsupported"; return; }
         status = "mtrnav.searching"; journeys = List.of(); partialResults = false; fastestArrival = 0;
@@ -151,11 +124,10 @@ public final class NavigationClient {
         status = "mtrnav.choose_stations";
         NativeMtrClient.cancelQuery();
     }
-    public static void select(Journey journey) { if(V2Review.enabled()){tracking=new JourneyTracker.State(journey,0,JourneyTracker.Phase.WAITING,"",false);return;} if (usingNative) NativeMtrClient.select(journey); else send("select", journey.id(), ""); }
-    public static void correct(String action) { if(V2Review.enabled())return; if (usingNative) NativeMtrClient.correct(action); else send("correct", tracking == null ? "" : tracking.journey().id(), action); }
-    public static void cancel() { if(V2Review.enabled()){tracking=null;return;} if (usingNative) NativeMtrClient.cancel(); else lastTrackingId = send("cancel", "", ""); tracking = null; NavigationApi.cancel(); }
+    public static void select(Journey journey) { if (usingNative) NativeMtrClient.select(journey); else send("select", journey.id(), ""); }
+    public static void correct(String action) { if (usingNative) NativeMtrClient.correct(action); else send("correct", tracking == null ? "" : tracking.journey().id(), action); }
+    public static void cancel() { if (usingNative) NativeMtrClient.cancel(); else lastTrackingId = send("cancel", "", ""); tracking = null; NavigationApi.cancel(); }
     public static void board(String station) {
-        if(V2Review.enabled()){V2Review.board(station);return;}
         boardStation = station; arrivals = List.of(); boardLoading = true; boardUpdatedNanos = boardSampleMillis = 0;
         if (usingNative) NativeMtrClient.refreshBoard(); else boardRequestId = send("poll", "", "");
     }
@@ -169,9 +141,9 @@ public final class NavigationClient {
         var event = ArrivalReminder.unique(selected, arrivals);
         if (!station.equals(boardStation) || !boardFresh() || event.isEmpty() || event.get().departure() < CLOCK.now(System.nanoTime()) || catalog == null) return false;
         reminder = new ArrivalReminder(catalog.dimension(), station, event.get(), minutes, boardSampleMillis, boardUpdatedNanos);
-        ReminderHud.armed(); if(!V2Review.enabled())tickReminder(System.nanoTime()); return true;
+        NavigationUi.onReminderArmed(); tickReminder(System.nanoTime()); return true;
     }
-    public static void cancelReminder() { reminder = null; ReminderHud.reset(); }
+    public static void cancelReminder() { reminder = null; NavigationUi.onReminderCleared(); }
     public static void observeReminder(String station, List<StopEvent> events, long sampleMillis, String expectedId) {
         if (reminder != null && reminder.id().equals(expectedId)) reminder.observe(dimension, station, events, sampleMillis, System.nanoTime());
     }
@@ -179,7 +151,7 @@ public final class NavigationClient {
         if (reminder == null) return;
         if (!reminder.dimension().equals(dimension) || reminder.expired(CLOCK.now(now))) { cancelReminder(); return; }
         if (reminder.tick(CLOCK.now(now), now, !CLOCK.stale(now))) {
-            ReminderHud.triggered();
+            NavigationUi.onReminderTriggered();
             var player = Minecraft.getInstance().player;
             if (player != null) player.playSound(net.minecraft.sounds.SoundEvents.EXPERIENCE_ORB_PICKUP, .4F, 1.2F);
         }
@@ -256,7 +228,6 @@ public final class NavigationClient {
     }
     public static String tr(String key, Object... args) { return Component.translatable(key, args).getString(); }
     public static void renderHud(GuiGraphics graphics) {
-        NavigationHud.render(graphics);
-        ReminderHud.render(graphics);
+        NavigationUi.renderHud(graphics);
     }
 }

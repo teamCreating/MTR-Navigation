@@ -13,7 +13,6 @@ final class NavigationPreferences {
     private static int hudPercent = HudScale.DEFAULT_PERCENT;
     private static double hudX = 1, hudY = 0;
     private static boolean autoFit = true;
-    private static String uiSkin = "ORE";
     private static boolean reminderExpanded;
     private static int reminderPercent = HudScale.DEFAULT_PERCENT;
     private static double reminderX = .5, reminderY;
@@ -23,7 +22,6 @@ final class NavigationPreferences {
         file = Minecraft.getInstance().gameDirectory.toPath().resolve("config/mtrnav-client.properties");
         if (Files.isRegularFile(file)) try (var input = Files.newBufferedReader(file)) {
             var values = new Properties(); values.load(input);
-            uiSkin = values.getProperty("uiSkin", "ORE");
             hudPercent = HudScale.clamp(Integer.parseInt(values.getProperty("hudScalePercent", "150")));
             hudX = HudPlacement.position(Double.parseDouble(values.getProperty("hudPositionX", "1")), 1);
             hudY = HudPlacement.position(Double.parseDouble(values.getProperty("hudPositionY", "0")), 0);
@@ -36,8 +34,6 @@ final class NavigationPreferences {
             com.mojang.logging.LogUtils.getLogger().warn("[MTR Navigation] Could not load client preferences; using valid defaults", error);
         }
     }
-    static String skin() { load(); return uiSkin; }
-    static void setSkin(String value) { load(); uiSkin=value; save(); }
     static int hudPercent() { load(); return hudPercent; }
     static double hudX() { load(); return hudX; }
     static double hudY() { load(); return hudY; }
@@ -62,7 +58,7 @@ final class NavigationPreferences {
         load();
         try {
             Files.createDirectories(file.getParent());
-            var values = new Properties(); values.setProperty("uiSkin",uiSkin); values.setProperty("hudScalePercent", Integer.toString(hudPercent));
+            var values = new Properties(); values.setProperty("hudScalePercent", Integer.toString(hudPercent));
             values.setProperty("hudPositionX", Double.toString(hudX)); values.setProperty("hudPositionY", Double.toString(hudY));
             values.setProperty("hudAutoFit", Boolean.toString(autoFit));
             values.setProperty("reminderKeepExpanded", Boolean.toString(reminderExpanded));

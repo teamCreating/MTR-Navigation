@@ -38,28 +38,12 @@ processResources {
 loom {
     runs {
         client {
-            runDir project.hasProperty('oreReview') ? "../run/ui-review/${minecraftTarget}-fabric-ore${project.hasProperty('oreFixtures') ? '-fixtures' : ''}" : project.hasProperty('paradigmPreview') ? "../run/ui-review/${minecraftTarget}-fabric-paradigms" : project.hasProperty('v2Review') ? "../run/ui-review/${minecraftTarget}-fabric-v2" : project.hasProperty('uiPreview') ? "../run/ui-review/${minecraftTarget}-fabric" : minecraftTarget == '1.21.1' ? '../run/fabric' : "../run/${minecraftTarget}-fabric"
-            if(project.hasProperty('oreReview')) {
-                if(project.hasProperty('oreBackground'))vmArg '-Dmtrnav.oreBackgroundQa=true'
-                vmArg '-Dmtrnav.oreReview=true'
-                vmArg "-Dmtrnav.uiPreviewLabel=${minecraftTarget}-fabric-ore${project.hasProperty('oreFixtures') ? '-fixtures' : ''}"
-                if(project.hasProperty('oreFixtures')) {vmArg '-Dmtrnav.uiPreview=true';vmArg '-Dmtrnav.v2Review=true'}
-            }
-            if (project.hasProperty('paradigmPreview')) {
-                vmArg '-Dmtrnav.uiPreview=true'
-                vmArg '-Dmtrnav.paradigmPreview=true'
-                vmArg "-Dmtrnav.uiPreviewLabel=${minecraftTarget}-fabric-paradigms"
-            }
-            if(project.hasProperty('v2Review')) { vmArg '-Dmtrnav.uiPreview=true'; vmArg '-Dmtrnav.v2Review=true'; vmArg "-Dmtrnav.uiPreviewLabel=${minecraftTarget}-fabric-v2" }
+            runDir project.hasProperty('newUiFixtures') ? "../run/ui-review/${minecraftTarget}-fabric-newui-fixtures" : minecraftTarget == '1.21.1' ? '../run/fabric' : "../run/${minecraftTarget}-fabric"
+            if (project.hasProperty('newUiFixtures')) vmArg '-Dmtrnav.newUiFixtures=true'
             if (project.hasProperty('quickplay')) { programArg '--quickPlaySingleplayer'; programArg project.property('quickplay').toString() }
             if (project.hasProperty('nativeSmoke')) vmArg '-Dmtrnav.forceNative=true'
-            if (project.hasProperty('uiPreview')) vmArg '-Dmtrnav.uiPreview=true'
-            if (project.hasProperty('uiPreview')) vmArg "-Dmtrnav.uiPreviewLabel=${minecraftTarget}-fabric"
-            if (project.hasProperty('uiPreviewFont')) vmArg "-Dmtrnav.uiPreviewFont=${project.property('uiPreviewFont')}"
-            if (project.hasProperty('uiPreviewScene')) vmArg "-Dmtrnav.uiPreviewScene=${project.property('uiPreviewScene')}"
-            if (project.hasProperty('uiPreviewVariant')) vmArg "-Dmtrnav.uiPreviewVariant=${project.property('uiPreviewVariant')}"
         }
         server { runDir minecraftTarget == '1.21.1' ? '../run-server/fabric' : "../run-server/${minecraftTarget}-fabric"; programArg '--nogui' }
     }
 }
-jar { from('../LICENSE', '../NOTICE'); exclude('assets/mtrnav/textures/gui/create/**') }
+jar { from('../LICENSE', '../NOTICE') }

@@ -21,6 +21,7 @@ public final class NeoNavigationClient {
     private static final KeyMapping OPEN = new KeyMapping("key.mtrnav.open", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_N, "category.mtrnav");
     public NeoNavigationClient(IEventBus bus) {
         NavigationClient.openKey = () -> OPEN.getTranslatedKeyMessage().getString();
+        NavigationClient.isOpenKey = OPEN::matches;
         bus.addListener((RegisterKeyMappingsEvent event) -> event.register(OPEN));
         NavigationClient.transport(() -> Minecraft.getInstance().getConnection() != null && Minecraft.getInstance().getConnection().hasChannel(NavRequest.TYPE), PacketDistributor::sendToServer);
         NavigationClient.vehicleTransport(() -> Minecraft.getInstance().getConnection() != null && Minecraft.getInstance().getConnection().hasChannel(NavRequestV3.TYPE), PacketDistributor::sendToServer);

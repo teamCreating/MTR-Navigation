@@ -11,13 +11,16 @@ public final class OverlayBridge {
     private static Class<?> cache;
     private static Object lastSnapshot;
     private static Catalog lastCatalog;
-    public static Catalog catalog(String dimension) {
+    public static boolean isAvailable() {
         if (!checked) {
             checked = true;
             try { cache = Class.forName("io.github.teamcreating.mtrmap.mapdata.MapDataCache"); }
             catch (ClassNotFoundException | LinkageError ignored) { }
         }
-        if (cache == null) return null;
+        return cache != null;
+    }
+    public static Catalog catalog(String dimension) {
+        if (!isAvailable()) return null;
         try {
             if (!(boolean) cache.getMethod("hasServerData", String.class).invoke(null, dimension)) {
                 // Overlay owns its synchronization lifecycle. Navigation only consumes

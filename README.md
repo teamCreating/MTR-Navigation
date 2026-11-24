@@ -24,9 +24,9 @@
   <a href="#english">English</a>
 </p>
 
-MTR：站间物语是一个独立的 Minecraft Transit Railway 导航附属模组。你可以查找车站、比较换乘方案、查看站台到发，或为某一班列车设置到站提醒。0.1.1 全页面采用 Ore UI 风格的原生控件，字体跟随 Minecraft；**不需要安装机械动力**。
+MTR：站间物语是一个独立的 Minecraft Transit Railway 导航附属模组。你可以查找车站、比较换乘方案、查看站台到发，或为某一班列车设置到站提醒。0.1.2 全面重构为零外部依赖的新一代「现代轨道导视 × 候车厅 PIDS」工作台与半透明双 HUD（采用像素切角深板岩外框与纯现代暗色内部控件），字体跟随 Minecraft；**不需要安装任何额外 UI 模组或机械动力**。
 
-**当前版本：0.1.1。** [下载 0.1.1](https://github.com/teamCreating/MTR-Navigation/releases/tag/v0.1.1) · [更新记录](CHANGELOG.md)。提供 Minecraft 1.21.1／1.21.4 的 NeoForge 和 Fabric 安装包，详见[验证记录](docs/validation/verification.md)。
+**当前版本：0.1.2。** [下载 0.1.2](https://github.com/teamCreating/MTR-Navigation/releases/tag/v0.1.2) · [更新记录](CHANGELOG.md)。提供 Minecraft 1.21.1／1.21.4 的 NeoForge 和 Fabric 安装包，详见[验证记录](docs/validation/verification.md)。
 
 ## 可以做什么
 
@@ -42,52 +42,48 @@ MTR：站间物语是一个独立的 Minecraft Transit Railway 导航附属模�
 
 ## 实际界面
 
-以下是 **0.1.1** 在 Minecraft 内实际拍摄的界面。演示使用完全架空的「苔灯群岛」测试存档：**苔灯港、风铃渡、雾松丘、星沼湾**及**星汐快线、萤环线、岚湾轻轨**均为虚构名称，班次与行程是明确标注的测试数据，不对应真实服务器或真实交通线路。实际使用时，名称、线路颜色、车型与时刻读取所在存档／服务器的 MTR 数据。
+以下是 **0.1.2** 在 Minecraft 内实际拍摄的界面。演示使用完全架空的「苔灯群岛」测试夹具：**苔灯港、风铃渡、雾松丘、星沼湾**及**星汐快线、萤环线、岚湾轻轨**均为虚构名称，班次与行程是明确标注的测试数据，不对应真实服务器或真实交通线路。实际使用时，名称、线路颜色、车型、地形与时刻均实时读取所在存档／服务器的真实世界与 MTR 数据。
 
-### 比较换乘方案
+### 换乘规划与步骤时间轴
 
-从苔灯港前往星沼湾，左侧比较耗时与换乘次数；每张卡片按顺序串联线路标识、MTR 交通图标及步行分钟数。色块采用线路配置的颜色，右侧查看站台、方向和途经站。
+一体化左侧导航工作台，支持按 `N` 快速打开与收起。左侧比较最多五种换乘方案，每张卡片串联线路色块、MTR 交通图标与步行分钟；右侧高清垂直时间轴支持一键展开途经站与车厢编组顺序。
 
-[![架空存档演示：从苔灯港前往星沼湾的换乘方案](docs/screenshots/0.1.1/journey-query.png)](docs/screenshots/0.1.1/journey-query.png)
+[![架空夹具演示：从苔灯港前往星沼湾的步骤时间轴](docs/screenshots/0.1.2/journey-timeline.png)](docs/screenshots/0.1.2/journey-timeline.png)
 
-### 选择想乘坐的车型
+### 手机导航风格 2D 实景线网地图
 
-搜索当前网络中的车型，选择“不限制”“优先乘坐”或“必须乘坐”。详情区分实际与计划编组，并可展开每节车厢的顺序和资源 ID。[车型规则](docs/vehicles.md)。
+一键切换 2D 线网视图，真实存档下自动采样已加载区块地表与山影，叠加平滑弯道轨道、动态流动方向箭头、水滴形起终点图钉、换乘气泡、玩家 GPS 蓝点与朝向光锥、指北针及米制比例尺；选中路线自动聚焦，大地图可深度缩放至 20 m 街区级。
 
-[![架空存档演示：车型多选与优先／必须乘坐](docs/screenshots/0.1.1/vehicle-selection.png)](docs/screenshots/0.1.1/vehicle-selection.png)
+[![架空夹具演示：手机导航风格 2D 线网地图](docs/screenshots/0.1.2/journey-topology.png)](docs/screenshots/0.1.2/journey-topology.png)
 
-### 展开线路，查看车站到发
+### 候车厅 PIDS 车站到发大屏
 
-到发按线路分组。展开星汐快线、萤环线或岚湾轻轨，查看具体班次的站台、倒计时、车型与来源；点击班次可设置提醒。
+实时时钟、线路筛选胶囊、大号倒计时与图形化车厢编组条同屏展示，右侧点击「提醒」即可滑出到站提醒抽屉。
 
-[![架空存档演示：虚构线路的车站到发与车型信息](docs/screenshots/0.1.1/departures.png)](docs/screenshots/0.1.1/departures.png)
+[![架空夹具演示：候车厅 PIDS 电子大屏](docs/screenshots/0.1.2/pids-board.png)](docs/screenshots/0.1.2/pids-board.png)
 
-### 搜索并选择车站
+### 右侧滑出选站抽屉
 
-独立目录支持中英文搜索、A–Z／Z–A／距离排序与字母索引。选中车站后，在底部确认用于起点或终点。
+选站、车型筛选、班次提醒与步行编辑均改用右侧滑出抽屉，不再多层跳转打断查询；支持中英文搜索、A–Z／Z–A／距离排序与同名站坐标区分。
 
-[![架空存档演示：苔灯群岛车站目录](docs/screenshots/0.1.1/station-directory.png)](docs/screenshots/0.1.1/station-directory.png)
+[![架空夹具演示：右侧滑出选站抽屉](docs/screenshots/0.1.2/station-picker.png)](docs/screenshots/0.1.2/station-picker.png)
 
-### 一页调整两个 HUD
+### 交互式 HUD 设置与半透明双 HUD
 
-导航框和班次提醒框分别调整位置、大小与显示模式，也可完全收起设置面板查看效果。两个框自动避让；图中的倒计时为预览示例。
+设置页内置 16:9 可直接拖拽/滚轮缩放的实时屏显预览与 1:1 真机近景预览，也可一键进入全屏实景摆放。游戏内采用半透明动态列车门 LCD 线路条与顶部灵动提醒胶囊，双框自动避让。
 
-[![架空存档演示：导航与提醒 HUD 的位置、缩放和显示设置](docs/screenshots/0.1.1/hud-settings.png)](docs/screenshots/0.1.1/hud-settings.png)
+[![架空夹具演示：HUD 实时交互设置](docs/screenshots/0.1.2/hud-settings.png)](docs/screenshots/0.1.2/hud-settings.png)
 
-### 录入步行连接
-
-依次选择出发地和目的地，填写步行耗时。站台、名称与备注可选；个人保存和提交共享建议分别操作。
-
-[![架空存档演示：风铃渡至星沼湾的步行连接编辑](docs/screenshots/0.1.1/walking-editor.png)](docs/screenshots/0.1.1/walking-editor.png)
+[![游戏内实景：半透明双 HUD 效果](docs/screenshots/0.1.2/dual-hud.png)](docs/screenshots/0.1.2/dual-hud.png)
 
 ## 安装与兼容
 
 需要 **Java 21、MTR 4.1.0-beta.2**，并选择与你的 Minecraft 版本和加载器一致的安装包：
 
-- **Minecraft 1.21.1／NeoForge 21.1.x**：`MTR-Navigation-neoforge-0.1.1+1.21.1.jar`。
-- **Minecraft 1.21.1／Fabric**：`MTR-Navigation-fabric-0.1.1+1.21.1.jar`。
-- **Minecraft 1.21.4／NeoForge 21.4.x**：`MTR-Navigation-neoforge-0.1.1+1.21.4.jar`。
-- **Minecraft 1.21.4／Fabric**：`MTR-Navigation-fabric-0.1.1+1.21.4.jar`。
+- **Minecraft 1.21.1／NeoForge 21.1.x**：`MTR-Navigation-neoforge-0.1.2+1.21.1.jar`。
+- **Minecraft 1.21.1／Fabric**：`MTR-Navigation-fabric-0.1.2+1.21.1.jar`。
+- **Minecraft 1.21.4／NeoForge 21.4.x**：`MTR-Navigation-neoforge-0.1.2+1.21.4.jar`。
+- **Minecraft 1.21.4／Fabric**：`MTR-Navigation-fabric-0.1.2+1.21.4.jar`。
 
 Fabric 需要 Fabric Loader 0.16.14 或更新版本，以及对应 Minecraft 版本的 [Fabric API](https://modrinth.com/mod/fabric-api)。MTR 本身也需要安装与 Minecraft／加载器对应的版本。
 
@@ -105,30 +101,28 @@ Fabric 需要 Fabric Loader 0.16.14 或更新版本，以及对应 Minecraft 版
 
 ### 查询与导航
 
-1. 按 **N** 或输入 **`/mtrnav`** 打开界面，快捷键可在控制设置中修改。
-2. 输入起终点的完整站名；也可点 **全部车站**，选中后分别设为起点、终点。
-3. 点 **查询**，切换排序并比较候选方案，确认后点 **开始导航**。
-4. 上车后点 **已上车**，下车后点 **已下车，继续**；操作错误时用 **上一步** 校正。
-5. 关闭窗口后 HUD 继续提示，按打开键返回。
+1. 按 **N** 或输入 **`/mtrnav`** 打开工作台，未在输入框打字时再按一次打开键（或 `Esc`）即可直接收起界面；快捷键可在控制设置中修改。
+2. 输入起终点的完整站名，或点击输入框旁的 **选站列表** 按钮从右侧滑出选站抽屉，支持中英文搜索与 **A–Z／Z–A／离我最近** 排序。
+3. 点击 **查询**，左侧比较最多五种候选方案，右侧可在 **步骤时间轴** 与 **2D 线网拓扑** 间自由切换（关闭再打开自动记住上次选择的视图），确认后点 **开始导航**。
+4. 在 **2D 线网拓扑** 中可拖拽平移、滚轮缩放（支持大跨度线网深度缩放至街区级）、点击车站设为起终点或直达该站到发，点击右上角 `◎` 可在「聚焦当前路线／核心区」与「全网总览」间一键切换。
+5. 上车后在 **当前导航** 页点 **已上车**，下车后点 **已下车，继续**；操作错误时用 **上一步** 校正。关闭窗口后半透明 HUD 继续实时提示，按打开键随时返回。
 
-**快速查站**：全部车站右上可切换排序；宽窗口直接点击字母，窄窗口点击“索引”。英文名优先做字母归组，纯中文按常用汉字拼音首字母归组；数字在“#”，无法归组的在“其他”。距离按当前位置的水平直线估算，点击“重新定位”刷新，未知距离排在最后。详见[车站目录操作](docs/station-directory.md)。
+点击行程详情中的车站可直达该站到发；点击「途经 N 站」所在行可直接展开／收起，每段线路独立保存展开状态。重新查询不会直接替换正在执行的行程，需要再次选择方案。点击或用 Tab 进入车站输入框时会全选原站名，直接输入新站名即可替换；再次点击可局部编辑，右侧 **×** 可一键清空。
 
-点击行程详情中的车站可查看到发；直接点击“途经 N 站”所在行展开，再次点击收起；每段线路独立保存展开状态。重新查询不会直接替换正在执行的行程，需要再次选择方案。点击或用Tab进入车站输入框时会全选原站名，直接输入新站名即可替换；再次点击可局部编辑，右侧 **×** 仍可清空。切到到发页也会自动选中当前站名，输入后按回车查询。
-
-**起点定位**：每次连接首次进入换乘查询、起点为空且未经编辑时，自动根据玩家位置选择附近车站。也可点击准星图标 **定位** 重新选择；窄窗口仅显示图标。最近站在512格内，且比第二近站近超过64格时自动填入；否则打开独立的 **附近车站** 页面，按距离排序后由你确认。页面保留搜索、滚轮、拖动滚动条和键盘操作；点击 **重新定位** 才更新距离基准。
+**起点定位**：每次连接首次进入换乘查询、起点为空且未经编辑时，自动根据玩家位置选择附近车站。也可点击准星图标 **定位** 重新选择；最近站在 512 格内且比第二近站近超过 64 格时自动填入，否则滑出 **附近车站** 抽屉按距离排序供你确认。
 
 距离是当前维度内到车站坐标的**水平直线估算**，不代表入口或步行距离。未知坐标的站仍能手动搜索，但不参与定位。手动修改、交换或清空起点后，不会自动填回；定位也不会自动查询或替换活动导航。
 
 ### 到发与班次提醒
 
-打开 **车站到发**，选择车站，点击线路标题展开班次。列表支持滚轮与拖动右侧滚动条；自动刷新保留线路展开状态。
+在左侧导航栏切到 **车站到发**，顶部通过 **全部线路** 或单条线路胶囊快速筛选班次，同屏查看实时时钟、大号倒计时、图形化车厢编组条与站台徽章。
 
-点击某一班次可设置提醒，时间以**该列车到达所选车站**为准。保存时已经进入提前窗口，会在数据确认后立即触发。
+点击任意班次右侧的 **提醒** 按钮滑出提醒抽屉，时间以**该列车到达所选车站**为准。保存时已经进入提前窗口，会在数据确认后立即触发。
 
-- 提醒条默认位于顶部中央，自动收起时仍保留线路、车站、倒计时、方向、站台与状态；设置和触发时短暂展开。**HUD设置**或提醒设置中均可切换 **保持展开**。提醒框的位置和大小可独立调整。
+- 顶部提醒胶囊默认位于屏幕顶部中央，自动收起时仍保留线路、车站、倒计时与状态；设置和触发时平滑展开。在 **HUD 设置** 页可切换 **始终展开提醒条**，并独立调整位置与大小。
 - 数据超过五秒未更新、采样过旧或不能确认所选记录时，显示 **班次待确认**，暂停可靠倒计时与提醒。
 - 发车时间已过时显示相应提示，不直接判断你是否已经上车，也不会自动换成下一班。
-- 顶部 **更多… → 提醒** 可更新或取消提醒；没有提醒时进入车站到发页选车次。只有提醒、没有导航行程时，按打开键优先进入提醒管理。
+- 只有提醒、没有导航行程时，按打开键优先进入 **车站到发** 并直接展开当前提醒抽屉以便修改或取消。
 
 每次连接最多保留一个提醒；替换其他班次需要明确点击替换。提醒不跨会话保存，断线、切服或切维度时清除，最后已知发车时间过去十分钟后过期。
 
@@ -136,15 +130,15 @@ Fabric 需要 Fabric Loader 0.16.14 或更新版本，以及对应 Minecraft 版
 
 ### 调整 HUD
 
-点顶部 **更多… → HUD 设置** 打开统一设置页，选择 **导航框** 或 **班次提醒框**；也可直接点击要调整的预览框。拖动改位置，滚轮或原生滑块改所选框的大小，四角预设和恢复默认也只作用于所选框。两个框各自保存位置与大小，设置页同时预览，拖动时设置面板收起；也可点“预览”完整查看两个提示框，再返回设置。
+在左侧导航栏直接进入 **HUD 设置**，选择 **导航框** 或 **班次提醒框**，也可直接在右侧 **16:9 实时预览屏** 内点击选中、拖动改位置或滚轮缩放，下方同步展示 **1:1 真机近景样式**；点击 **全屏拖拽调整** 还可进入全屏实景界面直接摆放，拖动时自动隐藏辅助按钮。
 
-两个提示框同时显示时会自动避让，提醒框即使收起也按展开尺寸预留空间。小窗口放不下时会临时缩小，**关闭自动适配也保留防重叠保护**，不会覆盖保存的位置。自动收起／保持展开也在同一页设置，详见[双HUD设置说明](docs/hud-settings.md)。
+两个半透明提示框同时显示时会自动避让，提醒框即使收起也按展开尺寸预留空间。小窗口放不下时会临时缩小，**关闭自动适配也保留防重叠保护**，不会覆盖保存的位置。详见[双HUD设置说明](docs/hud-settings.md)。
 
 大小范围为 75%～200%。位置按可用屏幕区域的比例保存，切换分辨率后仍保持在屏幕内；配置位于游戏实例的 `config/mtrnav-client.properties`。
 
 ### 步行连接与更多方案
 
-点击查询页的 **步行换乘**，通过顶部页签直接进入 **服务器共享／仅自己／我的提交／审核管理**；在独立的 **查询设置** 页调整个人连接发送授权及15、30、60分钟或不限的晚到范围。没有 Navigation 服务端时默认打开个人连接；客户端仍可通过 MTR 原生时刻服务计算。
+在左侧导航栏切到 **步行换乘**，通过顶部页签直接管理 **服务器共享／仅自己／我的提交／审核管理／查询设置**（调整个人连接发送授权及 15、30、60 分钟或不限的晚到范围）。新建与编辑步行连接通过右侧滑出抽屉完成；没有 Navigation 服务端时默认打开个人连接，客户端仍可通过 MTR 原生时刻服务计算。
 
 新建时依次选择出发站、到达站及可选站台，直接填写分钟和秒（总计10秒～60分钟），名称和说明可选填。保存个人连接与提交共享建议是两个不同操作。默认同时保存反向个人连接；两条方向可分别修改，共享时逐方向提交审核。未知或失效端点不参加查询。
 
@@ -188,15 +182,15 @@ Linux／macOS 对应使用 `./dev.sh neoforge build testFabricCore` 和 `./dev.s
 
 产物分别位于 `build/libs` 和 `fabric/build/libs`。Gradle、依赖与工具缓存位于 `.cache`，临时文件位于 `.tmp`，开发游戏实例位于 `run`／`run-server`；这些生成目录不提交到仓库。分发后的配置使用玩家自己的游戏实例目录。
 
-使用[多版本构建入口](docs/multiversion.md)：共用功能代码，为 Minecraft 1.21.1／1.21.4 分别生成 NeoForge 和 Fabric 包。使用 `./tools/build_all.ps1` 顺序构建并检查，统一产物及 SHA256 清单位于 `build/multiversion`。0.1.1 发布附件包含这四个目标，游戏内验收情况见[验证记录](docs/validation/verification.md)。
+使用[多版本构建入口](docs/multiversion.md)：共用功能代码，为 Minecraft 1.21.1／1.21.4 分别生成 NeoForge 和 Fabric 包。使用 `./tools/build_all.ps1` 顺序构建并检查，统一产物及 SHA256 清单位于 `build/multiversion`。0.1.2 发布附件包含这四个目标，游戏内验收情况见[验证记录](docs/validation/verification.md)。
 
 ## English
 
-**MTR: Between Stations** is an independent navigation add-on for Minecraft Transit Railway. It provides a searchable station directory, transfer planning, grouped station arrivals and departures, journey guidance, and reminders for individual trains.
+**MTR: Between Stations** is an independent navigation add-on for Minecraft Transit Railway. It provides a unified modern transit workbench with a searchable station picker, transfer planning, interactive 2D cartographic transit map, PIDS station departures board, journey guidance, and reminders for individual trains.
 
 Requires **Minecraft 1.21.1 or 1.21.4, Java 21 and MTR 4.1.0-beta.2**. Separate NeoForge and Fabric builds are available; Fabric also requires Fabric API. Install one matching JAR on the client. Installing Navigation on the server is optional, but client-only operation requires the server's native MTR map service to work.
 
-The [in-game screenshots](#实际界面) show version 0.1.1 using the fictional Mosslight Isles demonstration save. Station and line names, journeys and timetables are test data. Normal gameplay reads the connected MTR network; HUD editor countdowns are preview examples.
+The [in-game screenshots](#实际界面) show version 0.1.2 using the fictional Mosslight Isles test fixture. Station and line names, journeys and timetables are test data. Normal gameplay reads the connected MTR network and live loaded Minecraft chunks; HUD editor countdowns are preview examples.
 
 Press **N** or use **`/mtrnav`**. Use **All stations** to choose an origin, destination or arrivals station. Cycle A–Z, Z–A or nearest sorting, and jump by letter using the index. English names are preferred for grouping; supported Chinese names use their pinyin initial, with unsupported initials in Other. The selected row has a light border and a leading indicator. Clicking or tabbing into a station field selects its existing name so typing replaces it; switching to arrivals also selects the current station name. Compare connections, start a journey, and confirm boarding or alighting when automatic progress is unavailable. Close the screen to keep the journey HUD active.
 
@@ -210,7 +204,7 @@ New queries return up to **five distinct route patterns**, with a default extra-
 
 With an updated Navigation server, players may submit proposals for moderators (operator level 2+) to approve. Pending proposals are visible only to their author and authorized moderators. Personal rules require explicit consent before being sent for a private server-side query; they are not published or included in shared audit data. Servers with only the old v1 protocol retain the original rail-only queries. See the [walking guide](docs/walking-transfers.md) for limits and verification details.
 
-Current version: **0.1.1**. [Download](https://github.com/teamCreating/MTR-Navigation/releases/tag/v0.1.1) · [Changelog](CHANGELOG.md). Builds are available for Minecraft 1.21.1 / 1.21.4 on NeoForge and Fabric. Dedicated multiplayer validation remains limited. See the [verification notes](docs/validation/verification.md) and [Overlay integration guide](docs/overlay-integration.md) for precise scope.
+Current version: **0.1.2**. [Download](https://github.com/teamCreating/MTR-Navigation/releases/tag/v0.1.2) · [Changelog](CHANGELOG.md). Builds are available for Minecraft 1.21.1 / 1.21.4 on NeoForge and Fabric. Dedicated multiplayer validation remains limited. See the [verification notes](docs/validation/verification.md) and [Overlay integration guide](docs/overlay-integration.md) for precise scope.
 
 ## 许可与致谢
 
