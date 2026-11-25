@@ -1,6 +1,5 @@
 package io.github.teamcreating.mtrnav.client.ui.workspace;
 
-import io.github.teamcreating.mtrnav.api.NavigationApi;
 import io.github.teamcreating.mtrnav.client.UiBridge;
 import io.github.teamcreating.mtrnav.client.WalkingClient;
 import io.github.teamcreating.mtrnav.client.ui.framework.SlideDrawer;
@@ -319,7 +318,7 @@ public final class WorkspaceScreen extends Screen implements WorkspaceHost {
 
         // Top-right status chips: Overlay sync + Fixture indicator
         int chipRight = closeBtn.bounds().x() - 6;
-        if (UiBridge.overlayAvailable() && NavigationApi.current().isPresent()) {
+        if (UiBridge.overlayHighlightActive()) {
             String sync = tr("mtrnav.ui.overlay_synced");
             int sw = UiDraw.font().width(sync) + 12;
             if (chipRight - sw > topBarRect.x() + 90) {

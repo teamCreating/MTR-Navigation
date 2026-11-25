@@ -75,6 +75,7 @@ public final class LcdNavigationHud {
         boolean complete = !example && (tracking.phase() == JourneyTracker.Phase.COMPLETE || tracking.journey().legs().isEmpty());
         boolean riding = !example && tracking.phase() == JourneyTracker.Phase.RIDING;
         boolean walking = !example && tracking.walk() != null;
+        boolean untimed = !example && ConnectionPlan.isGuidedJourney(tracking.journey());
         var leg = example || complete ? null
                 : tracking.journey().legs().get(Math.min(tracking.legIndex(), tracking.journey().legs().size() - 1));
 
@@ -107,18 +108,19 @@ public final class LcdNavigationHud {
             String rightTime = example ? "01:42"
                     : complete ? ""
                     : walking ? tr("mtrnav.walk_seconds", tracking.walk().seconds())
+                    : untimed ? tr("mtrnav.ui.ref_nav_tag")
                     : leg == null ? "" : NavFormat.remaining(riding ? leg.arrival() : leg.departure());
             int rtW = rightTime.isEmpty() ? 0 : UiDraw.font().width(rightTime) + 4;
             UiDraw.text(g, phaseTxt, bx, 6, Math.max(0, w - bx - rtW - 8), UiTokens.TEXT_SECONDARY);
             if (!rightTime.isEmpty()) {
-                UiDraw.bold(g, rightTime, w - rtW - 6, 6, rtW, UiTokens.STATUS_LIVE);
+                UiDraw.bold(g, rightTime, w - rtW - 6, 6, rtW, untimed ? UiTokens.STATUS_WARN : UiTokens.STATUS_LIVE);
             }
 
             // Dynamic horizontal LCD rail strip
             int railY = 29;
             int rx0 = 14, rx1 = w - 14;
             UiDraw.line(g, rx0, railY, rx1, railY, 2.2f, UiTokens.BORDER_SUBTLE);
-            boolean hasProgress = example || (leg != null && riding && !CLOCK.stale(System.nanoTime()) && leg.arrival() > leg.departure());
+            boolean hasProgress = example || (!untimed && leg != null && riding && !CLOCK.stale(System.nanoTime()) && leg.arrival() > leg.departure());
             if (hasProgress) {
                 double progress = example ? 0.62
                         : Math.clamp((double) (CLOCK.now(System.nanoTime()) - leg.departure()) / (leg.arrival() - leg.departure()), 0.0, 1.0);
@@ -126,6 +128,8 @@ public final class LcdNavigationHud {
                 UiDraw.line(g, rx0, railY, curX, railY, 2.6f, tint);
                 UiDraw.circle(g, curX, railY, 4.2f, UiTokens.withAlpha(tint, 95));
                 UiDraw.circle(g, curX, railY, 2.8f, 0xFFFFFFFF);
+            } else if (untimed && riding && leg != null) {
+                UiDraw.line(g, rx0, railY, rx1, railY, 2.6f, tint);
             } else if (walking) {
                 UiDraw.dashedLine(g, rx0, railY, rx1, railY, 2.2f, 4f, 3f, UiTokens.STATUS_WARN);
             }
@@ -160,8 +164,8 @@ public final class LcdNavigationHud {
             // Guidance footer line
             String hint = example ? tr("mtrnav.hud_preview_hint")
                     : NavFormat.guidance().isEmpty() ? tr("mtrnav.hud_short_key", openKey.get()) : NavFormat.guidance();
-            if (!example && CLOCK.stale(System.nanoTime())) hint = tr("mtrnav.stale");
-            UiDraw.text(g, hint, 10, 76, w - 18, UiTokens.STATUS_LIVE);
+            if (!example && !untimed && CLOCK.stale(System.nanoTime())) hint = tr("mtrnav.stale");
+            UiDraw.text(g, hint, 10, 76, w - 18, untimed ? UiTokens.STATUS_WARN : UiTokens.STATUS_LIVE);
         } finally {
             g.pose().popPose();
         }

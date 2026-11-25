@@ -478,5 +478,12 @@
   "mtrnav.ui.ref_option": "Ref %s",
   "mtrnav.ui.ref_stops": "%s stops",
   "mtrnav.ui.ref_shortest": "Shortest",
-  "mtrnav.ui.ref_summary": "Reference %s / %s · Times unconfirmed; navigation unavailable"
+  "mtrnav.ui.ref_summary": "Reference %s / %s · Times unconfirmed; navigation unavailable",
+  "mtrnav.ui.overlay_preview": "Map preview",
+  "mtrnav.ui.overlay_preview_hint": "Preview the selected route on Xaero / JourneyMap",
+  "mtrnav.ui.overlay_preview_need_server": "Requires MTR Map Overlay 1.6.0 on the server for map highlight sync",
+  "mtrnav.ui.start_guided": "Guide route",
+  "mtrnav.ui.ref_nav_tag": "Route guide",
+  "mtrnav.ui.ref_summary_guided": "Reference %s / %s · Untimed manual guidance available",
+  "mtrnav.ui.ref_nav_hint": "Route guide · Press %s to confirm boarding/alighting"
 }

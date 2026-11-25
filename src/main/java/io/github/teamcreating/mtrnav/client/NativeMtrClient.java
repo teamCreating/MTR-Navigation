@@ -32,6 +32,7 @@ public final class NativeMtrClient {
     private static String dimension = "";
     private static volatile long epoch;
     private static long queryGeneration, requestSequence, lastCatalog, lastDepartures, lastBoard, lastReminder, lastSample;
+    private static long lastOverlayRevision = Long.MIN_VALUE;
     private static int dimensionIndex;
     private static boolean dimensionResolved, waitingQuery;
     private static NativeTimetable.Network network;
@@ -59,6 +60,7 @@ public final class NativeMtrClient {
         search.getQueue().clear(); decoding.getQueue().clear();
         network = null; timetable = null; tracker = null; dimension = ""; dimensionResolved = false;
         dimensionIndex = 0; lastCatalog = lastDepartures = lastBoard = lastReminder = lastSample = 0;
+        lastOverlayRevision = Long.MIN_VALUE;
     }
     public static void tick(String currentDimension) {
         if (!dimension.equals(currentDimension)) { reset(); dimension = currentDimension; }
@@ -72,6 +74,12 @@ public final class NativeMtrClient {
         Catalog overlay = OverlayBridge.catalog(dimension);
         if (network == null && overlay != null && !overlay.stations().isEmpty()) {
             NavigationClient.catalog = overlay; NavigationClient.status = "mtrnav.loading_times";
+        }
+        if (overlay != null && !overlay.routes().isEmpty() && overlay.revision() != lastOverlayRevision) {
+            lastOverlayRevision = overlay.revision();
+            if (network != null && network.catalog().platforms().stream().anyMatch(p -> p.id().startsWith("map:"))) {
+                lastCatalog = 0;
+            }
         }
         if (lastCatalog == 0 || now - lastCatalog > 120_000_000_000L) catalog(overlay);
         if (network == null) return;
@@ -90,7 +98,7 @@ public final class NativeMtrClient {
         }
     }
     private static void catalog(Catalog overlay) {
-        var platforms = nativePlatforms(); String requestedDimension = dimension;
+        var platforms = nativePlatforms(overlay); String requestedDimension = dimension;
         if (request("stations-and-routes", null, json -> NativeTimetable.network(requestedDimension, json, overlay, platforms), parsed -> {
             if (!dimensionResolved) {
                 dimensionIndex = parsed.dimensions().indexOf(dimension);
@@ -106,10 +114,26 @@ public final class NativeMtrClient {
             lastDepartures = 0;
         })) lastCatalog = System.nanoTime();
     }
-    private static Map<String, List<NativeTimetable.PlatformIdentity>> nativePlatforms() {
+    private static Map<String, List<NativeTimetable.PlatformIdentity>> nativePlatforms(Catalog overlay) {
         var result = new HashMap<String, List<NativeTimetable.PlatformIdentity>>();
+        // Prefer full-network native platform IDs from Overlay 1.6.0 official Catalog when available,
+        // so distant routes outside client chunk distance still have exact native platform IDs for map highlighting.
+        if (overlay != null && !overlay.routes().isEmpty() && !overlay.platforms().isEmpty()) {
+            var platformStations = new HashMap<String, String>(overlay.platforms().size() * 2);
+            for (var p : overlay.platforms()) platformStations.put(p.id(), p.stationId());
+            for (var route : overlay.routes()) {
+                var list = new ArrayList<NativeTimetable.PlatformIdentity>(route.platforms().size());
+                boolean valid = !route.platforms().isEmpty();
+                for (String pid : route.platforms()) {
+                    String sid = platformStations.get(pid);
+                    if (sid == null || sid.isEmpty()) { valid = false; break; }
+                    list.add(new NativeTimetable.PlatformIdentity(pid, sid));
+                }
+                if (valid) result.put(route.id(), List.copyOf(list));
+            }
+        }
         for (var data : new MinecraftClientData[]{MinecraftClientData.getInstance(), MinecraftClientData.getDashboardInstance()}) if (data != null) {
-            for (var route : data.simplifiedRoutes) result.put(Long.toHexString(route.getId()), route.getPlatforms().stream()
+            for (var route : data.simplifiedRoutes) result.putIfAbsent(Long.toHexString(route.getId()), route.getPlatforms().stream()
                     .map(p -> new NativeTimetable.PlatformIdentity(Long.toHexString(p.getPlatformId()), Long.toHexString(p.getStationId()))).toList());
         }
         return result;

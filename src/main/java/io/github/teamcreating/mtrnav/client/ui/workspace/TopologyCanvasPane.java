@@ -1,5 +1,6 @@
 package io.github.teamcreating.mtrnav.client.ui.workspace;
 
+import io.github.teamcreating.mtrnav.client.UiBridge;
 import io.github.teamcreating.mtrnav.client.ui.framework.UiButton;
 import io.github.teamcreating.mtrnav.client.ui.framework.UiContext;
 import io.github.teamcreating.mtrnav.client.ui.theme.NavFormat;
@@ -185,11 +186,15 @@ public final class TopologyCanvasPane {
             if (effectiveOrigin != null) activeStations.add(effectiveOrigin);
             if (effectiveDest != null) activeStations.add(effectiveDest);
 
+            List<List<double[]>> overlayCurves = NewUiFixtures.enabled()
+                    ? List.of()
+                    : UiBridge.overlayJourneyCurves(catalog.dimension(), highlightedJourney);
             List<Model.RideLeg> legs = highlightedJourney.legs();
             for (int i = 0; i < legs.size(); i++) {
                 var leg = legs.get(i);
+                List<double[]> worldCurve = i < overlayCurves.size() ? overlayCurves.get(i) : List.of();
                 totalRouteBlocks += collectActiveLeg(leg.routeId(), leg.fromStationId(), leg.viaStations(), leg.toStationId(),
-                        nodeById, routeById, activeLegs, activeStations, activeStationColor, activeRouteEdgeKeys);
+                        worldCurve, nodeById, routeById, activeLegs, activeStations, activeStationColor, activeRouteEdgeKeys);
                 if (i + 1 < legs.size() && leg.toStationId().equals(legs.get(i + 1).fromStationId())) {
                     transferStations.add(leg.toStationId());
                 }
@@ -198,11 +203,15 @@ public final class TopologyCanvasPane {
             if (effectiveOrigin != null) activeStations.add(effectiveOrigin);
             if (effectiveDest != null) activeStations.add(effectiveDest);
 
+            List<List<double[]>> overlayCurves = NewUiFixtures.enabled()
+                    ? List.of()
+                    : UiBridge.overlayReferenceCurves(catalog.dimension(), highlightedReference);
             List<ConnectionPlan.Leg> legs = highlightedReference.legs();
             for (int i = 0; i < legs.size(); i++) {
                 var leg = legs.get(i);
+                List<double[]> worldCurve = i < overlayCurves.size() ? overlayCurves.get(i) : List.of();
                 totalRouteBlocks += collectActiveLeg(leg.routeId(), leg.fromStationId(), leg.viaStations(), leg.toStationId(),
-                        nodeById, routeById, activeLegs, activeStations, activeStationColor, activeRouteEdgeKeys);
+                        worldCurve, nodeById, routeById, activeLegs, activeStations, activeStationColor, activeRouteEdgeKeys);
                 if (i + 1 < legs.size() && leg.toStationId().equals(legs.get(i + 1).fromStationId())) {
                     transferStations.add(leg.toStationId());
                 }
@@ -745,6 +754,7 @@ public final class TopologyCanvasPane {
     }
 
     private double collectActiveLeg(String routeId, String fromStationId, List<String> viaStations, String toStationId,
+                                    List<double[]> overlayWorldCurve,
                                     Map<String, TopologyProjection.Node> nodeById, Map<String, Model.Route> routeById,
                                     List<ActiveLegPath> activeLegs, Set<String> activeStations,
                                     Map<String, Integer> activeStationColor, Set<String> activeRouteEdgeKeys) {
@@ -758,9 +768,15 @@ public final class TopologyCanvasPane {
         appendNode(chain, nodeById.get(toStationId));
         if (chain.isEmpty()) return 0.0;
 
-        List<float[]> raw = new ArrayList<>(chain.size());
-        for (var cn : chain) raw.add(new float[]{cn.screenX(), cn.screenY()});
-        activeLegs.add(new ActiveLegPath(routeId, routeName, color, chain, smoothPolyline(raw, false)));
+        List<float[]> screenCurve;
+        if (overlayWorldCurve != null && overlayWorldCurve.size() >= 2) {
+            screenCurve = projectWorldCurve(overlayWorldCurve);
+        } else {
+            List<float[]> raw = new ArrayList<>(chain.size());
+            for (var cn : chain) raw.add(new float[]{cn.screenX(), cn.screenY()});
+            screenCurve = smoothPolyline(raw, false);
+        }
+        activeLegs.add(new ActiveLegPath(routeId, routeName, color, chain, screenCurve));
 
         double blocks = 0.0;
         for (int k = 0; k < chain.size(); k++) {
@@ -778,6 +794,23 @@ public final class TopologyCanvasPane {
             }
         }
         return blocks;
+    }
+
+    private List<float[]> projectWorldCurve(List<double[]> worldPts) {
+        List<float[]> out = new ArrayList<>(Math.min(worldPts.size(), 128));
+        float lastX = Float.NaN, lastY = Float.NaN;
+        int lastIdx = worldPts.size() - 1;
+        for (int i = 0; i <= lastIdx; i++) {
+            double[] wp = worldPts.get(i);
+            float sx = projection.worldToScreenX(wp[0]);
+            float sy = projection.worldToScreenY(wp[1]);
+            if (i == 0 || i == lastIdx || Math.hypot(sx - lastX, sy - lastY) >= 2.0f) {
+                out.add(new float[]{sx, sy});
+                lastX = sx;
+                lastY = sy;
+            }
+        }
+        return out;
     }
 
     private void renderTopLeftNavCard(GuiGraphics g, UiRect card, List<ActiveLegPath> activeLegs,

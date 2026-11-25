@@ -46,6 +46,7 @@ public final class JourneyPlanView implements UiView {
     private final UiButton vehicleBtn;
     private final UiButton modeTimelineBtn;
     private final UiButton modeTopologyBtn;
+    private final UiButton overlayPreviewBtn;
     private final UiButton compactListBtn;
     private final UiButton compactDetailBtn;
     private final UiButton startBtn;
@@ -131,6 +132,8 @@ public final class JourneyPlanView implements UiView {
             rememberedRightMode = rightMode;
             rememberedUserToggled = true;
         }).icon(UiIcons.MAP);
+        this.overlayPreviewBtn = new UiButton(tr("mtrnav.ui.overlay_preview"), UiButton.Style.CHIP, UiBridge::toggleOverlayPreview)
+                .icon(UiIcons.LOCATE).tooltip(tr("mtrnav.ui.overlay_preview_hint"));
 
         this.compactListBtn = new UiButton(tr("mtrnav.ui.list"), UiButton.Style.CHIP, () -> compactShowRight = false);
         this.compactDetailBtn = new UiButton(tr("mtrnav.ui.details"), UiButton.Style.CHIP, () -> compactShowRight = true);
@@ -221,15 +224,23 @@ public final class JourneyPlanView implements UiView {
     }
 
     private void startSelectedJourney() {
-        if (journeys.isEmpty()) return;
-        var chosen = journeys.get(Math.clamp(selectedJourney, 0, journeys.size() - 1));
-        if (NewUiFixtures.enabled()) {
-            tracking = new JourneyTracker.State(chosen, 0, JourneyTracker.Phase.WAITING, "", false);
-            host.switchTab(WorkspaceHost.Tab.ACTIVE);
+        if (!journeys.isEmpty()) {
+            var chosen = journeys.get(Math.clamp(selectedJourney, 0, journeys.size() - 1));
+            if (NewUiFixtures.enabled()) {
+                tracking = new JourneyTracker.State(chosen, 0, JourneyTracker.Phase.WAITING, "", false);
+                host.switchTab(WorkspaceHost.Tab.ACTIVE);
+                return;
+            }
+            pendingSelection = chosen.id();
+            select(chosen);
             return;
         }
-        pendingSelection = chosen.id();
-        select(chosen);
+        List<ConnectionPlan> refs = activeReferencePlans();
+        if (!refs.isEmpty()) {
+            var chosenRef = refs.get(Math.clamp(selectedJourney, 0, refs.size() - 1));
+            selectReference(chosenRef);
+            host.switchTab(WorkspaceHost.Tab.ACTIVE);
+        }
     }
 
     private void openStationPicker(boolean forOrigin) {
@@ -245,6 +256,10 @@ public final class JourneyPlanView implements UiView {
     }
 
     private void locateOrigin() {
+        locateOrigin(false);
+    }
+
+    private void locateOrigin(boolean autoSearchAfterSelect) {
         UiBridge.originLocation().attempted();
         var position = UiBridge.playerPosition();
         if (position == null) { locationMessage = tr("mtrnav.location_no_player"); return; }
@@ -258,6 +273,9 @@ public final class JourneyPlanView implements UiView {
             setStation(st.id(), true);
             UiBridge.originLocation().selected(st.id(), position);
             locationMessage = "";
+            if (autoSearchAfterSelect && !destination.isEmpty() && !origin.equals(destination)) {
+                triggerSearch();
+            }
         } else {
             host.openDrawer(new StationPickerDrawer(
                     tr("mtrnav.nearby_stations"),
@@ -268,22 +286,50 @@ public final class JourneyPlanView implements UiView {
                         setStation(station.id(), true);
                         UiBridge.originLocation().selected(station.id(), position);
                         host.closeDrawer();
+                        if (autoSearchAfterSelect && !destination.isEmpty() && !origin.equals(destination)) {
+                            triggerSearch();
+                        }
                     }));
+        }
+    }
+
+    /**
+     * Applies a station deep-link dispatched by MTR Map Overlay ("Navigate" button on Xaero/JourneyMap)
+     * as soon as the dimension catalog is loaded and contains the target station.
+     */
+    public void applyExternalDestinationIfReady() {
+        if (pendingExternalDestination == null || pendingExternalDestination.isEmpty()) return;
+        if (catalog == null || catalog.stations().isEmpty()) return;
+        if (!pendingExternalDimension.isEmpty() && !catalog.dimension().equals(pendingExternalDimension)) return;
+        if (catalog.station(pendingExternalDestination) == null) return;
+
+        String targetId = pendingExternalDestination;
+        pendingExternalDestination = "";
+        pendingExternalDimension = "";
+
+        setStation(targetId, false);
+        if (origin.isEmpty() || origin.equals(destination)) {
+            locateOrigin(true);
+        } else {
+            triggerSearch();
         }
     }
 
     @Override
     public void onActivate() {
         syncInputsFromState();
+        applyExternalDestinationIfReady();
         if (!userToggledRightMode) {
-            rightMode = (!journeys.isEmpty() || referencePlan != null) ? RightMode.TIMELINE : RightMode.TOPOLOGY;
+            rightMode = (!journeys.isEmpty() || !activeReferencePlans().isEmpty()) ? RightMode.TIMELINE : RightMode.TOPOLOGY;
         }
     }
 
     @Override
     public void tick() {
         syncInputsFromState();
+        applyExternalDestinationIfReady();
         if (tracking == null && !NewUiFixtures.enabled()
+                && pendingExternalDestination.isEmpty()
                 && UiBridge.originLocation().ready(!origin.isEmpty(), originInput.value().isBlank(),
                         UiBridge.playerPosition() != null, catalog != null && !catalog.stations().isEmpty())) {
             locateOrigin();
@@ -364,6 +410,8 @@ public final class JourneyPlanView implements UiView {
         int tabW = Math.min(98, (rw - 6) / 2);
         modeTimelineBtn.bounds(new UiRect(rx, ry, tabW, 19));
         modeTopologyBtn.bounds(new UiRect(rx + tabW + 4, ry, tabW, 19));
+        int prevW = Math.min(82, Math.max(56, rw - tabW * 2 - 12));
+        overlayPreviewBtn.bounds(new UiRect(rx + rw - prevW, ry, prevW, 19));
 
         this.footerRect = new UiRect(rx, rightCol.bottom() - 28, rw, 28);
         this.rightBody = new UiRect(rx, ry + 24, rw, Math.max(0, footerRect.y() - (ry + 24) - 6));
@@ -465,14 +513,39 @@ public final class JourneyPlanView implements UiView {
         UiDraw.scrollbar(g, cardScroll, cardsArea.right() - 7, 4);
     }
 
+    private void renderLegAccentBar(GuiGraphics g, UiRect r, List<Integer> colors, boolean selected, int fallbackColor) {
+        int barX = r.x() + 3;
+        int barY = r.y() + 5;
+        int barH = Math.max(6, r.height() - 10);
+        if (colors.isEmpty()) {
+            UiDraw.roundedRect(g, barX, barY, 3, barH, 1.5f, selected ? fallbackColor : UiTokens.withAlpha(fallbackColor, 175));
+            return;
+        }
+        if (colors.size() == 1) {
+            int col = colors.getFirst();
+            UiDraw.roundedRect(g, barX, barY, 3, barH, 1.5f, selected ? col : UiTokens.withAlpha(col, 195));
+            return;
+        }
+        int n = Math.min(colors.size(), 4);
+        int gap = 1;
+        int usableH = Math.max(n, barH - gap * (n - 1));
+        int curY = barY;
+        for (int i = 0; i < n; i++) {
+            int segH = (i == n - 1) ? Math.max(2, barY + barH - curY) : Math.max(2, usableH / n);
+            int col = colors.get(i);
+            UiDraw.roundedRect(g, barX, curY, 3, segH, 1.2f, selected ? col : UiTokens.withAlpha(col, 195));
+            curY += segH + gap;
+        }
+    }
+
     private void renderReferenceCard(GuiGraphics g, UiContext ctx, int index, ConnectionPlan plan, List<ConnectionPlan> allRefs, UiRect r) {
         boolean sel = index == selectedJourney;
         boolean hov = r.contains(ctx.mouseX, ctx.mouseY) && cardsArea.contains(ctx.mouseX, ctx.mouseY);
         int bg = sel ? UiTokens.SURFACE_SELECTED : hov ? UiTokens.SURFACE_HOVER : UiTokens.SURFACE;
         int border = sel ? UiTokens.STATUS_WARN : UiTokens.BORDER_SUBTLE;
         UiDraw.card(g, r, UiTokens.RADIUS_SM, bg, border);
-        UiDraw.roundedRect(g, r.x() + 3, r.y() + 5, 3, r.height() - 10, 1.5f,
-                sel ? UiTokens.STATUS_WARN : UiTokens.withAlpha(UiTokens.STATUS_WARN, 130));
+        var legColors = plan.legs().stream().map(l -> NavFormat.routeColor(l.routeId())).toList();
+        renderLegAccentBar(g, r, legColors, sel, UiTokens.STATUS_WARN);
 
         double distBlocks = plan.estimatedBlocks(catalog);
         String metric = distBlocks >= 1000.0
@@ -511,8 +584,8 @@ public final class JourneyPlanView implements UiView {
         int border = sel ? UiTokens.BORDER_SELECTED : UiTokens.BORDER_SUBTLE;
         UiDraw.card(g, r, UiTokens.RADIUS_SM, bg, border);
 
-        int tint = journey.legs().isEmpty() ? UiTokens.ACCENT_SKY : NavFormat.routeColor(journey.legs().getFirst().routeId());
-        UiDraw.roundedRect(g, r.x() + 3, r.y() + 5, 3, r.height() - 10, 1.5f, tint);
+        var legColors = journey.legs().stream().map(l -> NavFormat.routeColor(l.routeId())).toList();
+        renderLegAccentBar(g, r, legColors, sel, UiTokens.ACCENT_SKY);
 
         String dur = NavFormat.shortDuration(journey.arrival() - journey.queryTime());
         int durW = (int) (UiDraw.font().width(dur) * 1.25f) + 6;
@@ -581,6 +654,12 @@ public final class JourneyPlanView implements UiView {
         }
     }
 
+    private boolean showOverlayPreviewChip() {
+        return tracking == null && UiBridge.overlayApiAvailable() && UiBridge.overlayAvailable()
+                && rightCol.width() >= 256
+                && (!journeys.isEmpty() || !activeReferencePlans().isEmpty());
+    }
+
     private void renderRightColumn(GuiGraphics g, UiContext ctx) {
         modeTimelineBtn.selected(rightMode == RightMode.TIMELINE).render(g, ctx);
         modeTopologyBtn.selected(rightMode == RightMode.TOPOLOGY).render(g, ctx);
@@ -590,6 +669,16 @@ public final class JourneyPlanView implements UiView {
         selectedJourney = Math.clamp(selectedJourney, 0, Math.max(0, optionCount - 1));
         Journey current = journeys.isEmpty() ? null : journeys.get(selectedJourney);
         ConnectionPlan currentRef = journeys.isEmpty() && !refs.isEmpty() ? refs.get(selectedJourney) : null;
+
+        if (showOverlayPreviewChip()) {
+            boolean worldReady = catalog != null && UiBridge.overlayWorldReady(catalog.dimension());
+            overlayPreviewBtn.enabled(worldReady);
+            overlayPreviewBtn.tooltip(tr(worldReady ? "mtrnav.ui.overlay_preview_hint" : "mtrnav.ui.overlay_preview_need_server"));
+            overlayPreviewBtn.selected(worldReady && UiBridge.overlayPreviewEnabled()).render(g, ctx);
+            if (worldReady && UiBridge.overlayPreviewEnabled()) {
+                UiBridge.updateOverlayPreview(catalog.dimension(), current, currentRef);
+            }
+        }
 
         if (rightMode == RightMode.TOPOLOGY) {
             topology.render(g, ctx, current, currentRef);
@@ -610,11 +699,14 @@ public final class JourneyPlanView implements UiView {
         // Bottom footer
         String summary = !journeys.isEmpty()
                 ? tr("mtrnav.option_summary", selectedJourney + 1, journeys.size())
-                : refs.size() > 1
-                ? tr("mtrnav.ui.ref_summary", selectedJourney + 1, refs.size())
-                : tr(currentRef == null ? "mtrnav.search_help" : "mtrnav.reference_only");
+                : currentRef != null
+                ? tr("mtrnav.ui.ref_summary_guided", selectedJourney + 1, Math.max(1, refs.size()))
+                : tr("mtrnav.search_help");
         UiDraw.text(g, summary, footerRect.x() + 2, footerRect.y() + 11, Math.max(0, footerRect.width() - startBtn.bounds().width() - 10), UiTokens.TEXT_SECONDARY);
-        startBtn.enabled(!journeys.isEmpty() && !CLOCK.stale(ctx.nowNanos));
+        boolean canStartTimed = !journeys.isEmpty() && !CLOCK.stale(ctx.nowNanos);
+        boolean canStartGuided = journeys.isEmpty() && currentRef != null;
+        startBtn.label(tr(canStartGuided ? "mtrnav.ui.start_guided" : "mtrnav.start"));
+        startBtn.enabled(canStartTimed || canStartGuided);
         startBtn.render(g, ctx);
     }
 
@@ -645,6 +737,7 @@ public final class JourneyPlanView implements UiView {
         }
         if (wide || compactShowRight) {
             if (modeTimelineBtn.mouseClicked(x, y, button) || modeTopologyBtn.mouseClicked(x, y, button)
+                    || (showOverlayPreviewChip() && overlayPreviewBtn.mouseClicked(x, y, button))
                     || startBtn.mouseClicked(x, y, button)) return true;
             if (rightMode == RightMode.TOPOLOGY && topology.mouseClicked(x, y, button)) return true;
             if (rightMode == RightMode.TIMELINE && timeline.mouseClicked(x, y, button)) return true;
@@ -672,6 +765,7 @@ public final class JourneyPlanView implements UiView {
                 | vehicleBtn.mouseReleased(x, y, button)
                 | modeTimelineBtn.mouseReleased(x, y, button)
                 | modeTopologyBtn.mouseReleased(x, y, button)
+                | overlayPreviewBtn.mouseReleased(x, y, button)
                 | startBtn.mouseReleased(x, y, button)
                 | cardScroll.endDrag()
                 | topology.mouseReleased(x, y, button)

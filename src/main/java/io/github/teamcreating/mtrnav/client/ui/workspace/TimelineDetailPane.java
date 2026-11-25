@@ -54,19 +54,27 @@ public final class TimelineDetailPane {
         int x = inner.x();
 
         // Summary header block
-        UiDraw.scaledText(g, NavFormat.duration(journey.arrival() - journey.queryTime()), x, y, Math.max(40, contentW - 110), UiTokens.TEXT_PRIMARY, 1.35f);
-        String meta = tr("mtrnav.transfers", journey.transfers()) + " · " + NavFormat.clockTime(journey.arrival()) + " " + tr("mtrnav.arrival");
-        UiDraw.text(g, meta, x, y + 16, contentW, UiTokens.TEXT_SECONDARY);
-        if (UiBridge.overlayAvailable()) {
+        boolean untimed = ConnectionPlan.isGuidedJourney(journey);
+        if (untimed) {
+            int stops = journey.legs().stream().mapToInt(l -> l.viaStations().size() + 1).sum();
+            UiDraw.scaledText(g, tr("mtrnav.ui.ref_nav_tag"), x, y, Math.max(40, contentW - 110), UiTokens.STATUS_WARN, 1.35f);
+            String meta = tr("mtrnav.transfers", journey.transfers()) + " · " + tr("mtrnav.ui.ref_stops", stops);
+            UiDraw.text(g, meta, x, y + 16, contentW, UiTokens.TEXT_SECONDARY);
+        } else {
+            UiDraw.scaledText(g, NavFormat.duration(journey.arrival() - journey.queryTime()), x, y, Math.max(40, contentW - 110), UiTokens.TEXT_PRIMARY, 1.35f);
+            String meta = tr("mtrnav.transfers", journey.transfers()) + " · " + NavFormat.clockTime(journey.arrival()) + " " + tr("mtrnav.arrival");
+            UiDraw.text(g, meta, x, y + 16, contentW, UiTokens.TEXT_SECONDARY);
+        }
+        if (UiBridge.overlayWorldReady(journey.dimension())) {
             String sync = tr("mtrnav.ui.overlay_sync_hint");
             int sw = Math.min(contentW, UiDraw.font().width(sync) + 10);
             UiDraw.pill(g, sync, x + contentW - sw, y + 1, sw, UiTokens.withAlpha(UiTokens.PRIMARY, 42), UiTokens.STATUS_LIVE);
         }
         y += 30;
-        if (partialResults) {
+        if (partialResults && !untimed) {
             y = UiDraw.wrapped(g, tr("mtrnav.partial_results"), x, y, contentW, 11, UiTokens.STATUS_WARN) + 3;
         }
-        if (fastestArrival > 0 && journey.arrival() > fastestArrival) {
+        if (!untimed && fastestArrival > 0 && journey.arrival() > fastestArrival) {
             UiDraw.text(g, tr("mtrnav.walk_slower", (journey.arrival() - fastestArrival + 59_999L) / 60_000L), x, y, contentW, UiTokens.TEXT_MUTED);
             y += 12;
         }
@@ -86,7 +94,7 @@ public final class TimelineDetailPane {
             if (i == journey.legs().size()) break;
             var leg = journey.legs().get(i);
             boolean activeLeg = i == highlightLegIndex;
-            if (i > 0 || journey.walks().stream().anyMatch(w -> w.beforeRideIndex() == 0)) {
+            if (!untimed && (i > 0 || journey.walks().stream().anyMatch(w -> w.beforeRideIndex() == 0))) {
                 final int before = i;
                 long walked = journey.walks().stream().filter(w -> w.beforeRideIndex() == before).mapToLong(w -> w.seconds() * 1000L).sum();
                 long gap = leg.departure() - (i == 0 ? journey.queryTime() : journey.legs().get(i - 1).arrival()) - walked;
@@ -160,9 +168,12 @@ public final class TimelineDetailPane {
                 x + bw + 26, y + 7, w - bw - 32, UiTokens.TEXT_PRIMARY);
         y += 25;
 
-        // Consist bar + optional car details toggle
-        ConsistBar.render(g, leg.consist(), tint, x + 18, y, w - 22);
-        y += 12;
+        // Consist bar + optional car details toggle (skip for untimed reference guide)
+        boolean untimed = leg.departure() <= 0 && leg.arrival() <= 0;
+        if (!untimed) {
+            ConsistBar.render(g, leg.consist(), tint, x + 18, y, w - 22);
+            y += 12;
+        }
         if (!leg.consist().cars().isEmpty()) {
             String stockKey = journeyId + "/stock/" + index;
             boolean open = expandedKeys.contains(stockKey);
@@ -182,13 +193,15 @@ public final class TimelineDetailPane {
         // Compute vertical rail span
         int railStartY = y + 9;
         // Origin station row
-        renderStationRow(g, ctx, leg.fromStationId(), leg.fromPlatformId(), NavFormat.clockTime(leg.departure()), tint, true, x, y, w);
-        y += 18;
-        // Departure countdown & live/plan status
-        String depLine = tr("mtrnav.departure") + " " + NavFormat.remaining(leg.departure())
-                + " · " + tr(leg.realtime() ? "mtrnav.realtime" : "mtrnav.scheduled");
-        UiDraw.text(g, depLine, x + 20, y, w - 26, leg.realtime() ? UiTokens.STATUS_LIVE : UiTokens.TEXT_SECONDARY);
-        y += 14;
+        renderStationRow(g, ctx, leg.fromStationId(), leg.fromPlatformId(), untimed ? "" : NavFormat.clockTime(leg.departure()), tint, true, x, y, w);
+        y += untimed ? 22 : 18;
+        if (!untimed) {
+            // Departure countdown & live/plan status
+            String depLine = tr("mtrnav.departure") + " " + NavFormat.remaining(leg.departure())
+                    + " · " + tr(leg.realtime() ? "mtrnav.realtime" : "mtrnav.scheduled");
+            UiDraw.text(g, depLine, x + 20, y, w - 26, leg.realtime() ? UiTokens.STATUS_LIVE : UiTokens.TEXT_SECONDARY);
+            y += 14;
+        }
 
         // Expandable intermediate stops
         String viaKey = journeyId + "/via/" + index;
@@ -204,10 +217,12 @@ public final class TimelineDetailPane {
         UiDraw.ring(g, x + 9, railStartY, 2.2f, 4.0f, tint);
         UiDraw.circle(g, x + 9, railEndY, 4.0f, tint);
 
-        renderStationRow(g, ctx, leg.toStationId(), leg.toPlatformId(), NavFormat.clockTime(leg.arrival()), tint, false, x, y, w);
-        y += 18;
-        UiDraw.text(g, tr("mtrnav.arrival") + " " + NavFormat.remaining(leg.arrival()), x + 20, y, w - 26, UiTokens.TEXT_MUTED);
-        y += 16;
+        renderStationRow(g, ctx, leg.toStationId(), leg.toPlatformId(), untimed ? "" : NavFormat.clockTime(leg.arrival()), tint, false, x, y, w);
+        y += untimed ? 24 : 18;
+        if (!untimed) {
+            UiDraw.text(g, tr("mtrnav.arrival") + " " + NavFormat.remaining(leg.arrival()), x + 20, y, w - 26, UiTokens.TEXT_MUTED);
+            y += 16;
+        }
         return y;
     }
 
@@ -288,8 +303,9 @@ public final class TimelineDetailPane {
             for (var walk : journey.walks()) if (walk.beforeRideIndex() == i) h += 42;
             if (i == journey.legs().size()) break;
             var leg = journey.legs().get(i);
-            if (i > 0 || journey.walks().stream().anyMatch(wk -> wk.beforeRideIndex() == 0)) h += 13;
-            h += 25 + 12 + 18 + 14 + 18 + 16;
+            boolean untimed = leg.departure() <= 0 && leg.arrival() <= 0;
+            if (!untimed && (i > 0 || journey.walks().stream().anyMatch(wk -> wk.beforeRideIndex() == 0))) h += 13;
+            h += untimed ? (25 + 22 + 24) : (25 + 12 + 18 + 14 + 18 + 16);
             if (!leg.consist().cars().isEmpty()) {
                 h += 17;
                 if (expandedKeys.contains(journey.id() + "/stock/" + i)) {

@@ -478,5 +478,12 @@
   "mtrnav.ui.ref_option": "参考 %s",
   "mtrnav.ui.ref_stops": "共 %s 站",
   "mtrnav.ui.ref_shortest": "路径最短",
-  "mtrnav.ui.ref_summary": "参考方案 %s / %s · 班次未确认，暂不能开始导航"
+  "mtrnav.ui.ref_summary": "参考方案 %s / %s · 班次未确认，暂不能开始导航",
+  "mtrnav.ui.overlay_preview": "地图预览",
+  "mtrnav.ui.overlay_preview_hint": "在 Xaero / JourneyMap 大地图上高亮预览当前选中方案",
+  "mtrnav.ui.overlay_preview_need_server": "需要服务端安装 MTR Map Overlay 1.6.0 以启用大地图联动",
+  "mtrnav.ui.start_guided": "路径导航",
+  "mtrnav.ui.ref_nav_tag": "路径引导",
+  "mtrnav.ui.ref_summary_guided": "参考方案 %s / %s · 无实时班次，可手动路径导航",
+  "mtrnav.ui.ref_nav_hint": "路径引导 · 按 %s 手动确认上下车"
 }

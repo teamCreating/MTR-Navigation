@@ -34,6 +34,7 @@ def verify(path, minecraft, loader, version):
         assert entrypoint in names
         assert 'LICENSE' in names and 'NOTICE' in names
         assert not any(n.startswith('org/mtr/') and n.endswith('.class') for n in names), 'MTR must stay external'
+        assert not any(n.startswith('io/github/teamcreating/mtrmap/') and n.endswith('.class') for n in names), 'Overlay API must stay compileOnly'
         for name in names:
             if name.startswith('io/github/teamcreating/mtrnav/') and name.endswith('.class'):
                 header = jar.read(name)[:8]

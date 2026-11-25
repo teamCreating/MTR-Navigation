@@ -28,7 +28,9 @@ if (!mtrJar.isFile()) throw new GradleException("Missing ${mtrJar.name}. Run: py
 sourceSets.main.java.srcDir("src/minecraft/${minecraftTarget}/java")
 dependencies {
     compileOnly files(mtrJar)
+    compileOnly files('libs/mtrmap-api-1.0.0.jar')
     testImplementation files(mtrJar)
+    testImplementation files('libs/mtrmap-api-1.0.0.jar')
     testImplementation platform('org.junit:junit-bom:5.10.2')
     testImplementation 'org.junit.jupiter:junit-jupiter'
     testImplementation 'com.google.code.gson:gson:2.10.1'

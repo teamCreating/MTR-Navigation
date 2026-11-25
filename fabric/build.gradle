@@ -22,6 +22,7 @@ dependencies {
     def mtrJar = file("../.cache/downloads/MTR-fabric-${target.mtr}+${minecraftTarget}.jar")
     if (!mtrJar.isFile()) throw new GradleException("Missing ${mtrJar.name}. Run: python tools/download_dependencies.py --minecraft ${minecraftTarget}")
     modCompileOnly files(mtrJar)
+    compileOnly files('../libs/mtrmap-api-1.0.0.jar')
     if (project.hasProperty('runtimeMtr')) modRuntimeOnly files(mtrJar)
 }
 sourceSets.main.java.srcDir('../src/main/java')

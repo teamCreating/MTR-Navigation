@@ -1,14 +1,21 @@
 # MTR Map Overlay 对接指南
 
-本文对应 MTR：站间物语（MTR Navigation）0.1.0-alpha.1 的 `JourneySelection` **v1**。目标环境为 Minecraft 1.21.1、MTR 4.1.0-beta.2，NeoForge 与 Fabric 共用此接口。
+本文对应 MTR：站间物语（MTR Navigation）的 **`JourneySelection` v1** 与 **MTR Map Overlay 1.6.0 (`MtrMapApi 1.0.0`)** 双向客户端集成。目标环境为 Minecraft 1.21.1／1.21.4、MTR 4.1.0-beta.2，NeoForge 与 Fabric 共用此接口。
 
-源码仓库：[teamCreating/MTR-Navigation](https://github.com/teamCreating/MTR-Navigation)。本文描述当前已实现的接口；地图区间高亮仍需要 Overlay 侧实现。
+源码仓库：[teamCreating/MTR-Navigation](https://github.com/teamCreating/MTR-Navigation)。Navigation 已内置可选零硬依赖的 `MtrMapApi 1.0.0` 双向客户端适配器，未安装 Overlay 时仍可 100% 独立运行。
 
 ## 两个模组各自负责什么
 
-Navigation 负责车站搜索、时刻查询、换乘方案和用户选择的行程。Overlay 负责地图数据、轨道几何及地图显示。Navigation 不引用 Overlay 内部类来发布行程，也不会更改其地图渲染。
+Navigation 负责车站搜索、时刻查询、换乘方案和用户选择的行程。Overlay 负责地图数据、轨道几何及 Xaero／JourneyMap 地图显示。
 
-当前还有一条独立的只读兼容路径：`client/OverlayBridge.java` 通过反射读取 Overlay 1.5.2 已同步的 `MapDataCache`，获取原生车站 ID、名称与坐标。它不会主动触发 Overlay 全量同步，也不会把地图快照当成班次数据。该桥接依赖的内部结构不属于双方长期公共协议；Overlay 升级时建议复核。
+双向联动路径（均通过 `client/OverlayBridge.java` 的零硬依赖安全门面隔离）：
+
+1. **官方 `MtrMapApi 1.0.0` 双向适配器（Overlay 1.6.0+，隔离于 `client/overlay/OverlayApiAdapter.java`）**：
+   - **大地图 → Navigation**：注册 `mtrnav:planner` 导航提供者（`registerNavigation`，支持 4 参数按站可用性判断并兼容 1.5.3 的 3 参数回退），玩家在 Xaero／JourneyMap 车站浮窗点击「导航」即可直接打开换乘查询、自动填入终点并定位附近起点。
+   - **Navigation → 大地图**：通过 `openView(Purpose.FOCUS)` + `resolve` + `ViewRequest.navigation(...)` 将活动行程（或查询页开启「地图预览」时的选中方案）实时高亮到 Xaero／JourneyMap，未乘车段全彩、已完成段 35% 半透留色、无关线路 15% 压暗，取消/断线/切维度自动清理。
+   - **官方 `Catalog` 与真曲线轨道**：优先读取 `MtrMapApi.Catalog` 车站/站台/线路目录，并按需通过 `tracks(...)` 为内置 2D 线网图的高亮路线渲染真实弯曲轨道几何。
+2. **只读兼容回退路径（Overlay 1.5.2）**：若运行环境仍为旧版 Overlay 1.5.2，则自动回退到反射读取 `MapDataCache.landmarks` 的只读车站坐标路径，不触发全量同步。
+3. **公共 `NavigationApi` (`JourneySelection` v1)**：保持 100% 向后兼容，供任何其他第三方地图模组订阅。
 
 车站快照、去重后的地图轨道和列车位置不足以恢复完整班次、重复停靠及到发时刻。Navigation 的时刻仍来自 MTR 原生接口或 Navigation 服务端。
 

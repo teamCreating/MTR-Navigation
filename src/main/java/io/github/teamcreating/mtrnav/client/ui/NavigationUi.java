@@ -57,6 +57,21 @@ public final class NavigationUi {
         if (stationId != null && !stationId.isEmpty()) screen.openPlanWithStation(stationId, asOrigin);
     }
 
+    /**
+     * Deep-link invoked by MTR Map Overlay when the user clicks "Navigate" on a station in Xaero/JourneyMap.
+     * Pre-fills destination, auto-locates nearby origin, and triggers search immediately when unambiguous.
+     */
+    public static void openPlanFromOverlay(String navDimension, String stationId) {
+        var mc = Minecraft.getInstance();
+        if (mc.player == null || stationId == null || stationId.isEmpty()) return;
+        UiBridge.notifyNativeOpened();
+        pendingExternalDimension = navDimension == null ? "" : navDimension;
+        pendingExternalDestination = stationId;
+        var screen = new WorkspaceScreen(WorkspaceHost.Tab.PLAN);
+        mc.setScreen(screen);
+        screen.planView().applyExternalDestinationIfReady();
+    }
+
     public static void confirmWalkingConsent(Runnable next) {
         var mc = Minecraft.getInstance();
         WorkspaceScreen ws;

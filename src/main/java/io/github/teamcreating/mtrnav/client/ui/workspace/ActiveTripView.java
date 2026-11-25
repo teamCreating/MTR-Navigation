@@ -8,6 +8,7 @@ import io.github.teamcreating.mtrnav.client.ui.theme.NavFormat;
 import io.github.teamcreating.mtrnav.client.ui.theme.UiDraw;
 import io.github.teamcreating.mtrnav.client.ui.theme.UiIcons;
 import io.github.teamcreating.mtrnav.client.ui.theme.UiTokens;
+import io.github.teamcreating.mtrnav.core.ConnectionPlan;
 import io.github.teamcreating.mtrnav.core.JourneyTracker;
 import io.github.teamcreating.mtrnav.core.ui.UiRect;
 import net.minecraft.client.gui.GuiGraphics;
@@ -115,7 +116,7 @@ public final class ActiveTripView implements UiView {
         int hx = heroRect.x() + 16;
         int hw = heroRect.width() - 26;
         int pw = UiDraw.pill(g, NavFormat.phaseLabel(phase), hx, heroRect.y() + 8, 96,
-                UiTokens.withAlpha(accent, 52), accent);
+                accent, UiTokens.contrastInk(accent));
         UiDraw.text(g, NavFormat.station(journey.originStationId()) + " → " + NavFormat.station(journey.destinationStationId()),
                 hx + pw + 8, heroRect.y() + 11, hw - pw - 8, UiTokens.TEXT_SECONDARY);
 
@@ -130,12 +131,15 @@ public final class ActiveTripView implements UiView {
             subline = tr("mtrnav.walk_estimated", walk.seconds())
                     + (walk.toPlatformId().isEmpty() ? "" : " · " + tr("mtrnav.platform", NavFormat.platform(walk.toPlatformId())));
         } else if (leg != null) {
+            boolean untimed = ConnectionPlan.isGuidedJourney(journey);
             headline = tr(riding ? "mtrnav.next_alight" : "mtrnav.next_board",
                     NavFormat.station(riding ? leg.toStationId() : leg.fromStationId()));
             subline = NavFormat.route(leg.routeId()) + " · "
                     + tr("mtrnav.platform", NavFormat.platform(riding ? leg.toPlatformId() : leg.fromPlatformId()))
-                    + " · " + tr(riding ? "mtrnav.arrival" : "mtrnav.departure") + " "
-                    + NavFormat.remaining(riding ? leg.arrival() : leg.departure());
+                    + (untimed
+                    ? ""
+                    : " · " + tr(riding ? "mtrnav.arrival" : "mtrnav.departure") + " "
+                    + NavFormat.remaining(riding ? leg.arrival() : leg.departure()));
         } else {
             headline = tr("mtrnav.complete");
             subline = "";

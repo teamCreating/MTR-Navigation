@@ -79,6 +79,41 @@ public record ConnectionPlan(String origin, String destination, List<Leg> legs, 
         return sb.toString();
     }
 
+    /**
+     * Converts this untimed reference path into a manually guided {@link Journey} without inventing any
+     * train departure/arrival timestamps ({@code queryTime = arrival = departure = 0}).
+     */
+    public Journey toGuidedJourney(Catalog catalog) {
+        String dim = catalog == null ? "" : catalog.dimension();
+        long rev = catalog == null ? 0L : catalog.revision();
+        var rideLegs = new ArrayList<RideLeg>(legs.size());
+        for (int i = 0; i < legs.size(); i++) {
+            var leg = legs.get(i);
+            rideLegs.add(new RideLeg(
+                    new RunKey("ref", 0, i, 0),
+                    "",
+                    leg.routeId(),
+                    leg.fromStationId(),
+                    leg.toStationId(),
+                    leg.fromPlatformId(),
+                    leg.toPlatformId(),
+                    leg.fromStopIndex(),
+                    leg.toStopIndex(),
+                    leg.direction(),
+                    0L,
+                    0L,
+                    false,
+                    leg.viaStations(),
+                    new Consist(List.of(), StockSource.UNKNOWN)));
+        }
+        return new Journey("ref:" + UUID.randomUUID(), dim, rev, origin, destination,
+                0L, 0L, transfers(), rideLegs, walks, 0L, 0);
+    }
+
+    public static boolean isGuidedJourney(Journey journey) {
+        return journey != null && journey.id() != null && journey.id().startsWith("ref:");
+    }
+
     public static Optional<ConnectionPlan> find(Catalog catalog, String origin, String destination) {
         return find(catalog, origin, destination, List.of(), List.of());
     }

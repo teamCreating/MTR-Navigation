@@ -2,6 +2,7 @@ package io.github.teamcreating.mtrnav.client.ui.theme;
 
 import io.github.teamcreating.mtrnav.client.NavigationClient;
 import io.github.teamcreating.mtrnav.client.WalkingClient;
+import io.github.teamcreating.mtrnav.core.ConnectionPlan;
 import io.github.teamcreating.mtrnav.core.JourneyTracker;
 import io.github.teamcreating.mtrnav.core.Model;
 import net.minecraft.client.Minecraft;
@@ -83,6 +84,7 @@ public final class NavFormat {
     }
 
     public static String remaining(long timestamp) {
+        if (timestamp <= 0) return "";
         return CLOCK.stale(System.nanoTime()) ? "—" : NavigationClient.countdown(timestamp);
     }
 
@@ -121,6 +123,9 @@ public final class NavFormat {
         }
         if (!tracking.notice().isEmpty() && !tracking.notice().equals("manual_check")) {
             return tr("mtrnav.notice." + tracking.notice());
+        }
+        if (ConnectionPlan.isGuidedJourney(tracking.journey())) {
+            return tr("mtrnav.ui.ref_nav_hint", openKey.get());
         }
         if (usingNative && !CLOCK.stale(System.nanoTime()) && tracking.legIndex() < tracking.journey().legs().size()) {
             var leg = tracking.journey().legs().get(tracking.legIndex());

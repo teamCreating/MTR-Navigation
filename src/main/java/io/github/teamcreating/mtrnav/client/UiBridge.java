@@ -52,6 +52,21 @@ public final class UiBridge {
     public static void toggleReminderExpanded() { NavigationPreferences.toggleReminderExpanded(); }
     public static void savePreferences() { NavigationPreferences.save(); }
 
-    // Overlay synergy detection
+    // Overlay synergy detection & live map sync
     public static boolean overlayAvailable() { return OverlayBridge.isAvailable(); }
+    public static boolean overlayApiAvailable() { return OverlayBridge.isApiAvailable(); }
+    public static boolean overlayWorldReady(String dimension) { return OverlayBridge.isWorldReady(dimension); }
+    public static boolean overlayHighlightActive() { return OverlayBridge.isHighlightActive(); }
+    public static boolean overlayPreviewEnabled() { return OverlayBridge.isPreviewEnabled(); }
+    public static void toggleOverlayPreview() { OverlayBridge.togglePreviewEnabled(); }
+    public static void updateOverlayPreview(String dimension, Model.Journey journey, ConnectionPlan reference) {
+        OverlayBridge.updatePreviewTarget(dimension, journey, reference);
+    }
+    public static void clearOverlayPreview() { OverlayBridge.clearPreviewTarget(); }
+    public static java.util.List<java.util.List<double[]>> overlayJourneyCurves(String dimension, Model.Journey journey) {
+        return OverlayBridge.resolveJourneyCurves(dimension, journey);
+    }
+    public static java.util.List<java.util.List<double[]>> overlayReferenceCurves(String dimension, ConnectionPlan plan) {
+        return OverlayBridge.resolveReferenceCurves(dimension, plan);
+    }
 }

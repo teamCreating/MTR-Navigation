@@ -40,6 +40,7 @@ public final class NavigationClient {
     public static long boardUpdatedNanos, boardSampleMillis;
     public static String status = "mtrnav.connecting";
     public static String origin = "", destination = "", boardStation = "";
+    public static String pendingExternalDimension = "", pendingExternalDestination = "";
     public static Sort sort = Sort.FASTEST;
     public static long fastestArrival;
     public static boolean partialResults;
@@ -60,12 +61,14 @@ public final class NavigationClient {
     private static long oldestResponseId, lastCatalogId, lastHello, boardRequestId;
     private static long lastTickNanos;
     private static boolean helloSent;
+    private static JourneyTracker localGuidedTracker;
     private record PollContext(String station, String reminderId) {}
     private static final Map<Long, PollContext> pollContexts = new LinkedHashMap<>();
     public static boolean usingNative;
     public static Supplier<String> openKey = () -> "N";
     public static BiPredicate<Integer, Integer> isOpenKey = (key, scan) -> false;
 
+    public static String currentDimension() { return dimension; }
     public static void transport(BooleanSupplier canSend, Consumer<NavRequest> send) { available = canSend; sender = send; }
     public static void open() {
         NavigationUi.openWorkspace();
@@ -87,6 +90,7 @@ public final class NavigationClient {
         long now = System.nanoTime();
         tickReminder(now);
         WalkingClient.tick(mc.screen instanceof WorkspaceScreen || tracking != null);
+        OverlayBridge.tick(dim, tracking);
         if (!available.getAsBoolean() || Boolean.getBoolean("mtrnav.forceNative")) {
             usingNative = true;
             NativeMtrClient.tick(dim);
@@ -104,13 +108,13 @@ public final class NavigationClient {
     public static void reset() {
         fleet = List.of(); vehicleCondition = VehicleCondition.none();
         originLocation.reset(); WalkingClient.reset(); fastestArrival = 0; partialResults = false;
-        catalog = null; journeys = List.of(); setReferencePlans(List.of()); referenceReason = ""; arrivals = List.of(); tracking = null; reminder = null;
+        catalog = null; journeys = List.of(); setReferencePlans(List.of()); referenceReason = ""; arrivals = List.of(); tracking = null; localGuidedTracker = null; reminder = null;
         boardLoading = false; boardUpdatedNanos = boardSampleMillis = 0; pollContexts.clear();
         NavigationUi.reset();
-        origin = destination = boardStation = ""; status = "mtrnav.connecting";
+        origin = destination = boardStation = ""; pendingExternalDimension = pendingExternalDestination = ""; status = "mtrnav.connecting";
         queryId = lastTrackingId = lastPoll = lastSample = 0; helloSent = false;
         oldestResponseId = nextId + 1; lastCatalogId = lastHello = 0;
-        assembly.clear(); CLOCK.clear(); NavigationApi.cancel();
+        assembly.clear(); CLOCK.clear(); NavigationApi.cancel(); OverlayBridge.resetSession();
         NativeMtrClient.reset(); usingNative = false;
     }
     public static void query() {
@@ -130,12 +134,50 @@ public final class NavigationClient {
     public static void clearSearchResults() {
         if (queryId != 0 && !usingNative && WalkingClient.supportsQuery()) send("cancel_query", "", "");
         journeys = List.of(); setReferencePlans(List.of()); referenceReason = ""; queryId = 0;
+        OverlayBridge.clearPreviewTarget();
         status = "mtrnav.choose_stations";
         NativeMtrClient.cancelQuery();
     }
-    public static void select(Journey journey) { if (usingNative) NativeMtrClient.select(journey); else send("select", journey.id(), ""); }
-    public static void correct(String action) { if (usingNative) NativeMtrClient.correct(action); else send("correct", tracking == null ? "" : tracking.journey().id(), action); }
-    public static void cancel() { if (usingNative) NativeMtrClient.cancel(); else lastTrackingId = send("cancel", "", ""); tracking = null; NavigationApi.cancel(); }
+    public static void select(Journey journey) {
+        localGuidedTracker = null;
+        if (usingNative) NativeMtrClient.select(journey);
+        else send("select", journey.id(), "");
+    }
+    public static void selectReference(ConnectionPlan plan) {
+        if (plan == null || catalog == null) return;
+        NativeMtrClient.cancel();
+        if (!usingNative) lastTrackingId = send("cancel", "", "");
+        OverlayBridge.clearPreviewTarget();
+        var guided = plan.toGuidedJourney(catalog);
+        localGuidedTracker = new JourneyTracker(guided);
+        var state = localGuidedTracker.correct("");
+        tracking = new JourneyTracker.State(state.journey(), state.legIndex(), state.phase(),
+                state.phase() == JourneyTracker.Phase.COMPLETE ? "" : state.phase() == JourneyTracker.Phase.WALKING ? state.notice() : "manual_check",
+                false, state.stepIndex());
+        if (guided.legs().stream().allMatch(l -> !l.fromPlatformId().startsWith("map:") && !l.toPlatformId().startsWith("map:"))) {
+            NavigationApi.select(JourneySelection.from(guided));
+        } else {
+            NavigationApi.cancel();
+        }
+    }
+    public static void correct(String action) {
+        if (localGuidedTracker != null) {
+            var state = localGuidedTracker.correct(action);
+            tracking = new JourneyTracker.State(state.journey(), state.legIndex(), state.phase(),
+                    state.phase() == JourneyTracker.Phase.COMPLETE ? "" : state.phase() == JourneyTracker.Phase.WALKING ? state.notice() : "manual_check",
+                    false, state.stepIndex());
+            return;
+        }
+        if (usingNative) NativeMtrClient.correct(action);
+        else send("correct", tracking == null ? "" : tracking.journey().id(), action);
+    }
+    public static void cancel() {
+        localGuidedTracker = null;
+        if (usingNative) NativeMtrClient.cancel();
+        else lastTrackingId = send("cancel", "", "");
+        tracking = null;
+        NavigationApi.cancel();
+    }
     public static void board(String station) {
         boardStation = station; arrivals = List.of(); boardLoading = true; boardUpdatedNanos = boardSampleMillis = 0;
         if (usingNative) NativeMtrClient.refreshBoard(); else boardRequestId = send("poll", "", "");
@@ -224,11 +266,15 @@ public final class NavigationClient {
         }
         if ((response.kind().equals("poll") || response.kind().equals("select") || response.kind().equals("correct") || response.kind().equals("cancel"))
                 && response.id() >= lastTrackingId) {
-            lastTrackingId = response.id(); tracking = response.tracking();
-            if (tracking != null) {
-                var selection = JourneySelection.from(tracking.journey());
-                if (NavigationApi.current().isEmpty() || !NavigationApi.current().get().equals(selection)) NavigationApi.select(selection);
-            } else NavigationApi.cancel();
+            lastTrackingId = response.id();
+            if (localGuidedTracker == null || response.tracking() != null) {
+                if (response.tracking() != null) localGuidedTracker = null;
+                tracking = response.tracking();
+                if (tracking != null) {
+                    var selection = JourneySelection.from(tracking.journey());
+                    if (NavigationApi.current().isEmpty() || !NavigationApi.current().get().equals(selection)) NavigationApi.select(selection);
+                } else NavigationApi.cancel();
+            }
         }
         if (!response.message().isEmpty()) status = "mtrnav." + response.message();
     }
