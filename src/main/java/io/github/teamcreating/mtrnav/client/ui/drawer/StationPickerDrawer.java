@@ -40,7 +40,7 @@ public final class StationPickerDrawer extends SlideDrawer {
     private StationLocator.Position location;
     private Map<String, Double> distances = Map.of();
     private List<Station> matches = List.of();
-    private Catalog lastCatalog;
+    private String lastCatalogKey = "";
     private String selectedId;
     private String lastClickId = "";
     private long lastClickNanos;
@@ -58,7 +58,7 @@ public final class StationPickerDrawer extends SlideDrawer {
         this.searchInput = new UiTextInput(tr("mtrnav.directory_search"))
                 .icon(UiIcons.SEARCH)
                 .placeholder(tr("mtrnav.station_hint"))
-                .responder(ignored -> refilter());
+                .responder(ignored -> refilter(true));
         this.searchInput.setFocused(true);
 
         this.sortBtn = new UiButton(tr("mtrnav.directory_sort.az"), UiButton.Style.CHIP, () -> {
@@ -67,21 +67,26 @@ public final class StationPickerDrawer extends SlideDrawer {
             if (order == StationDirectoryOrder.Mode.DISTANCE && location == null) {
                 location = UiBridge.playerPosition();
             }
-            refilter();
+            refilter(true);
         });
         this.relocateBtn = new UiButton(tr("mtrnav.relocate"), UiButton.Style.CHIP, () -> {
             location = UiBridge.playerPosition();
-            refilter();
+            refilter(true);
         }).icon(UiIcons.LOCATE);
         this.confirmBtn = new UiButton(tr("mtrnav.walk_pick_station"), UiButton.Style.PRIMARY, this::commitSelected).icon(UiIcons.CHECK);
         this.cancelBtn = new UiButton(tr("mtrnav.back"), UiButton.Style.SECONDARY, this::close);
-        refilter();
+        refilter(true);
     }
 
-    private void refilter() {
-        lastCatalog = catalog;
+    private static String catalogKey(Catalog c) {
+        return c == null ? "" : c.dimension() + "|" + c.revision() + "|" + c.stations().size();
+    }
+
+    private void refilter(boolean resetScroll) {
+        lastCatalogKey = catalogKey(catalog);
         if (catalog == null) {
             matches = List.of();
+            if (resetScroll) scroll.reset();
             return;
         }
         matches = StationSearch.matches(catalog.stations(), searchInput.value());
@@ -99,7 +104,7 @@ public final class StationPickerDrawer extends SlideDrawer {
         if (matches.stream().noneMatch(s -> s.id().equals(selectedId))) {
             selectedId = matches.size() == 1 ? matches.getFirst().id() : "";
         }
-        scroll.reset();
+        if (resetScroll) scroll.reset();
     }
 
     private Station selectedStation() {
@@ -113,7 +118,7 @@ public final class StationPickerDrawer extends SlideDrawer {
 
     @Override
     public void tick() {
-        if (lastCatalog != catalog) refilter();
+        if (!lastCatalogKey.equals(catalogKey(catalog))) refilter(false);
     }
 
     @Override

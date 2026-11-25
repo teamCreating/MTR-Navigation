@@ -474,5 +474,9 @@
   "mtrnav.ui.topology_hint_short": "Drag · Scroll · Click station",
   "mtrnav.ui.map_live_terrain": "Live terrain",
   "mtrnav.ui.map_base_layer": "Transit map",
-  "mtrnav.ui.map_walk_min": "Walk %sm"
+  "mtrnav.ui.map_walk_min": "Walk %sm",
+  "mtrnav.ui.ref_option": "Ref %s",
+  "mtrnav.ui.ref_stops": "%s stops",
+  "mtrnav.ui.ref_shortest": "Shortest",
+  "mtrnav.ui.ref_summary": "Reference %s / %s · Times unconfirmed; navigation unavailable"
 }

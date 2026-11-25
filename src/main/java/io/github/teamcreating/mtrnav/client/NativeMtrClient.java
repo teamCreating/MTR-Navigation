@@ -99,7 +99,7 @@ public final class NativeMtrClient {
                 if (dimensionIndex != 0) { lastCatalog = 0; return; }
             }
             if (network == null || network.catalog().revision() != parsed.catalog().revision()) {
-                NavigationClient.journeys = List.of(); NavigationClient.referencePlan = null; timetable = null;
+                NavigationClient.journeys = List.of(); NavigationClient.setReferencePlans(List.of()); timetable = null;
             }
             network = parsed; NavigationClient.catalog = parsed.catalog().retainPlatformNames(NavigationClient.catalog);
             NavigationClient.status = parsed.catalog().stations().isEmpty() ? "mtrnav.no_stations" : "mtrnav.ready";
@@ -138,12 +138,15 @@ public final class NativeMtrClient {
         boolean requested = request("arrivals", body.toString(), json -> {
             var data = NativeTimetable.data(json);
             var events = new ArrayList<StopEvent>(); var platforms = new LinkedHashMap<String, Platform>(); currentCatalog.platforms().forEach(p -> platforms.put(p.id(), p));
+            boolean addedPlatform = false;
             for (var row : NativeTimetable.array(data, "arrivals")) {
                 var e = row.getAsJsonObject();
                 String route = Long.toHexString(NativeTimetable.number(e, "routeId")), platform = Long.toHexString(NativeTimetable.number(e, "platformId"));
                 if (expected.catalog().routes().stream().noneMatch(r -> r.id().equals(route))) continue;
                 var pos = expected.catalog().station(station);
-                platforms.putIfAbsent(platform, new Platform(platform, station, NativeTimetable.text(e, "platformName"), pos == null ? 0 : pos.x(), pos == null ? 0 : pos.y(), pos == null ? 0 : pos.z()));
+                if (platforms.putIfAbsent(platform, new Platform(platform, station, NativeTimetable.text(e, "platformName"), pos == null ? 0 : pos.x(), pos == null ? 0 : pos.y(), pos == null ? 0 : pos.z())) == null) {
+                    addedPlatform = true;
+                }
                 var cars = new ArrayList<String>();
                 for (var car : NativeTimetable.array(e, "cars")) { String model = NativeTimetable.text(car.getAsJsonObject(), "vehicleId"); if (!model.isBlank()) cars.add(model); }
                 events.add(new StopEvent(new RunKey("native-board", 0, NativeTimetable.number(e, "departureIndex"), 0), "", route, platform, -1,
@@ -151,10 +154,14 @@ public final class NativeMtrClient {
                         NativeTimetable.number(e, "deviation"), e.has("realtime") && e.get("realtime").getAsBoolean(), new Consist(cars, StockSource.UNKNOWN)));
             }
             var c = expected.catalog();
-            return new BoardData(new Catalog(c.dimension(), c.revision(), c.stations(), List.copyOf(platforms.values()), c.routes()), List.copyOf(events), NativeTimetable.number(data, "currentTime"));
+            Catalog nextCatalog = addedPlatform
+                    ? new Catalog(c.dimension(), c.revision(), c.stations(), List.copyOf(platforms.values()), c.routes())
+                    : currentCatalog;
+            return new BoardData(nextCatalog, List.copyOf(events), NativeTimetable.number(data, "currentTime"));
         }, parsed -> {
             if (network != expected) return;
-            sample(parsed.sample()); NavigationClient.catalog = parsed.catalog();
+            sample(parsed.sample());
+            if (parsed.catalog() != NavigationClient.catalog) NavigationClient.catalog = parsed.catalog();
             NavigationClient.observeReminder(station, parsed.events(), parsed.sample(), reminderId);
             if (station.equals(NavigationClient.boardStation)) {
                 NavigationClient.fleet = parsed.events().stream().flatMap(e -> e.consist().cars().stream()).distinct().sorted().toList();
@@ -203,12 +210,13 @@ public final class NativeMtrClient {
             catch (RuntimeException error) { results = List.of(); failure = "mtrnav.search_failed";
                 com.mojang.logging.LogUtils.getLogger().warn("[MTR Navigation] Query failed", error); }
             var completed = results; String failedStatus = failure; long fastestFound = fastest; boolean wasPartial = partial;
-            var reference = results.isEmpty() ? io.github.teamcreating.mtrnav.core.ConnectionPlan.find(source.catalog(), origin, destination, List.of(), personalLinks).orElse(null) : null;
+            var references = results.isEmpty() ? io.github.teamcreating.mtrnav.core.ConnectionPlan.findAlternatives(source.catalog(), origin, destination, List.of(), personalLinks, sort, 5) : List.<io.github.teamcreating.mtrnav.core.ConnectionPlan>of();
+            var primaryRef = references.isEmpty() ? null : references.getFirst();
             Minecraft.getInstance().execute(() -> {
                     if (epoch != session || generation != queryGeneration) return;
                     NavigationClient.journeys = completed; NavigationClient.fastestArrival = fastestFound; NavigationClient.partialResults = wasPartial;
-                    NavigationClient.referencePlan = reference;
-                    NavigationClient.referenceReason = !failedStatus.isEmpty() ? "mtrnav.reference_incomplete" : reference != null && reference.transfers() > Settings.defaults().maxTransfers() ? "mtrnav.reference_limit" : "mtrnav.reference_no_service";
+                    NavigationClient.setReferencePlans(references);
+                    NavigationClient.referenceReason = !failedStatus.isEmpty() ? "mtrnav.reference_incomplete" : primaryRef != null && primaryRef.transfers() > Settings.defaults().maxTransfers() ? "mtrnav.reference_limit" : "mtrnav.reference_no_service";
                     NavigationClient.status = !failedStatus.isEmpty() ? failedStatus : completed.isEmpty() ? "mtrnav.no_route" : wasPartial ? "mtrnav.partial_results" : "mtrnav.native_results";
                 });
         });

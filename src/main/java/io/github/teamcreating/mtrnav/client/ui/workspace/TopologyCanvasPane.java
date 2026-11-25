@@ -1,6 +1,5 @@
 package io.github.teamcreating.mtrnav.client.ui.workspace;
 
-import io.github.teamcreating.mtrnav.client.UiBridge;
 import io.github.teamcreating.mtrnav.client.ui.framework.UiButton;
 import io.github.teamcreating.mtrnav.client.ui.framework.UiContext;
 import io.github.teamcreating.mtrnav.client.ui.theme.NavFormat;
@@ -19,11 +18,13 @@ import static io.github.teamcreating.mtrnav.client.NavigationClient.*;
 
 /**
  * Smartphone-navigation-grade 2D transit map built on real Minecraft chunk terrain + dark cartography,
- * smooth curved railway corridors, animated route chevrons, teardrop GPS pins, live player heading cone,
- * floating ETA route summary card, North compass dock, and dynamic metric scale bar.
+ * viewport-culled background corridors, smooth curved active routes with animated chevrons,
+ * teardrop GPS pins, live player heading cone, floating ETA route card, North compass, and dynamic scale bar.
+ * Engineered to stay buttery-smooth and clutter-free even on 200+ station mega-networks.
  */
 public final class TopologyCanvasPane {
     private static final int CANVAS_BG = 0xFF0E1621;
+    private static final int MAX_NON_ROUTE_LABELS = 18;
 
     private record Seg(float x1, float y1, float x2, float y2) {}
     private record ActiveLegPath(String routeId, String routeName, int color,
@@ -37,6 +38,7 @@ public final class TopologyCanvasPane {
     private UiRect dockRect = UiRect.EMPTY;
     private TopologyProjection.Snapshot snapshot = TopologyProjection.Snapshot.EMPTY;
     private boolean panning;
+    private long lastInteractNanos;
     private double lastMouseX, lastMouseY;
     private String popoverStationId;
     private UiRect popoverRect = UiRect.EMPTY;
@@ -57,10 +59,12 @@ public final class TopologyCanvasPane {
         this.host = host;
         this.zoomInBtn = new UiButton("+", UiButton.Style.GHOST, () -> {
             userMovedCamera = true;
+            lastInteractNanos = System.nanoTime();
             projection.zoomAt(1.35, bounds.centerX(), bounds.centerY(), bounds);
         });
         this.zoomOutBtn = new UiButton("−", UiButton.Style.GHOST, () -> {
             userMovedCamera = true;
+            lastInteractNanos = System.nanoTime();
             projection.zoomAt(0.74, bounds.centerX(), bounds.centerY(), bounds);
         });
         this.resetBtn = new UiButton("", UiButton.Style.GHOST, this::toggleFocusOrOverview)
@@ -103,15 +107,25 @@ public final class TopologyCanvasPane {
 
     private void toggleFocusOrOverview() {
         if (catalog == null || bounds.isEmpty()) return;
+        lastInteractNanos = 0L;
         if (userMovedCamera || showingFullOverview) {
             userMovedCamera = false;
             showingFullOverview = false;
-            if (lastFocusStations.size() >= 2) projection.fitStations(lastFocusStations, catalog, bounds);
-            else projection.fitCoreCluster(catalog, bounds);
+            applyDefaultFocus(lastFocusStations);
         } else {
             userMovedCamera = false;
             showingFullOverview = true;
             projection.resetView();
+        }
+    }
+
+    private void applyDefaultFocus(Set<String> focusStations) {
+        if (focusStations.size() >= 2) {
+            projection.fitStations(focusStations, catalog, bounds);
+        } else if (catalog.stations().size() > 24 && origin != null && !origin.isEmpty() && catalog.station(origin) != null) {
+            projection.fitAroundStation(origin, catalog, bounds, 12);
+        } else {
+            projection.fitCoreCluster(catalog, bounds);
         }
     }
 
@@ -130,33 +144,26 @@ public final class TopologyCanvasPane {
             return;
         }
 
-        // Auto-focus camera onto the active route (or outlier-resistant urban core) whenever selection changes
+        // Auto-focus camera onto the active route (or local neighborhood / core cluster) when selection changes
         Set<String> focusStations = collectFocusStationIds(highlightedJourney, highlightedReference);
         String focusKey = catalog.dimension() + "|" + catalog.revision() + "|" + bounds.width() + "x" + bounds.height() + "|"
                 + (highlightedJourney != null ? highlightedJourney.id()
-                : highlightedReference != null ? ("ref:" + highlightedReference.origin() + ":" + highlightedReference.destination())
-                : "core");
+                : highlightedReference != null ? ("ref:" + highlightedReference.signature())
+                : ("idle:" + (origin == null ? "" : origin)));
         if (!focusKey.equals(lastFocusKey)) {
             lastFocusKey = focusKey;
             lastFocusStations = focusStations;
             userMovedCamera = false;
             showingFullOverview = false;
-            if (focusStations.size() >= 2) {
-                projection.fitStations(focusStations, catalog, bounds);
-            } else {
-                projection.fitCoreCluster(catalog, bounds);
-            }
+            applyDefaultFocus(focusStations);
         }
 
         snapshot = projection.project(catalog, bounds);
-        Map<String, TopologyProjection.Node> nodeById = new LinkedHashMap<>();
+        Map<String, TopologyProjection.Node> nodeById = new HashMap<>(snapshot.nodes().size() * 2);
         for (var n : snapshot.nodes()) nodeById.put(n.stationId(), n);
 
-        Map<String, Model.Route> routeById = new HashMap<>();
+        Map<String, Model.Route> routeById = new HashMap<>(catalog.routes().size() * 2);
         for (var r : catalog.routes()) routeById.put(r.id(), r);
-
-        Map<String, String> platformStation = new HashMap<>();
-        for (var p : catalog.platforms()) platformStation.put(p.id(), p.stationId());
 
         // Classify highlighted journey (or reference plan) legs, transfer points, and walk times
         List<ActiveLegPath> activeLegs = new ArrayList<>();
@@ -214,16 +221,15 @@ public final class TopologyCanvasPane {
 
         UiDraw.enableScissor(g, bounds.inset(1));
 
-        // 1. Cartographic dark-mode terrain base map (live MC chunks + topographic contours + urban districts)
-        mapLayer.render(g, bounds, projection, catalog);
+        // 1. O(1)/pixel cartographic dark-mode terrain base map (throttled during rapid drag/zoom)
+        boolean interacting = panning || (ctx.nowNanos - lastInteractNanos) < 160_000_000L;
+        mapLayer.render(g, bounds, projection, catalog, interacting);
 
-        // Subtle dark edge vignette for crisp map framing
         g.fill(bounds.x() + 1, bounds.y() + 1, bounds.right() - 1, bounds.y() + 2, 0x44000000);
         g.fill(bounds.x() + 1, bounds.bottom() - 2, bounds.right() - 1, bounds.bottom() - 1, 0x44000000);
 
-        // 2. Smooth curved background railway corridors
-        List<Seg> backgroundSegs = new ArrayList<>();
-        renderBackgroundCorridors(g, nodeById, platformStation, hasHighlight, activeRouteEdgeKeys, backgroundSegs);
+        // 2. Fast viewport-culled, deduplicated background railway corridors
+        renderBackgroundEdgesFast(g, hasHighlight, activeRouteEdgeKeys);
 
         // 3. Highlighted active route (drop shadow + dark casing + vivid track + animated gliding nav chevrons)
         List<Seg> activeSegs = new ArrayList<>();
@@ -233,28 +239,26 @@ public final class TopologyCanvasPane {
                 var pts = leg.curve();
                 if (pts.size() < 2) continue;
 
-                // Soft ground shadow (makes the active route lift cleanly off the map like Apple Maps)
                 for (int i = 0; i + 1 < pts.size(); i++) {
                     float[] a = pts.get(i), b = pts.get(i + 1);
-                    UiDraw.line(g, a[0], a[1] + 2.0f, b[0], b[1] + 2.0f, 9.8f, 0x4E04070D);
-                    UiDraw.line(g, a[0], a[1], b[0], b[1], 10.2f, UiTokens.withAlpha(leg.color(), 42));
+                    if (!segmentIntersectsBounds(a[0], a[1], b[0], b[1], 14f)) continue;
+                    UiDraw.line(g, a[0], a[1] + 2.0f, b[0], b[1] + 2.0f, 9.5f, 0x4E04070D);
+                    UiDraw.line(g, a[0], a[1], b[0], b[1], 10.0f, UiTokens.withAlpha(leg.color(), 42));
                     activeSegs.add(new Seg(a[0], a[1], b[0], b[1]));
                 }
-                // Crisp dark outer casing
                 for (int i = 0; i + 1 < pts.size(); i++) {
                     float[] a = pts.get(i), b = pts.get(i + 1);
-                    UiDraw.line(g, a[0], a[1], b[0], b[1], 6.8f, 0xF20A101B);
+                    if (!segmentIntersectsBounds(a[0], a[1], b[0], b[1], 10f)) continue;
+                    UiDraw.line(g, a[0], a[1], b[0], b[1], 6.6f, 0xF20A101B);
                 }
-                for (var p : pts) UiDraw.circle(g, p[0], p[1], 3.4f, 0xF20A101B);
-
-                // Luminous core route stroke
                 for (int i = 0; i + 1 < pts.size(); i++) {
                     float[] a = pts.get(i), b = pts.get(i + 1);
-                    UiDraw.line(g, a[0], a[1], b[0], b[1], 4.3f, leg.color());
+                    if (!segmentIntersectsBounds(a[0], a[1], b[0], b[1], 8f)) continue;
+                    UiDraw.line(g, a[0], a[1], b[0], b[1], 4.2f, leg.color());
                 }
-                for (var p : pts) UiDraw.circle(g, p[0], p[1], 2.15f, leg.color());
-
-                // Animated gliding navigation chevrons (smartphone turn-by-turn feel!)
+                for (var p : pts) {
+                    if (pointInBounds(p[0], p[1], 6f)) UiDraw.circle(g, p[0], p[1], 2.1f, leg.color());
+                }
                 renderAnimatedChevrons(g, pts, leg.color(), animSec);
             }
         }
@@ -263,78 +267,101 @@ public final class TopologyCanvasPane {
         for (var w : activeWalks) {
             var a = nodeById.get(w.fromStationId());
             var b = nodeById.get(w.toStationId());
-            if (a != null && b != null && !a.stationId().equals(b.stationId())) {
+            if (a != null && b != null && !a.stationId().equals(b.stationId())
+                    && segmentIntersectsBounds(a.screenX(), a.screenY(), b.screenX(), b.screenY(), 8f)) {
                 UiDraw.dottedLine(g, a.screenX(), a.screenY(), b.screenX(), b.screenY(), 2.9f, 6.5f, 0xDF0A101B);
                 UiDraw.dottedLine(g, a.screenX(), a.screenY(), b.screenX(), b.screenY(), 1.75f, 6.5f, UiTokens.STATUS_WARN);
                 activeSegs.add(new Seg(a.screenX(), a.screenY(), b.screenX(), b.screenY()));
             }
         }
 
-        // 5. Live Player GPS Blue Dot & Rotating Heading Cone (in real worlds)
+        // 5. Live Player GPS Blue Dot & Rotating Heading Cone
         renderPlayerLocation(g, ctx.nowNanos);
 
-        // 6. Station nodes & teardrop GPS pins (priority z-order)
+        // 6. Viewport-culled station nodes & teardrop GPS pins
         var hoveredNode = popoverRect.contains(ctx.mouseX, ctx.mouseY) ? null
                 : TopologyProjection.hitNode(snapshot, ctx.mouseX, ctx.mouseY, 12.0);
 
-        List<TopologyProjection.Node> orderedNodes = new ArrayList<>(snapshot.nodes());
-        orderedNodes.sort(Comparator.comparingInt(n -> nodeDrawPriority(n, effectiveOrigin, effectiveDest, transferStations, activeStations, hoveredNode)));
+        List<TopologyProjection.Node> visibleNodes = new ArrayList<>();
+        for (var n : snapshot.nodes()) {
+            boolean isPin = n.stationId().equals(effectiveOrigin) || n.stationId().equals(effectiveDest);
+            if (pointInBounds(n.screenX(), n.screenY(), isPin ? 28f : 10f)) {
+                visibleNodes.add(n);
+            }
+        }
+        visibleNodes.sort(Comparator.comparingInt(n -> nodeDrawPriority(n, effectiveOrigin, effectiveDest, transferStations, activeStations, hasHighlight, hoveredNode)));
+        boolean denseView = visibleNodes.size() > 36;
 
-        for (var node : orderedNodes) {
+        for (var node : visibleNodes) {
             boolean isOrigin = node.stationId().equals(effectiveOrigin);
             boolean isDest = node.stationId().equals(effectiveDest);
             boolean isTransfer = transferStations.contains(node.stationId());
-            boolean isActive = !hasHighlight || activeStations.contains(node.stationId()) || isOrigin || isDest;
+            boolean isRouteNode = hasHighlight && activeStations.contains(node.stationId());
             boolean hovered = hoveredNode != null && hoveredNode.stationId().equals(node.stationId());
             boolean selected = node.stationId().equals(popoverStationId);
 
-            renderStationMarker(g, node, isOrigin, isDest, isTransfer, isActive, hasHighlight,
+            renderStationMarker(g, node, isOrigin, isDest, isTransfer, isRouteNode, hasHighlight, denseView,
                     activeStationColor.getOrDefault(node.stationId(), UiTokens.TEXT_PRIMARY), hovered, selected);
         }
 
-        // 7. Build chrome exclusion boxes and place collision-free labels & floating route badges
+        // 7. Strict viewport-culled, non-overlapping label engine (O(visible) — zero edge-clamping hell!)
         UiRect topRouteCard = hasHighlight
                 ? new UiRect(bounds.x() + 8, bounds.y() + 8, Math.min(238, Math.max(150, bounds.width() - 48)), 36)
                 : new UiRect(bounds.x() + 8, bounds.y() + 8, Math.min(180, bounds.width() - 48), 20);
         UiRect bottomChrome = new UiRect(bounds.x() + 6, bounds.bottom() - 24, bounds.width() - 12, 20);
         UiRect rightDockZone = new UiRect(compassRect.x() - 4, compassRect.y() - 2, compassRect.width() + 8, 108);
-        UiRect safeArea = new UiRect(bounds.x() + 6, bounds.y() + (hasHighlight ? 46 : 28),
+        UiRect safeArea = new UiRect(bounds.x() + 6, bounds.y() + (hasHighlight ? 46 : 26),
                 Math.max(20, bounds.width() - 12), Math.max(20, bounds.height() - (hasHighlight ? 72 : 52)));
 
-        List<UiRect> occupied = new ArrayList<>();
+        List<UiRect> occupied = new ArrayList<>(48);
         occupied.add(topRouteCard);
         occupied.add(rightDockZone);
         occupied.add(bottomChrome);
-        for (var n : snapshot.nodes()) {
+        // Only add exclusion zones for visible important markers (pins, transfers, route stops, hovered)
+        for (var n : visibleNodes) {
             boolean isPin = n.stationId().equals(effectiveOrigin) || n.stationId().equals(effectiveDest);
+            boolean isKey = isPin || transferStations.contains(n.stationId()) || (hasHighlight && activeStations.contains(n.stationId()));
+            if (!isKey) continue;
             if (isPin) {
-                // Exclude teardrop pin silhouette above the station anchor
                 occupied.add(new UiRect(Math.round(n.screenX() - 11), Math.round(n.screenY() - 25), 22, 29));
             } else {
-                float nr = nodeRadius(n, effectiveOrigin, effectiveDest, transferStations, activeStations, hasHighlight) + 3.5f;
-                occupied.add(new UiRect(Math.round(n.screenX() - nr), Math.round(n.screenY() - nr),
-                        Math.round(nr * 2f), Math.round(nr * 2f)));
+                occupied.add(new UiRect(Math.round(n.screenX() - 8), Math.round(n.screenY() - 8), 16, 16));
             }
         }
 
-        List<TopologyProjection.Node> labelOrder = new ArrayList<>(snapshot.nodes());
-        labelOrder.sort((a, b) -> Integer.compare(
-                nodeDrawPriority(b, effectiveOrigin, effectiveDest, transferStations, activeStations, hoveredNode),
-                nodeDrawPriority(a, effectiveOrigin, effectiveDest, transferStations, activeStations, hoveredNode)));
+        // Sort visible nodes by priority descending (hovered -> pins -> transfers -> active route -> major hubs -> regular)
+        List<TopologyProjection.Node> labelOrder = new ArrayList<>(visibleNodes);
+        labelOrder.sort((a, b) -> {
+            int pa = nodeDrawPriority(a, effectiveOrigin, effectiveDest, transferStations, activeStations, hasHighlight, hoveredNode);
+            int pb = nodeDrawPriority(b, effectiveOrigin, effectiveDest, transferStations, activeStations, hasHighlight, hoveredNode);
+            if (pa != pb) return Integer.compare(pb, pa);
+            return Integer.compare(b.lineColors().size(), a.lineColors().size());
+        });
 
+        int nonRouteLabelsDrawn = 0;
         for (var node : labelOrder) {
+            // Strictly skip stations whose anchor dot is outside the visible map area (never clamp onto edges!)
+            if (!pointInBounds(node.screenX(), node.screenY(), -2f)) continue;
+
             boolean isOrigin = node.stationId().equals(effectiveOrigin);
             boolean isDest = node.stationId().equals(effectiveDest);
             boolean isTransfer = transferStations.contains(node.stationId());
-            boolean isActive = !hasHighlight || activeStations.contains(node.stationId()) || isOrigin || isDest;
+            boolean isRouteStop = hasHighlight && activeStations.contains(node.stationId());
             boolean hovered = hoveredNode != null && hoveredNode.stationId().equals(node.stationId());
             boolean selected = node.stationId().equals(popoverStationId);
 
-            if (!(isActive || hovered || selected || snapshot.nodes().size() <= 18)) continue;
+            boolean mustShow = hovered || selected || isOrigin || isDest || isTransfer;
+            boolean routePriority = mustShow || isRouteStop;
+            if (!routePriority) {
+                // When a route is active on a big network, keep background labels super restrained
+                int cap = hasHighlight ? (snapshot.nodes().size() > 24 ? 0 : 8) : MAX_NON_ROUTE_LABELS;
+                if (nonRouteLabelsDrawn >= cap) continue;
+            }
 
-            renderSmartStationLabel(g, node, isOrigin, isDest, isTransfer,
+            boolean drawn = renderSmartStationLabel(g, node, isOrigin, isDest, isTransfer,
                     transferWalkSeconds.getOrDefault(node.stationId(), 0),
-                    isActive, hasHighlight, hovered, selected, safeArea, occupied, activeSegs, backgroundSegs);
+                    isRouteStop, mustShow, hovered, selected, safeArea, occupied, activeSegs);
+            if (drawn && !routePriority) nonRouteLabelsDrawn++;
         }
 
         // Place floating route-name pills along each active leg
@@ -344,7 +371,7 @@ public final class TopologyCanvasPane {
             }
         }
 
-        // 8. Floating smartphone navigation chrome: Top-left route card, Bottom-left metric scale bar, Bottom-right status
+        // 8. Floating smartphone navigation chrome
         renderTopLeftNavCard(g, topRouteCard, activeLegs, highlightedJourney, highlightedReference, totalRouteBlocks);
         renderBottomScaleAndStatus(g);
 
@@ -357,64 +384,51 @@ public final class TopologyCanvasPane {
         renderRightMapDock(g, ctx);
     }
 
-    private void renderBackgroundCorridors(GuiGraphics g, Map<String, TopologyProjection.Node> nodeById,
-                                           Map<String, String> platformStation, boolean hasHighlight,
-                                           Set<String> activeRouteEdgeKeys, List<Seg> outSegs) {
-        for (var route : catalog.routes()) {
-            int rawColor = 0xFF000000 | (route.color() & 0xFFFFFF);
-            List<TopologyProjection.Node> seq = new ArrayList<>();
-            for (String platId : route.platforms()) {
-                String stId = platformStation.get(platId);
-                if (stId != null) appendNode(seq, nodeById.get(stId));
-            }
-            if (seq.size() < 2) continue;
+    /**
+     * Viewport-culled, corridor-deduplicated background railway rendering.
+     * Avoids drawing 10 overlapping identical trunk lines and skips off-screen segments completely.
+     */
+    private void renderBackgroundEdgesFast(GuiGraphics g, boolean hasHighlight, Set<String> activeRouteEdgeKeys) {
+        var edges = snapshot.edges();
+        boolean megaNetwork = edges.size() > 60;
+        Map<String, Integer> pairCount = megaNetwork ? new HashMap<>(edges.size()) : null;
 
-            // Break route into contiguous non-active spans so active legs stay crisp without double-drawing
-            List<float[]> span = new ArrayList<>();
-            for (int i = 0; i < seq.size(); i++) {
-                var cur = seq.get(i);
-                if (span.isEmpty()) {
-                    span.add(new float[]{cur.screenX(), cur.screenY()});
-                } else {
-                    var prev = seq.get(i - 1);
-                    boolean isActiveSeg = hasHighlight && activeRouteEdgeKeys.contains(edgeKey(route.id(), prev.stationId(), cur.stationId()));
-                    if (isActiveSeg) {
-                        drawBackgroundSpan(g, span, rawColor, hasHighlight, outSegs);
-                        span.clear();
-                        span.add(new float[]{cur.screenX(), cur.screenY()});
-                    } else {
-                        span.add(new float[]{cur.screenX(), cur.screenY()});
+        float casingW = hasHighlight ? 3.2f : (megaNetwork ? 3.8f : 4.8f);
+        float coreW = hasHighlight ? 1.8f : (megaNetwork ? 2.2f : 2.9f);
+        int casingCol = hasHighlight ? 0x800A101B : 0xBD0A101B;
+        int alpha = hasHighlight ? 92 : 210;
+
+        for (var e : edges) {
+            if (hasHighlight && activeRouteEdgeKeys.contains(edgeKey(e.routeId(), e.fromStationId(), e.toStationId()))) {
+                continue;
+            }
+            if (!segmentIntersectsBounds(e.x1(), e.y1(), e.x2(), e.y2(), 6f)) continue;
+
+            float x1 = e.x1(), y1 = e.y1(), x2 = e.x2(), y2 = e.y2();
+            if (pairCount != null) {
+                String pk = pairKey(e.fromStationId(), e.toStationId());
+                int seen = pairCount.getOrDefault(pk, 0);
+                // On huge trunk networks, draw at most 2 parallel colors per station pair to keep GPU lean & clean
+                if (seen >= 2) continue;
+                pairCount.put(pk, seen + 1);
+                if (seen == 1) {
+                    float dx = x2 - x1, dy = y2 - y1;
+                    float len = (float) Math.hypot(dx, dy);
+                    if (len > 1f) {
+                        float ox = -dy / len * 2.2f;
+                        float oy = dx / len * 2.2f;
+                        x1 += ox; y1 += oy; x2 += ox; y2 += oy;
                     }
                 }
             }
-            drawBackgroundSpan(g, span, rawColor, hasHighlight, outSegs);
+            if (!megaNetwork || !hasHighlight) {
+                UiDraw.line(g, x1, y1, x2, y2, casingW, casingCol);
+            }
+            UiDraw.line(g, x1, y1, x2, y2, coreW, UiTokens.withAlpha(e.color(), alpha));
         }
     }
 
-    private void drawBackgroundSpan(GuiGraphics g, List<float[]> rawPts, int rawColor, boolean hasHighlight, List<Seg> outSegs) {
-        if (rawPts.size() < 2) return;
-        boolean closed = rawPts.size() >= 4
-                && Math.hypot(rawPts.get(0)[0] - rawPts.get(rawPts.size() - 1)[0],
-                rawPts.get(0)[1] - rawPts.get(rawPts.size() - 1)[1]) < 1.5f;
-        List<float[]> smooth = smoothPolyline(rawPts, closed);
-        float casingW = hasHighlight ? 4.0f : 5.2f;
-        float coreW = hasHighlight ? 2.1f : 3.0f;
-        int casingCol = hasHighlight ? 0x990A101B : 0xD40A101B;
-        int coreCol = UiTokens.withAlpha(rawColor, hasHighlight ? 102 : 215);
-
-        for (int i = 0; i + 1 < smooth.size(); i++) {
-            float[] a = smooth.get(i), b = smooth.get(i + 1);
-            UiDraw.line(g, a[0], a[1], b[0], b[1], casingW, casingCol);
-            outSegs.add(new Seg(a[0], a[1], b[0], b[1]));
-        }
-        for (int i = 0; i + 1 < smooth.size(); i++) {
-            float[] a = smooth.get(i), b = smooth.get(i + 1);
-            UiDraw.line(g, a[0], a[1], b[0], b[1], coreW, coreCol);
-        }
-        for (var p : smooth) UiDraw.circle(g, p[0], p[1], coreW * 0.5f, coreCol);
-    }
-
-    private static void renderAnimatedChevrons(GuiGraphics g, List<float[]> pts, int routeColor, double animSec) {
+    private void renderAnimatedChevrons(GuiGraphics g, List<float[]> pts, int routeColor, double animSec) {
         int ink = UiTokens.withAlpha(UiTokens.contrastInk(routeColor), 225);
         float spacing = 28.0f;
         float offset = (float) ((animSec * 18.0) % spacing);
@@ -427,11 +441,20 @@ public final class TopologyCanvasPane {
             float dx = x2 - x1, dy = y2 - y1;
             float len = (float) Math.hypot(dx, dy);
             if (len < 0.5f) continue;
+            if (!segmentIntersectsBounds(x1, y1, x2, y2, 8f)) {
+                accum += len;
+                while (nextDist <= accum) nextDist += spacing;
+                continue;
+            }
             float ux = dx / len, uy = dy / len;
             while (nextDist <= accum + len - 6f) {
                 float local = nextDist - accum;
                 if (local >= 6f) {
-                    UiDraw.chevron(g, x1 + ux * local, y1 + uy * local, ux, uy, 4.0f, 1.35f, ink);
+                    float cx = x1 + ux * local;
+                    float cy = y1 + uy * local;
+                    if (pointInBounds(cx, cy, 4f)) {
+                        UiDraw.chevron(g, cx, cy, ux, uy, 4.0f, 1.35f, ink);
+                    }
                 }
                 nextDist += spacing;
             }
@@ -451,7 +474,6 @@ public final class TopologyCanvasPane {
         float py = projection.worldToScreenY(player.getZ());
         if (!bounds.contains(px, py)) return;
 
-        // Rotating GPS field-of-view cone (Minecraft yaw: 0 = +Z South, 90 = -X West)
         double rad = Math.toRadians(player.getYRot());
         double dirX = -Math.sin(rad);
         double dirY = Math.cos(rad);
@@ -463,7 +485,6 @@ public final class TopologyCanvasPane {
         float ry = py + (float) ((dirX * Math.sin(-spread) + dirY * Math.cos(-spread)) * coneLen);
         UiDraw.triangle(g, px, py, lx, ly, rx, ry, 0x4A2589FF);
 
-        // Pulsing GPS halo + crisp blue dot
         float pulse = (float) (0.5 + 0.5 * Math.sin(nowNanos / 350_000_000.0));
         UiDraw.circle(g, px, py, 6.5f + pulse * 3.2f, UiTokens.withAlpha(0xFF2589FF, (int) (75 - pulse * 45)));
         UiDraw.circle(g, px, py, 4.6f, 0xFFF8FAFC);
@@ -472,77 +493,72 @@ public final class TopologyCanvasPane {
 
     private void renderStationMarker(GuiGraphics g, TopologyProjection.Node node,
                                      boolean isOrigin, boolean isDest, boolean isTransfer,
-                                     boolean isActive, boolean hasHighlight, int routeColor,
-                                     boolean hovered, boolean selected) {
+                                     boolean isRouteNode, boolean hasHighlight, boolean denseView,
+                                     int routeColor, boolean hovered, boolean selected) {
         float cx = node.screenX();
         float cy = node.screenY();
 
         if (isOrigin || isDest) {
             int col = isOrigin ? UiTokens.PRIMARY : UiTokens.ACCENT_SKY;
             String tag = isOrigin ? tr("mtrnav.ui.tag_origin") : tr("mtrnav.ui.tag_dest");
-            // Ground contact shadow + anchor dot right on the track
-            UiDraw.circle(g, cx, cy + 1.0f, 5.2f, 0x66000000);
-            UiDraw.circle(g, cx, cy, 3.4f, 0xFFF8FAFC);
+            UiDraw.circle(g, cx, cy + 1.0f, 5.0f, 0x66000000);
+            UiDraw.circle(g, cx, cy, 3.3f, 0xFFF8FAFC);
             UiDraw.circle(g, cx, cy, 2.0f, col);
 
             if (hovered || selected) {
-                UiDraw.circle(g, cx, cy - 14.5f, 11.2f, UiTokens.withAlpha(col, 68));
+                UiDraw.circle(g, cx, cy - 14.5f, 11.0f, UiTokens.withAlpha(col, 68));
             }
-            // Standing teardrop pin silhouette (white outer rim + vivid colored pin body)
             float headY = cy - 14.5f;
             UiDraw.triangle(g, cx, cy - 1.5f, cx - 6.8f, headY + 4.2f, cx + 6.8f, headY + 4.2f, 0xFFF8FAFC);
             UiDraw.circle(g, cx, headY, 8.6f, 0xFFF8FAFC);
             UiDraw.triangle(g, cx, cy - 3.6f, cx - 5.2f, headY + 3.2f, cx + 5.2f, headY + 3.2f, col);
             UiDraw.circle(g, cx, headY, 7.2f, col);
-            // Crisp single-glyph tag centered in pin head
             int tw = UiDraw.font().width(tag);
             UiDraw.text(g, tag, Math.round(cx - tw * 0.5f), Math.round(headY - 4f), 14, UiTokens.contrastInk(col));
             return;
         }
 
-        float r = nodeRadius(node, null, null,
-                isTransfer ? Set.of(node.stationId()) : Set.of(), isActive ? Set.of(node.stationId()) : Set.of(), hasHighlight);
-
         if (hovered || selected) {
-            UiDraw.circle(g, cx, cy, r + 4.4f, UiTokens.withAlpha(UiTokens.ACCENT_SKY, 68));
-            UiDraw.ring(g, cx, cy, r + 2.4f, r + 3.6f, UiTokens.withAlpha(UiTokens.ACCENT_SKY, 230));
+            float hr = isTransfer ? 6.6f : (isRouteNode || node.hub()) ? 4.6f : 3.4f;
+            UiDraw.circle(g, cx, cy, hr + 4.2f, UiTokens.withAlpha(UiTokens.ACCENT_SKY, 68));
+            UiDraw.ring(g, cx, cy, hr + 2.2f, hr + 3.4f, UiTokens.withAlpha(UiTokens.ACCENT_SKY, 230));
         }
 
         if (isTransfer) {
-            UiDraw.circle(g, cx, cy + 1.0f, 8.2f, 0x55000000);
-            UiDraw.circle(g, cx, cy, 9.8f, UiTokens.withAlpha(UiTokens.STATUS_WARN, 46));
-            UiDraw.circle(g, cx, cy, 7.2f, 0xF00A101B);
-            UiDraw.circle(g, cx, cy, 6.2f, 0xFFF8FAFC);
-            UiDraw.circle(g, cx, cy, 4.3f, UiTokens.STATUS_WARN);
+            UiDraw.circle(g, cx, cy + 1.0f, 8.0f, 0x55000000);
+            UiDraw.circle(g, cx, cy, 9.6f, UiTokens.withAlpha(UiTokens.STATUS_WARN, 46));
+            UiDraw.circle(g, cx, cy, 7.0f, 0xF00A101B);
+            UiDraw.circle(g, cx, cy, 6.0f, 0xFFF8FAFC);
+            UiDraw.circle(g, cx, cy, 4.2f, UiTokens.STATUS_WARN);
             UiDraw.circle(g, cx, cy, 2.2f, 0xFF0E1621);
-        } else if (hasHighlight && isActive) {
-            UiDraw.circle(g, cx, cy + 0.8f, 5.4f, 0x50000000);
-            UiDraw.circle(g, cx, cy, 5.4f, 0xEE0A101B);
-            UiDraw.circle(g, cx, cy, 4.3f, routeColor);
-            UiDraw.circle(g, cx, cy, 2.5f, 0xFFF8FAFC);
+        } else if (isRouteNode) {
+            UiDraw.circle(g, cx, cy, 5.2f, 0xEE0A101B);
+            UiDraw.circle(g, cx, cy, 4.1f, routeColor);
+            UiDraw.circle(g, cx, cy, 2.3f, 0xFFF8FAFC);
         } else if (!hasHighlight && node.hub()) {
-            UiDraw.circle(g, cx, cy, 5.6f, 0xDD0A101B);
-            UiDraw.circle(g, cx, cy, 4.4f, 0xFFF8FAFC);
-            UiDraw.circle(g, cx, cy, 2.4f, CANVAS_BG);
+            float r = denseView ? 3.5f : 4.4f;
+            UiDraw.circle(g, cx, cy, r + 1.0f, 0xDD0A101B);
+            UiDraw.circle(g, cx, cy, r, 0xFFF8FAFC);
+            UiDraw.circle(g, cx, cy, r * 0.52f, CANVAS_BG);
         } else {
-            int ringColor = hovered ? UiTokens.TEXT_PRIMARY : isActive ? UiTokens.TEXT_SECONDARY : 0xFF6B7F99;
-            UiDraw.circle(g, cx, cy, r + 1.2f, 0xCC0A101B);
-            UiDraw.circle(g, cx, cy, r, 0xFF131C28);
-            UiDraw.ring(g, cx, cy, Math.max(1.2f, r - 1.35f), r, ringColor);
+            // Lightweight crisp station dot (fast even when 150 stations are visible)
+            float r = denseView ? 2.4f : 3.0f;
+            int col = hovered ? UiTokens.TEXT_PRIMARY : hasHighlight ? 0xFF53657E : 0xFF8396B0;
+            UiDraw.circle(g, cx, cy, r + 0.9f, 0xCC0A101B);
+            UiDraw.circle(g, cx, cy, r, col);
+            if (!denseView) UiDraw.circle(g, cx, cy, 1.3f, 0xFF131C28);
         }
     }
 
-    private void renderSmartStationLabel(GuiGraphics g, TopologyProjection.Node node,
-                                         boolean isOrigin, boolean isDest, boolean isTransfer, int walkSecs,
-                                         boolean isActive, boolean hasHighlight, boolean hovered, boolean selected,
-                                         UiRect safeArea, List<UiRect> occupied,
-                                         List<Seg> activeSegs, List<Seg> backgroundSegs) {
+    private boolean renderSmartStationLabel(GuiGraphics g, TopologyProjection.Node node,
+                                            boolean isOrigin, boolean isDest, boolean isTransfer, int walkSecs,
+                                            boolean isRouteStop, boolean mustShow, boolean hovered, boolean selected,
+                                            UiRect safeArea, List<UiRect> occupied, List<Seg> activeSegs) {
         String name = NavFormat.primary(node.name());
         var font = UiDraw.font();
-        int maxTextW = 104;
+        int maxTextW = 92;
         int nameW = Math.min(maxTextW, font.width(name));
 
-        // Transfer stations show a speech-bubble callout with optional walk minutes
         String walkMeta = (isTransfer && walkSecs > 0) ? tr("mtrnav.ui.map_walk_min", Math.max(1, (walkSecs + 30) / 60)) : null;
         String transferTag = isTransfer ? tr("mtrnav.ui.tag_transfer") : null;
         int tagW = transferTag != null ? font.width(transferTag) + 6 : 0;
@@ -550,54 +566,59 @@ public final class TopologyCanvasPane {
 
         int padX = 5;
         int boxW = padX + (tagW > 0 ? tagW + 4 : 0) + nameW + (walkW > 0 ? walkW + 2 : 0) + padX;
-        int boxH = isTransfer ? 16 : (isOrigin || isDest || isActive || hovered || selected ? 14 : 13);
+        int boxH = isTransfer ? 16 : (isOrigin || isDest || isRouteStop || hovered || selected ? 14 : 13);
 
         float cx = node.screenX();
         float cy = node.screenY();
-        float r = nodeRadius(node, isOrigin ? node.stationId() : null, isDest ? node.stationId() : null,
-                isTransfer ? Set.of(node.stationId()) : Set.of(), isActive ? Set.of(node.stationId()) : Set.of(), hasHighlight);
+        float r = isTransfer ? 6.6f : (isRouteStop || node.hub()) ? 4.6f : 3.2f;
 
-        // Origin/Dest teardrop pins stand ABOVE the dot, so prefer Bottom / Side first for their label!
         int[][] candidates;
         if (isOrigin || isDest) {
             candidates = new int[][]{
-                    {Math.round(cx - boxW * 0.5f), Math.round(cy + 8), 0},                         // Bottom (right under pin anchor)
-                    {Math.round(cx + 12), Math.round(cy - 10), 10},                                // Right
-                    {Math.round(cx - 12 - boxW), Math.round(cy - 10), 10},                         // Left
-                    {Math.round(cx - boxW * 0.5f), Math.round(cy - 28 - boxH), 16},                // Above pin head
-                    {Math.round(cx + 10), Math.round(cy + 6), 20},                                 // Bottom-Right
-                    {Math.round(cx - 10 - boxW), Math.round(cy + 6), 20}                           // Bottom-Left
+                    {Math.round(cx - boxW * 0.5f), Math.round(cy + 8), 0},
+                    {Math.round(cx + 12), Math.round(cy - 10), 8},
+                    {Math.round(cx - 12 - boxW), Math.round(cy - 10), 8},
+                    {Math.round(cx - boxW * 0.5f), Math.round(cy - 28 - boxH), 14}
             };
         } else {
-            float gap = isTransfer ? r + 8.0f : r + 5.5f;
+            float gap = isTransfer ? r + 7.5f : r + 5.0f;
             candidates = new int[][]{
-                    {Math.round(cx - boxW * 0.5f), Math.round(cy - gap - boxH), 0},               // Top
-                    {Math.round(cx - boxW * 0.5f), Math.round(cy + gap), 6},                      // Bottom
-                    {Math.round(cx + gap), Math.round(cy - boxH * 0.5f), 14},                     // Right
-                    {Math.round(cx - gap - boxW), Math.round(cy - boxH * 0.5f), 14},              // Left
-                    {Math.round(cx + gap * 0.72f), Math.round(cy - gap * 0.72f - boxH), 18},      // Top-Right
-                    {Math.round(cx - gap * 0.72f - boxW), Math.round(cy - gap * 0.72f - boxH), 18},
-                    {Math.round(cx + gap * 0.72f), Math.round(cy + gap * 0.72f), 22},
-                    {Math.round(cx - gap * 0.72f - boxW), Math.round(cy + gap * 0.72f), 22}
+                    {Math.round(cx - boxW * 0.5f), Math.round(cy - gap - boxH), 0},
+                    {Math.round(cx - boxW * 0.5f), Math.round(cy + gap), 6},
+                    {Math.round(cx + gap), Math.round(cy - boxH * 0.5f), 12},
+                    {Math.round(cx - gap - boxW), Math.round(cy - boxH * 0.5f), 12}
             };
         }
 
         UiRect bestRect = null;
         int bestIdx = 0;
-        int bestOverlap = 0;
+        int bestOverlap = Integer.MAX_VALUE;
         double bestScore = Double.POSITIVE_INFINITY;
+
         for (int i = 0; i < candidates.length; i++) {
             int[] c = candidates[i];
-            int lx = Math.clamp(c[0], safeArea.x(), Math.max(safeArea.x(), safeArea.right() - boxW));
-            int ly = Math.clamp(c[1], safeArea.y(), Math.max(safeArea.y(), safeArea.bottom() - boxH));
+            int lx = c[0];
+            int ly = c[1];
+            boolean outOfBounds = lx < safeArea.x() || ly < safeArea.y()
+                    || lx + boxW > safeArea.right() || ly + boxH > safeArea.bottom();
+            if (outOfBounds) {
+                if (!mustShow) continue; // Non-critical labels NEVER clamp onto map edges!
+                lx = Math.clamp(lx, safeArea.x(), Math.max(safeArea.x(), safeArea.right() - boxW));
+                ly = Math.clamp(ly, safeArea.y(), Math.max(safeArea.y(), safeArea.bottom() - boxH));
+            }
             UiRect rect = new UiRect(lx, ly, boxW, boxH);
-            double score = c[2];
-            score += (Math.abs(lx - c[0]) + Math.abs(ly - c[1])) * 14.0;
             int overlap = 0;
-            for (var occ : occupied) overlap += overlapArea(rect, occ);
-            score += overlap * 28.0;
-            score += segmentCollisionPenalty(rect, activeSegs, 11.0, 42.0);
-            score += segmentCollisionPenalty(rect, backgroundSegs, 8.5, 11.0);
+            for (var occ : occupied) {
+                overlap += overlapArea(rect, occ);
+                if (!mustShow && overlap > 0) break;
+            }
+            if (!mustShow && overlap > 0) continue;
+
+            double score = c[2] + overlap * 32.0;
+            if (outOfBounds) score += (Math.abs(lx - c[0]) + Math.abs(ly - c[1])) * 14.0;
+            if (!activeSegs.isEmpty()) {
+                score += segmentCollisionPenalty(rect, activeSegs, 10.0, 36.0);
+            }
             if (score < bestScore) {
                 bestScore = score;
                 bestRect = rect;
@@ -605,32 +626,30 @@ public final class TopologyCanvasPane {
                 bestOverlap = overlap;
             }
         }
-        if (bestRect == null) return;
-        // Zoom-adaptive decluttering: hide crowded minor background labels until zoomed in or hovered
-        boolean highPriority = isOrigin || isDest || isTransfer || isActive || hovered || selected;
-        if (!highPriority && bestOverlap > 0) return;
-        occupied.add(bestRect);
+        if (bestRect == null) return false;
+        if (!mustShow && bestOverlap > 0) return false;
 
-        // Callout drop shadow + frosted glass pill
-        if (isOrigin || isDest || isTransfer || isActive || hovered || selected) {
+        // Reserve padded breathing room around every placed label so adjacent stations never touch
+        occupied.add(new UiRect(bestRect.x() - 3, bestRect.y() - 2, bestRect.width() + 6, bestRect.height() + 4));
+
+        if (mustShow || isRouteStop) {
             UiDraw.roundedRect(g, bestRect.x(), bestRect.y() + 1.5f, bestRect.width(), bestRect.height(), 4.5f, 0x55000000);
         }
         int bg = (hovered || selected) ? 0xEE131D2D
                 : isTransfer ? 0xE8101723
                 : (isOrigin || isDest) ? 0xE60E1520
-                : isActive ? 0xD80F1622
-                : 0xAA0C131D;
+                : isRouteStop ? 0xDC0F1622
+                : 0xBA0C131D;
         int border = (hovered || selected) ? UiTokens.ACCENT_SKY
                 : isOrigin ? UiTokens.withAlpha(UiTokens.PRIMARY, 165)
                 : isDest ? UiTokens.withAlpha(UiTokens.ACCENT_SKY, 165)
                 : isTransfer ? UiTokens.withAlpha(UiTokens.STATUS_WARN, 185)
-                : isActive ? 0x773B4E68
-                : 0x3D2C3A4E;
+                : isRouteStop ? 0x773B4E68
+                : 0x442C3A4E;
 
         UiDraw.roundedRect(g, bestRect, 4.5f, bg);
         UiDraw.roundedOutline(g, bestRect, 4.5f, 1f, border);
 
-        // Speech-bubble pointer triangle for transfer callout when placed directly above/below node
         if (isTransfer && (bestIdx == 0 || bestIdx == 1)) {
             float px = Math.clamp(cx, bestRect.x() + 8, bestRect.right() - 8);
             if (bestIdx == 0) {
@@ -648,13 +667,15 @@ public final class TopologyCanvasPane {
             tx += tagW + 4;
         }
         int textColor = (hovered || selected || isOrigin || isDest || isTransfer) ? UiTokens.TEXT_PRIMARY
-                : isActive ? 0xFFE6EDF5
-                : 0xFF96A7BC;
+                : isRouteStop ? 0xFFE6EDF5
+                : node.hub() ? 0xFFD0DCEB
+                : 0xFFA3B3C7;
         UiDraw.text(g, name, tx, ty, nameW + 2, textColor);
         if (walkMeta != null) {
             tx += nameW + 5;
             UiDraw.text(g, walkMeta, tx, ty, walkW, UiTokens.STATUS_WARN);
         }
+        return true;
     }
 
     private void renderLegRouteBadge(GuiGraphics g, ActiveLegPath leg, UiRect safeArea,
@@ -667,6 +688,7 @@ public final class TopologyCanvasPane {
         for (int i = 0; i + 1 < pts.size(); i++) {
             var a = pts.get(i);
             var b = pts.get(i + 1);
+            if (!segmentIntersectsBounds(a.screenX(), a.screenY(), b.screenX(), b.screenY(), 0f)) continue;
             float len = (float) Math.hypot(b.screenX() - a.screenX(), b.screenY() - a.screenY());
             if (len > bestLen) {
                 bestLen = len;
@@ -696,14 +718,16 @@ public final class TopologyCanvasPane {
             float mx = bestA.screenX() + dx * t;
             float my = bestA.screenY() + dy * t;
             for (float s : sides) {
-                int rawX = Math.round(mx + nx * s - badgeW * 0.5f);
-                int rawY = Math.round(my + ny * s - badgeH * 0.5f);
-                int bx = Math.clamp(rawX, safeArea.x(), Math.max(safeArea.x(), safeArea.right() - badgeW));
-                int by = Math.clamp(rawY, safeArea.y(), Math.max(safeArea.y(), safeArea.bottom() - badgeH));
+                int bx = Math.round(mx + nx * s - badgeW * 0.5f);
+                int by = Math.round(my + ny * s - badgeH * 0.5f);
+                if (bx < safeArea.x() || by < safeArea.y() || bx + badgeW > safeArea.right() || by + badgeH > safeArea.bottom()) {
+                    continue;
+                }
                 UiRect rect = new UiRect(bx, by, badgeW, badgeH);
+                int overlap = 0;
+                for (var occ : occupied) overlap += overlapArea(rect, occ);
+                if (overlap > 0) continue;
                 double score = Math.abs(t - 0.5) * 20.0 + (Math.abs(s) > 18 ? 14.0 : 0.0);
-                score += (Math.abs(bx - rawX) + Math.abs(by - rawY)) * 12.0;
-                for (var occ : occupied) score += overlapArea(rect, occ) * 30.0;
                 score += segmentCollisionPenalty(rect, activeSegs, 8.5, 28.0);
                 if (score < bestScore) {
                     bestScore = score;
@@ -712,7 +736,7 @@ public final class TopologyCanvasPane {
             }
         }
         if (bestRect == null) return;
-        occupied.add(bestRect);
+        occupied.add(new UiRect(bestRect.x() - 2, bestRect.y() - 2, bestRect.width() + 4, bestRect.height() + 4));
 
         UiDraw.roundedRect(g, bestRect.x() - 1f, bestRect.y() + 0.5f, bestRect.width() + 2f, bestRect.height() + 2f, 4.5f, 0x66000000);
         UiDraw.roundedRect(g, bestRect.x() - 1f, bestRect.y() - 1f, bestRect.width() + 2f, bestRect.height() + 2f, 4.5f, 0xEB0A101B);
@@ -769,7 +793,6 @@ public final class TopologyCanvasPane {
             return;
         }
 
-        // Smartphone floating route summary card (ETA or Reference + transfers + line pills + distance)
         UiDraw.roundedRect(g, card.x(), card.y() + 1.5f, card.width(), card.height(), 6f, 0x55000000);
         UiDraw.roundedRect(g, card, 6f, 0xE20E1521);
         UiDraw.roundedOutline(g, card, 6f, 1f, journey != null ? 0x80384A63 : UiTokens.withAlpha(UiTokens.STATUS_WARN, 140));
@@ -794,7 +817,6 @@ public final class TopologyCanvasPane {
             UiDraw.text(g, meta, rx, ry, card.right() - rx - 8, UiTokens.TEXT_SECONDARY);
         }
 
-        // Row 2: Colored line pills + metric route distance (m / km)
         int lx = card.x() + 8;
         int ly = card.y() + 19;
         String distText = totalBlocks >= 1000.0
@@ -819,7 +841,6 @@ public final class TopologyCanvasPane {
     }
 
     private void renderBottomScaleAndStatus(GuiGraphics g) {
-        // Bottom-left authentic dynamic metric scale bar (blocks = meters)
         double ppb = Math.max(1e-4, projection.pixelsPerBlock());
         int[] steps = {10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000};
         int chosenMeters = 100;
@@ -851,7 +872,6 @@ public final class TopologyCanvasPane {
         g.fill(bx + barPx - 1, by - 3, bx + barPx, by + 1, UiTokens.TEXT_SECONDARY);
         UiDraw.text(g, scaleLabel, bx + barPx + 5, sy + 4, labelW + 2, UiTokens.TEXT_SECONDARY);
 
-        // Bottom-right subtle map layer status + hint
         String layerTag = (mapLayer.hasLiveTerrain() ? tr("mtrnav.ui.map_live_terrain") : tr("mtrnav.ui.map_base_layer"))
                 + " · " + tr("mtrnav.ui.topology_hint_short");
         int rw = Math.min(bounds.width() - pillW - 24, UiDraw.font().width(layerTag) + 14);
@@ -864,7 +884,6 @@ public final class TopologyCanvasPane {
     }
 
     private void renderRightMapDock(GuiGraphics g, UiContext ctx) {
-        // Mini North Compass badge
         UiDraw.roundedRect(g, compassRect.x(), compassRect.y() + 1f, compassRect.width(), compassRect.height(), 5f, 0x44000000);
         UiDraw.roundedRect(g, compassRect, 5f, 0xE2101723);
         UiDraw.roundedOutline(g, compassRect, 5f, 1f, 0x8036475E);
@@ -872,7 +891,6 @@ public final class TopologyCanvasPane {
         UiDraw.triangle(g, ccx, compassRect.y() + 3.5f, ccx - 3.0f, compassRect.y() + 8.5f, ccx + 3.0f, compassRect.y() + 8.5f, 0xFFEF4444);
         UiDraw.text(g, "N", compassRect.centerX() - 3, compassRect.y() + 10, 10, UiTokens.TEXT_PRIMARY);
 
-        // Unified floating zoom & locate dock
         UiDraw.roundedRect(g, dockRect.x(), dockRect.y() + 1f, dockRect.width(), dockRect.height(), 5f, 0x44000000);
         UiDraw.roundedRect(g, dockRect, 5f, 0xE2101723);
         UiDraw.roundedOutline(g, dockRect, 5f, 1f, 0x8036475E);
@@ -939,7 +957,18 @@ public final class TopologyCanvasPane {
         popBoardBtn.render(g, ctx);
     }
 
-    /** Rounds sharp interior corners along a railway polyline using smooth quadratic fillets. */
+    private boolean pointInBounds(float x, float y, float margin) {
+        return x >= bounds.x() - margin && x <= bounds.right() + margin
+                && y >= bounds.y() - margin && y <= bounds.bottom() + margin;
+    }
+
+    private boolean segmentIntersectsBounds(float x1, float y1, float x2, float y2, float margin) {
+        float minX = Math.min(x1, x2), maxX = Math.max(x1, x2);
+        float minY = Math.min(y1, y2), maxY = Math.max(y1, y2);
+        return maxX >= bounds.x() - margin && minX <= bounds.right() + margin
+                && maxY >= bounds.y() - margin && minY <= bounds.bottom() + margin;
+    }
+
     private static List<float[]> smoothPolyline(List<float[]> pts, boolean closed) {
         if (pts.size() < 3) return pts;
         List<float[]> out = new ArrayList<>(pts.size() * 4);
@@ -970,9 +999,7 @@ public final class TopologyCanvasPane {
             }
         }
         out.add(pts.get(last));
-        if (closed && out.size() > 2) {
-            out.add(pts.get(0));
-        }
+        if (closed && out.size() > 2) out.add(pts.get(0));
         return out;
     }
 
@@ -1022,20 +1049,13 @@ public final class TopologyCanvasPane {
     }
 
     private static int nodeDrawPriority(TopologyProjection.Node n, String effOrigin, String effDest,
-                                        Set<String> transfers, Set<String> active, TopologyProjection.Node hovered) {
+                                        Set<String> transfers, Set<String> active, boolean hasHighlight,
+                                        TopologyProjection.Node hovered) {
         if (hovered != null && hovered.stationId().equals(n.stationId())) return 50;
         if (n.stationId().equals(effOrigin) || n.stationId().equals(effDest)) return 40;
         if (transfers.contains(n.stationId())) return 30;
-        if (active.contains(n.stationId())) return 20;
+        if (hasHighlight && active.contains(n.stationId())) return 20;
         return n.hub() ? 10 : 0;
-    }
-
-    private static float nodeRadius(TopologyProjection.Node n, String effOrigin, String effDest,
-                                    Set<String> transfers, Set<String> active, boolean hasHighlight) {
-        if (n.stationId().equals(effOrigin) || n.stationId().equals(effDest)) return 6.4f;
-        if (transfers.contains(n.stationId())) return 6.6f;
-        if (hasHighlight && active.contains(n.stationId())) return 4.6f;
-        return n.hub() ? 4.4f : 3.2f;
     }
 
     private static int overlapArea(UiRect a, UiRect b) {
@@ -1110,6 +1130,7 @@ public final class TopologyCanvasPane {
     public boolean mouseDragged(double x, double y, int button) {
         if (!panning || button != 0) return false;
         userMovedCamera = true;
+        lastInteractNanos = System.nanoTime();
         projection.pan(x - lastMouseX, y - lastMouseY);
         lastMouseX = x;
         lastMouseY = y;
@@ -1126,6 +1147,7 @@ public final class TopologyCanvasPane {
                 | popBoardBtn.mouseReleased(x, y, button);
         if (panning && button == 0) {
             panning = false;
+            lastInteractNanos = 0L;
             return true;
         }
         return handled;
@@ -1134,6 +1156,7 @@ public final class TopologyCanvasPane {
     public boolean mouseScrolled(double x, double y, double vertical) {
         if (!bounds.contains(x, y)) return false;
         userMovedCamera = true;
+        lastInteractNanos = System.nanoTime();
         projection.zoomAt(vertical > 0 ? 1.24 : 0.80, x, y, bounds);
         return true;
     }

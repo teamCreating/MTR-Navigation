@@ -73,8 +73,14 @@ public final class JourneyPlanView implements UiView {
     private String locationMessage = "";
     private String pendingSelection = "";
     private List<Journey> lastJourneys = List.of();
+    private List<ConnectionPlan> lastReferencePlans = List.of();
     private Catalog locationCatalog;
     private final List<UiRect> cardHitRects = new ArrayList<>();
+
+    private List<ConnectionPlan> activeReferencePlans() {
+        if (!referencePlans.isEmpty()) return referencePlans;
+        return referencePlan == null ? List.of() : List.of(referencePlan);
+    }
 
     public JourneyPlanView(WorkspaceHost host) {
         this.host = host;
@@ -298,13 +304,14 @@ public final class JourneyPlanView implements UiView {
             pendingSelection = "";
             host.switchTab(WorkspaceHost.Tab.ACTIVE);
         }
-        if (lastJourneys != journeys) {
+        if (lastJourneys != journeys || lastReferencePlans != referencePlans) {
             lastJourneys = journeys;
+            lastReferencePlans = referencePlans;
             selectedJourney = 0;
             cardScroll.reset();
             timeline.resetScroll();
             if (!userToggledRightMode) {
-                rightMode = (!journeys.isEmpty() || referencePlan != null) ? RightMode.TIMELINE : RightMode.TOPOLOGY;
+                rightMode = (!journeys.isEmpty() || !activeReferencePlans().isEmpty()) ? RightMode.TIMELINE : RightMode.TOPOLOGY;
             }
         }
     }
@@ -421,11 +428,12 @@ public final class JourneyPlanView implements UiView {
                 : tr("mtrnav.vehicle_filter"));
         vehicleBtn.render(g, ctx);
 
-        // Journey Cards list
+        // Journey / Reference Cards list
         cardHitRects.clear();
         UiDraw.card(g, cardsArea, UiTokens.RADIUS_MD, UiTokens.INSET, UiTokens.BORDER_SUBTLE);
 
-        int count = journeys.isEmpty() && referencePlan != null ? 1 : journeys.size();
+        List<ConnectionPlan> refs = journeys.isEmpty() ? activeReferencePlans() : List.of();
+        int count = journeys.isEmpty() ? refs.size() : journeys.size();
         if (count == 0) {
             String msg = !locationMessage.isEmpty() ? locationMessage : tr(status);
             UiDraw.wrapped(g, msg, cardsArea.x() + 10, cardsArea.y() + 12, cardsArea.width() - 20, 12, UiTokens.TEXT_SECONDARY);
@@ -448,7 +456,7 @@ public final class JourneyPlanView implements UiView {
             if (cy + cardH < cardsArea.y() || cy > cardsArea.bottom()) continue;
 
             if (journeys.isEmpty()) {
-                renderReferenceCard(g, rect);
+                renderReferenceCard(g, ctx, i, refs.get(i), refs, rect);
             } else {
                 renderJourneyCard(g, ctx, i, journeys.get(i), rect);
             }
@@ -457,13 +465,43 @@ public final class JourneyPlanView implements UiView {
         UiDraw.scrollbar(g, cardScroll, cardsArea.right() - 7, 4);
     }
 
-    private void renderReferenceCard(GuiGraphics g, UiRect r) {
-        UiDraw.card(g, r, UiTokens.RADIUS_SM, UiTokens.SURFACE_SELECTED, UiTokens.STATUS_WARN);
-        UiDraw.roundedRect(g, r.x() + 3, r.y() + 5, 3, r.height() - 10, 1.5f, UiTokens.STATUS_WARN);
-        UiDraw.bold(g, tr("mtrnav.reference_route"), r.x() + 11, r.y() + 6, r.width() - 18, UiTokens.TEXT_PRIMARY);
-        UiDraw.text(g, tr("mtrnav.transfers", referencePlan.transfers()) + " · " + tr("mtrnav.reference_only"),
-                r.x() + 11, r.y() + 19, r.width() - 18, UiTokens.TEXT_SECONDARY);
-        renderChain(g, JourneyChain.of(referencePlan), r.x() + 11, r.bottom() - 17, r.width() - 18);
+    private void renderReferenceCard(GuiGraphics g, UiContext ctx, int index, ConnectionPlan plan, List<ConnectionPlan> allRefs, UiRect r) {
+        boolean sel = index == selectedJourney;
+        boolean hov = r.contains(ctx.mouseX, ctx.mouseY) && cardsArea.contains(ctx.mouseX, ctx.mouseY);
+        int bg = sel ? UiTokens.SURFACE_SELECTED : hov ? UiTokens.SURFACE_HOVER : UiTokens.SURFACE;
+        int border = sel ? UiTokens.STATUS_WARN : UiTokens.BORDER_SUBTLE;
+        UiDraw.card(g, r, UiTokens.RADIUS_SM, bg, border);
+        UiDraw.roundedRect(g, r.x() + 3, r.y() + 5, 3, r.height() - 10, 1.5f,
+                sel ? UiTokens.STATUS_WARN : UiTokens.withAlpha(UiTokens.STATUS_WARN, 130));
+
+        double distBlocks = plan.estimatedBlocks(catalog);
+        String metric = distBlocks >= 1000.0
+                ? String.format(Locale.ROOT, "%.1f km", distBlocks / 1000.0)
+                : distBlocks >= 10.0
+                ? Math.round(distBlocks) + " m"
+                : tr("mtrnav.ui.ref_stops", plan.stopCount());
+        int metricW = (int) (UiDraw.font().width(metric) * 1.12f) + 6;
+        UiDraw.scaledText(g, metric, r.right() - metricW - 4, r.y() + 6, metricW + 4,
+                sel ? UiTokens.TEXT_PRIMARY : UiTokens.TEXT_SECONDARY, 1.12f);
+
+        String title = allRefs.size() > 1 ? tr("mtrnav.ui.ref_option", index + 1) : tr("mtrnav.reference_route");
+        int titleX = r.x() + 11;
+        UiDraw.bold(g, title, titleX, r.y() + 6, Math.max(20, r.width() - metricW - 22), UiTokens.TEXT_PRIMARY);
+
+        if (allRefs.size() > 1 && index == 0) {
+            String badge = tr(sort == Sort.FEWEST_TRANSFERS ? "mtrnav.fewest" : "mtrnav.ui.ref_shortest");
+            int tx = titleX + UiDraw.font().width(title) + 8;
+            int maxB = r.right() - metricW - 8 - tx;
+            if (maxB >= 24) {
+                UiDraw.pill(g, badge, tx, r.y() + 4, maxB,
+                        sel ? UiTokens.STATUS_WARN : UiTokens.withAlpha(UiTokens.STATUS_WARN, 48),
+                        sel ? UiTokens.PRIMARY_INK : UiTokens.STATUS_WARN);
+            }
+        }
+
+        String subtitle = tr("mtrnav.transfers", plan.transfers()) + " · " + tr("mtrnav.ui.ref_stops", plan.stopCount());
+        UiDraw.text(g, subtitle, titleX, r.y() + 20, r.width() - 18, sel ? UiTokens.TEXT_SECONDARY : UiTokens.TEXT_MUTED);
+        renderChain(g, JourneyChain.of(plan), titleX, r.bottom() - 17, r.width() - 18);
     }
 
     private void renderJourneyCard(GuiGraphics g, UiContext ctx, int index, Journey journey, UiRect r) {
@@ -547,16 +585,19 @@ public final class JourneyPlanView implements UiView {
         modeTimelineBtn.selected(rightMode == RightMode.TIMELINE).render(g, ctx);
         modeTopologyBtn.selected(rightMode == RightMode.TOPOLOGY).render(g, ctx);
 
-        selectedJourney = Math.clamp(selectedJourney, 0, Math.max(0, journeys.size() - 1));
+        List<ConnectionPlan> refs = journeys.isEmpty() ? activeReferencePlans() : List.of();
+        int optionCount = journeys.isEmpty() ? refs.size() : journeys.size();
+        selectedJourney = Math.clamp(selectedJourney, 0, Math.max(0, optionCount - 1));
         Journey current = journeys.isEmpty() ? null : journeys.get(selectedJourney);
+        ConnectionPlan currentRef = journeys.isEmpty() && !refs.isEmpty() ? refs.get(selectedJourney) : null;
 
         if (rightMode == RightMode.TOPOLOGY) {
-            topology.render(g, ctx, current, referencePlan);
+            topology.render(g, ctx, current, currentRef);
         } else if (current != null) {
             timeline.renderJourney(g, ctx, current, -1);
             timeline.updateTooltips(ctx);
-        } else if (referencePlan != null) {
-            timeline.renderReference(g, ctx, referencePlan, referenceReason);
+        } else if (currentRef != null) {
+            timeline.renderReference(g, ctx, currentRef, referenceReason);
             timeline.updateTooltips(ctx);
         } else {
             UiDraw.card(g, rightBody, UiTokens.RADIUS_MD, UiTokens.INSET, UiTokens.BORDER_SUBTLE);
@@ -567,9 +608,11 @@ public final class JourneyPlanView implements UiView {
         }
 
         // Bottom footer
-        String summary = journeys.isEmpty()
-                ? tr(referencePlan == null ? "mtrnav.search_help" : "mtrnav.reference_only")
-                : tr("mtrnav.option_summary", selectedJourney + 1, journeys.size());
+        String summary = !journeys.isEmpty()
+                ? tr("mtrnav.option_summary", selectedJourney + 1, journeys.size())
+                : refs.size() > 1
+                ? tr("mtrnav.ui.ref_summary", selectedJourney + 1, refs.size())
+                : tr(currentRef == null ? "mtrnav.search_help" : "mtrnav.reference_only");
         UiDraw.text(g, summary, footerRect.x() + 2, footerRect.y() + 11, Math.max(0, footerRect.width() - startBtn.bounds().width() - 10), UiTokens.TEXT_SECONDARY);
         startBtn.enabled(!journeys.isEmpty() && !CLOCK.stale(ctx.nowNanos));
         startBtn.render(g, ctx);
@@ -589,8 +632,9 @@ public final class JourneyPlanView implements UiView {
                     || vehicleBtn.mouseClicked(x, y, button)) return true;
             if (button == 0 && cardScroll.beginDrag(x, y, cardsArea.right() - 7, 4)) return true;
             if (button == 0 && cardsArea.contains(x, y)) {
+                int optionCount = journeys.isEmpty() ? activeReferencePlans().size() : journeys.size();
                 for (int i = 0; i < cardHitRects.size(); i++) {
-                    if (cardHitRects.get(i).contains(x, y) && i < journeys.size()) {
+                    if (cardHitRects.get(i).contains(x, y) && i < optionCount) {
                         selectedJourney = i;
                         timeline.resetScroll();
                         if (!wide) compactShowRight = true;
@@ -656,8 +700,9 @@ public final class JourneyPlanView implements UiView {
             triggerSearch();
             return true;
         }
-        if ((key == GLFW.GLFW_KEY_DOWN || key == GLFW.GLFW_KEY_UP) && !journeys.isEmpty() && !originInput.focused() && !destInput.focused()) {
-            selectedJourney = Math.clamp(selectedJourney + (key == GLFW.GLFW_KEY_DOWN ? 1 : -1), 0, journeys.size() - 1);
+        int optionCount = journeys.isEmpty() ? activeReferencePlans().size() : journeys.size();
+        if ((key == GLFW.GLFW_KEY_DOWN || key == GLFW.GLFW_KEY_UP) && optionCount > 1 && !originInput.focused() && !destInput.focused()) {
+            selectedJourney = Math.clamp(selectedJourney + (key == GLFW.GLFW_KEY_DOWN ? 1 : -1), 0, optionCount - 1);
             timeline.resetScroll();
             return true;
         }

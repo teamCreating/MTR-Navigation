@@ -123,4 +123,34 @@ final class NewUiEngineTest {
         assertTrue(screenSpan > 120.0, "Focused 1.6 km route should span >120px instead of being squashed");
         assertTrue(proj.maxZoom() > 20.0, "Large world maps must allow deep zoom-in to street scale");
     }
+
+    @Test
+    void megaNetworkNeighborhoodFitAndTallRouteSafeMargins() {
+        var stations = new java.util.ArrayList<Model.Station>(174);
+        for (int i = 0; i < 172; i++) {
+            int gx = (i % 14) - 7;
+            int gz = (i / 14) - 6;
+            stations.add(new Model.Station("s" + i, "站" + i, gx * 900L, 64, gz * 900L, List.of()));
+        }
+        stations.add(new Model.Station("south_origin", "延璃原", 0L, 64, 6500L, List.of()));
+        stations.add(new Model.Station("north_dest", "沙阴", 120L, 64, -6600L, List.of()));
+
+        var catalog = new Model.Catalog("minecraft/overworld", 1, stations, List.of(), List.of());
+        var proj = new TopologyProjection();
+        var viewport = new UiRect(0, 0, 380, 280);
+
+        proj.fitAroundStation("s84", catalog, viewport, 12);
+        assertTrue(proj.zoom() > 2.0, "174-station server should open zoomed on local neighborhood around origin");
+        var localSnap = proj.project(catalog, viewport);
+        var centerNode = localSnap.nodes().stream().filter(n -> n.stationId().equals("s84")).findFirst().orElseThrow();
+        assertTrue(viewport.inset(20, 20).contains((int) centerNode.screenX(), (int) centerNode.screenY()),
+                "Origin station must be clearly framed inside viewport");
+
+        proj.fitStations(List.of("south_origin", "north_dest"), catalog, viewport);
+        var routeSnap = proj.project(catalog, viewport);
+        var north = routeSnap.nodes().stream().filter(n -> n.stationId().equals("north_dest")).findFirst().orElseThrow();
+        var south = routeSnap.nodes().stream().filter(n -> n.stationId().equals("south_origin")).findFirst().orElseThrow();
+        assertTrue(north.screenY() >= viewport.y() + 50.0, "North endpoint should clear the top route summary card");
+        assertTrue(south.screenY() <= viewport.bottom() - 34.0, "South endpoint should clear the bottom scale bar");
+    }
 }

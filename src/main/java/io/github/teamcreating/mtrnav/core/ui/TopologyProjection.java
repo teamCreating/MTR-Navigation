@@ -104,6 +104,25 @@ public final class TopologyProjection {
     }
 
     /**
+     * Fits a readable local metro neighborhood around a center station (e.g. player's auto-located origin)
+     * on large 30+ station servers so the map opens cleanly like a smartphone map instead of a crowded hairball.
+     */
+    public void fitAroundStation(String centerStationId, Model.Catalog catalog, UiRect viewport, int neighborCount) {
+        if (catalog == null || catalog.stations().isEmpty() || viewport.isEmpty()) return;
+        Model.Station center = catalog.station(centerStationId);
+        if (center == null) {
+            fitCoreCluster(catalog, viewport);
+            return;
+        }
+        List<String> nearby = catalog.stations().stream()
+                .sorted(Comparator.comparingDouble(st -> Math.hypot(st.x() - center.x(), st.z() - center.z())))
+                .limit(Math.max(4, neighborCount))
+                .map(Model.Station::id)
+                .toList();
+        fitStations(nearby, catalog, viewport);
+    }
+
+    /**
      * Fits the dense urban core when extreme far-away outlier stations (e.g. distant airports/test stations)
      * would otherwise squash downtown stations into an unreadable clump.
      */
@@ -159,10 +178,12 @@ public final class TopologyProjection {
                                 UiRect viewport, boolean routeMode) {
         double subSpanX = Math.max(80.0, maxX - minX);
         double subSpanZ = Math.max(80.0, maxZ - minZ);
-        double padX = Math.min(116.0, Math.max(64.0, viewport.width() * 0.30));
-        double padY = Math.min(132.0, Math.max(76.0, viewport.height() * 0.38));
-        double usableW = Math.max(30.0, viewport.width() - padX);
-        double usableH = Math.max(30.0, viewport.height() - padY);
+        double padLeft = 36.0;
+        double padRight = 44.0;
+        double padTop = routeMode ? 68.0 : 38.0;
+        double padBottom = 42.0;
+        double usableW = Math.max(30.0, viewport.width() - padLeft - padRight);
+        double usableH = Math.max(30.0, viewport.height() - padTop - padBottom);
         double desiredScale = Math.min(usableW / subSpanX, usableH / subSpanZ);
         // Prevent over-zooming on very short hops
         desiredScale = Math.min(desiredScale, 0.45);
@@ -170,10 +191,11 @@ public final class TopologyProjection {
         double scale = baseScale * nextZoom;
         double subMidX = (minX + maxX) * 0.5;
         double subMidZ = (minZ + maxZ) * 0.5;
+        double targetCenterX = viewport.x() + padLeft + usableW * 0.5;
+        double targetCenterY = viewport.y() + padTop + usableH * 0.5;
         this.zoom = nextZoom;
-        this.panX = -(subMidX - fullMidX) * scale;
-        // Shift slightly downward when route card occupies top-left of viewport
-        this.panY = -(subMidZ - fullMidZ) * scale + (routeMode ? 10.0 : 0.0);
+        this.panX = (targetCenterX - viewport.centerX()) - (subMidX - fullMidX) * scale;
+        this.panY = (targetCenterY - viewport.centerY()) - (subMidZ - fullMidZ) * scale;
     }
 
     private static double[] fullBounds(Model.Catalog catalog, UiRect viewport) {

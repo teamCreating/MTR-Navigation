@@ -26,7 +26,13 @@ public final class NavigationClient {
     public static void vehicleCondition(VehicleCondition value) { if (!vehicleCondition.equals(value)) { vehicleCondition = value; clearSearchResults(); } }
     public static List<Journey> journeys = List.of();
     public static ConnectionPlan referencePlan;
+    public static List<ConnectionPlan> referencePlans = List.of();
     public static String referenceReason = "";
+
+    public static void setReferencePlans(List<ConnectionPlan> plans) {
+        referencePlans = plans == null ? List.of() : List.copyOf(plans);
+        referencePlan = referencePlans.isEmpty() ? null : referencePlans.getFirst();
+    }
     public static List<StopEvent> arrivals = List.of();
     public static JourneyTracker.State tracking;
     public static ArrivalReminder reminder;
@@ -98,7 +104,7 @@ public final class NavigationClient {
     public static void reset() {
         fleet = List.of(); vehicleCondition = VehicleCondition.none();
         originLocation.reset(); WalkingClient.reset(); fastestArrival = 0; partialResults = false;
-        catalog = null; journeys = List.of(); referencePlan = null; referenceReason = ""; arrivals = List.of(); tracking = null; reminder = null;
+        catalog = null; journeys = List.of(); setReferencePlans(List.of()); referenceReason = ""; arrivals = List.of(); tracking = null; reminder = null;
         boardLoading = false; boardUpdatedNanos = boardSampleMillis = 0; pollContexts.clear();
         NavigationUi.reset();
         origin = destination = boardStation = ""; status = "mtrnav.connecting";
@@ -114,13 +120,16 @@ public final class NavigationClient {
         }
         if (vehicleCondition.active() && !supportsVehicles()) { status = "mtrnav.vehicle_unsupported"; return; }
         status = "mtrnav.searching"; journeys = List.of(); partialResults = false; fastestArrival = 0;
-        referencePlan = ConnectionPlan.find(catalog, origin, destination, usingNative ? List.of() : WalkingClient.sharedConnections(), usingNative || WalkingClient.consent() ? WalkingClient.activeLocal() : List.of()).orElse(null);
+        setReferencePlans(ConnectionPlan.findAlternatives(catalog, origin, destination,
+                usingNative ? List.of() : WalkingClient.sharedConnections(),
+                usingNative || WalkingClient.consent() ? WalkingClient.activeLocal() : List.of(),
+                sort, 5));
         referenceReason = "mtrnav.reference_pending";
         if (usingNative) NativeMtrClient.query(); else queryId = send("query", "", "");
     }
     public static void clearSearchResults() {
         if (queryId != 0 && !usingNative && WalkingClient.supportsQuery()) send("cancel_query", "", "");
-        journeys = List.of(); referencePlan = null; referenceReason = ""; queryId = 0;
+        journeys = List.of(); setReferencePlans(List.of()); referenceReason = ""; queryId = 0;
         status = "mtrnav.choose_stations";
         NativeMtrClient.cancelQuery();
     }
@@ -185,7 +194,7 @@ public final class NavigationClient {
         if (response.catalog() != null && response.id() >= lastCatalogId) {
             lastCatalogId = response.id();
             if (catalog == null || response.revision() != catalog.revision()) {
-                journeys = List.of(); referencePlan = null; catalog = response.catalog();
+                journeys = List.of(); setReferencePlans(List.of()); catalog = response.catalog();
             }
         }
         if (catalog != null && response.revision() != catalog.revision()) return;
@@ -198,7 +207,10 @@ public final class NavigationClient {
             fastestArrival = response.report() == null ? journeys.stream().mapToLong(Journey::arrival).min().orElse(0) : response.report().fastestArrival();
             partialResults = response.report() != null && response.report().incomplete();
             status = journeys.isEmpty() ? "mtrnav.no_route" : "mtrnav.ready";
-            referencePlan = journeys.isEmpty() ? ConnectionPlan.find(catalog, origin, destination, usingNative ? List.of() : WalkingClient.sharedConnections(), usingNative || WalkingClient.consent() ? WalkingClient.activeLocal() : List.of()).orElse(null) : null;
+            setReferencePlans(journeys.isEmpty() ? ConnectionPlan.findAlternatives(catalog, origin, destination,
+                    usingNative ? List.of() : WalkingClient.sharedConnections(),
+                    usingNative || WalkingClient.consent() ? WalkingClient.activeLocal() : List.of(),
+                    sort, 5) : List.of());
             referenceReason = response.message().startsWith("vehicle_") ? "mtrnav." + response.message() : response.message().equals("reference_limit") ? "mtrnav.reference_limit"
                     : response.message().isEmpty() || response.message().equals("reference_no_service") ? "mtrnav.reference_no_service" : "mtrnav.reference_incomplete";
         } else if (response.kind().equals("hello")) status = "mtrnav.ready";

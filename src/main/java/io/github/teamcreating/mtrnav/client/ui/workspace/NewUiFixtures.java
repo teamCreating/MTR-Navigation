@@ -59,7 +59,7 @@ public final class NewUiFixtures {
         origin = "a";
         destination = "d";
         tracking = null;
-        referencePlan = null;
+        setReferencePlans(List.of());
         vehicleCondition = VehicleCondition.none();
         fleet = List.of("m_train_cab_1", "m_train_trailer", "sp1900_cab_1", "crh_cab");
         status = "mtrnav.ready";
@@ -127,7 +127,7 @@ public final class NewUiFixtures {
             status = "mtrnav.choose_stations";
         } else if (scene == 3) {
             journeys = List.of();
-            referencePlan = ConnectionPlan.find(catalog, "a", "d").orElse(null);
+            setReferencePlans(ConnectionPlan.findAlternatives(catalog, "a", "d", sort, 5));
             referenceReason = "mtrnav.reference_no_service";
         } else if (scene == 4) {
             tracking = new JourneyTracker.State(sampleJourneys.getFirst(), 0, JourneyTracker.Phase.RIDING, "", false);
@@ -163,13 +163,13 @@ public final class NewUiFixtures {
     public static void query() {
         if (origin.isBlank() || destination.isBlank() || catalog == null) {
             journeys = List.of();
-            referencePlan = null;
+            setReferencePlans(List.of());
             status = "mtrnav.choose_stations";
             return;
         }
         if (origin.equals(destination)) {
             journeys = List.of();
-            referencePlan = null;
+            setReferencePlans(List.of());
             status = "mtrnav.same_station";
             return;
         }
@@ -185,7 +185,7 @@ public final class NewUiFixtures {
                 ? candidates.stream().sorted(Comparator.comparing(j -> !vehicleCondition.matches(j))).toList()
                 : candidates;
         fastestArrival = journeys.isEmpty() ? 0 : journeys.getFirst().arrival();
-        referencePlan = null;
+        setReferencePlans(List.of());
         status = journeys.isEmpty() ? "mtrnav.no_route" : "mtrnav.ready";
         refreshClock();
     }

@@ -26,7 +26,7 @@
 
 MTR：站间物语是一个独立的 Minecraft Transit Railway 导航附属模组。你可以查找车站、比较换乘方案、查看站台到发，或为某一班列车设置到站提醒。0.1.2 全面重构为零外部依赖的新一代「现代轨道导视 × 候车厅 PIDS」工作台与半透明双 HUD（采用像素切角深板岩外框与纯现代暗色内部控件），字体跟随 Minecraft；**不需要安装任何额外 UI 模组或机械动力**。
 
-**当前版本：0.1.2。** [下载 0.1.2](https://github.com/teamCreating/MTR-Navigation/releases/tag/v0.1.2) · [更新记录](CHANGELOG.md)。提供 Minecraft 1.21.1／1.21.4 的 NeoForge 和 Fabric 安装包，详见[验证记录](docs/validation/verification.md)。
+**当前版本：0.1.3。** [下载 0.1.3](https://github.com/teamCreating/MTR-Navigation/releases/tag/v0.1.3) · [更新记录](CHANGELOG.md)。提供 Minecraft 1.21.1／1.21.4 的 NeoForge 和 Fabric 安装包，详见[验证记录](docs/validation/verification.md)。
 
 ## 可以做什么
 
@@ -80,10 +80,10 @@ MTR：站间物语是一个独立的 Minecraft Transit Railway 导航附属模�
 
 需要 **Java 21、MTR 4.1.0-beta.2**，并选择与你的 Minecraft 版本和加载器一致的安装包：
 
-- **Minecraft 1.21.1／NeoForge 21.1.x**：`MTR-Navigation-neoforge-0.1.2+1.21.1.jar`。
-- **Minecraft 1.21.1／Fabric**：`MTR-Navigation-fabric-0.1.2+1.21.1.jar`。
-- **Minecraft 1.21.4／NeoForge 21.4.x**：`MTR-Navigation-neoforge-0.1.2+1.21.4.jar`。
-- **Minecraft 1.21.4／Fabric**：`MTR-Navigation-fabric-0.1.2+1.21.4.jar`。
+- **Minecraft 1.21.1／NeoForge 21.1.x**：`MTR-Navigation-neoforge-0.1.3+1.21.1.jar`。
+- **Minecraft 1.21.1／Fabric**：`MTR-Navigation-fabric-0.1.3+1.21.1.jar`。
+- **Minecraft 1.21.4／NeoForge 21.4.x**：`MTR-Navigation-neoforge-0.1.3+1.21.4.jar`。
+- **Minecraft 1.21.4／Fabric**：`MTR-Navigation-fabric-0.1.3+1.21.4.jar`。
 
 Fabric 需要 Fabric Loader 0.16.14 或更新版本，以及对应 Minecraft 版本的 [Fabric API](https://modrinth.com/mod/fabric-api)。MTR 本身也需要安装与 Minecraft／加载器对应的版本。
 
@@ -182,7 +182,7 @@ Linux／macOS 对应使用 `./dev.sh neoforge build testFabricCore` 和 `./dev.s
 
 产物分别位于 `build/libs` 和 `fabric/build/libs`。Gradle、依赖与工具缓存位于 `.cache`，临时文件位于 `.tmp`，开发游戏实例位于 `run`／`run-server`；这些生成目录不提交到仓库。分发后的配置使用玩家自己的游戏实例目录。
 
-使用[多版本构建入口](docs/multiversion.md)：共用功能代码，为 Minecraft 1.21.1／1.21.4 分别生成 NeoForge 和 Fabric 包。使用 `./tools/build_all.ps1` 顺序构建并检查，统一产物及 SHA256 清单位于 `build/multiversion`。0.1.2 发布附件包含这四个目标，游戏内验收情况见[验证记录](docs/validation/verification.md)。
+使用[多版本构建入口](docs/multiversion.md)：共用功能代码，为 Minecraft 1.21.1／1.21.4 分别生成 NeoForge 和 Fabric 包。使用 `./tools/build_all.ps1` 顺序构建并检查，统一产物及 SHA256 清单位于 `build/multiversion`。0.1.3 发布附件包含这四个目标，游戏内验收情况见[验证记录](docs/validation/verification.md)。
 
 ## English
 
@@ -204,7 +204,7 @@ New queries return up to **five distinct route patterns**, with a default extra-
 
 With an updated Navigation server, players may submit proposals for moderators (operator level 2+) to approve. Pending proposals are visible only to their author and authorized moderators. Personal rules require explicit consent before being sent for a private server-side query; they are not published or included in shared audit data. Servers with only the old v1 protocol retain the original rail-only queries. See the [walking guide](docs/walking-transfers.md) for limits and verification details.
 
-Current version: **0.1.2**. [Download](https://github.com/teamCreating/MTR-Navigation/releases/tag/v0.1.2) · [Changelog](CHANGELOG.md). Builds are available for Minecraft 1.21.1 / 1.21.4 on NeoForge and Fabric. Dedicated multiplayer validation remains limited. See the [verification notes](docs/validation/verification.md) and [Overlay integration guide](docs/overlay-integration.md) for precise scope.
+Current version: **0.1.3**. [Download](https://github.com/teamCreating/MTR-Navigation/releases/tag/v0.1.3) · [Changelog](CHANGELOG.md). Builds are available for Minecraft 1.21.1 / 1.21.4 on NeoForge and Fabric. Dedicated multiplayer validation remains limited. See the [verification notes](docs/validation/verification.md) and [Overlay integration guide](docs/overlay-integration.md) for precise scope.
 
 ## 许可与致谢
 
